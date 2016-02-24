@@ -7,4 +7,5 @@ Brian Adkins
 
 Directories:  
 
-* [exercism.io](https://github.com/lojic/LearningRacket/tree/master/exercism.io) - collection of solutions to [Exercism.io](http://exercism.io) problems
+* [exercism.io](https://github.com/lojic/LearningRacket/tree/master/exercism.io) - solutions to [Exercism.io](http://exercism.io) exercises
+* [project-euler](https://github.com/lojic/LearningRacket/tree/master/project-euler) - solutions to [Project Euler](https://projecteuler.net/) exercises
