@@ -11,6 +11,7 @@ Directories:
 * [exercism.io](https://github.com/lojic/LearningRacket/tree/master/exercism.io) - solutions to [Exercism.io](http://exercism.io) exercises
 * [htdp](https://github.com/lojic/LearningRacket/tree/master/htdp) examples/exercises from How To Design Programs
 * [project-euler](https://github.com/lojic/LearningRacket/tree/master/project-euler) - solutions to [Project Euler](https://projecteuler.net/) exercises
+* [realm-of-racket](https://github.com/lojic/LearningRacket/tree/master/realm-of-racket) - examples/exercises from Realm of Racket
 
 Possible future:
 
