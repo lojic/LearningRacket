@@ -10,6 +10,7 @@ Brian Adkins
 * [exercises-for-programmers](https://github.com/lojic/LearningRacket/tree/master/exercises-for-programmers) - solutions to "Exercises for Programmers" by Brian P. Hogan
 * [exercism.io](https://github.com/lojic/LearningRacket/tree/master/exercism.io) - solutions to [Exercism.io](http://exercism.io) exercises
 * [htdp](https://github.com/lojic/LearningRacket/tree/master/htdp) examples/exercises from How To Design Programs
+* [miscellaneous](https://github.com/lojic/LearningRacket/tree/master/miscellaneous) - a miscellaneous collection of Racket code (as patterns/groups emerge, files may be moved to more specific directories)
 * [project-euler](https://github.com/lojic/LearningRacket/tree/master/project-euler) - solutions to [Project Euler](https://projecteuler.net/) exercises
 * [realm-of-racket](https://github.com/lojic/LearningRacket/tree/master/realm-of-racket) - examples/exercises from Realm of Racket
 * [the-scheme-programming-language](https://github.com/lojic/LearningRacket/tree/master/the-scheme-programming-language) - examples/exercises from The Scheme Programming Language
