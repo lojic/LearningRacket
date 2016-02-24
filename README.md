@@ -7,5 +7,6 @@ Brian Adkins
 
 Directories:  
 
+* [exercises-for-programmers](https://github.com/lojic/LearningRacket/tree/master/exercises-for-programmers) - solutions to "Exercises for Programmers" by Brian P. Hogan
 * [exercism.io](https://github.com/lojic/LearningRacket/tree/master/exercism.io) - solutions to [Exercism.io](http://exercism.io) exercises
 * [project-euler](https://github.com/lojic/LearningRacket/tree/master/project-euler) - solutions to [Project Euler](https://projecteuler.net/) exercises
