@@ -15,3 +15,7 @@ Possible future:
 
 * Structure and Interpretation of Computer Programs (SICP)
 * Paradigms of Artificial Intelligence Programming (PAIP)
+
+**Other Racket Repositories**
+
+* [RacketIRCBot](https://github.com/lojic/RacketIRCBot) - a simple IRC bot in Racket
