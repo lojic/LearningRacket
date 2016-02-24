@@ -5,7 +5,7 @@ The **Racket** programming language is amazing! I've decided to begin an intensi
 Brian Adkins  
 [Lojic Technologies](http://lojic.com)
 
-Directories:  
+**Directories:**  
 
 * [exercises-for-programmers](https://github.com/lojic/LearningRacket/tree/master/exercises-for-programmers) - solutions to "Exercises for Programmers" by Brian P. Hogan
 * [exercism.io](https://github.com/lojic/LearningRacket/tree/master/exercism.io) - solutions to [Exercism.io](http://exercism.io) exercises
@@ -14,7 +14,7 @@ Directories:
 * [realm-of-racket](https://github.com/lojic/LearningRacket/tree/master/realm-of-racket) - examples/exercises from Realm of Racket
 * [the-scheme-programming-language](https://github.com/lojic/LearningRacket/tree/master/the-scheme-programming-language) - examples/exercises from The Scheme Programming Language
 
-Possible future:
+Possible future exercises:
 
 * Structure and Interpretation of Computer Programs (SICP)
 * Paradigms of Artificial Intelligence Programming (PAIP)
