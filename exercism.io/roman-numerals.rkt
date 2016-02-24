@@ -1,0 +1,26 @@
+#lang racket
+(provide numerals)
+
+(define values '((1000 "M" )
+                 ( 900 "CM")
+                 ( 500 "D" )
+                 ( 400 "CD")
+                 ( 100 "C" )
+                 (  90 "XC")
+                 (  50 "L" )
+                 (  40 "XL")
+                 (  10 "X" )
+                 (   9 "IX")
+                 (   5 "V" )
+                 (   4 "IV")
+                 (   1 "I" )))
+
+(define (numerals number)
+  (let _numerals ([number number] [acc '()])
+    (if (zero? number)
+        (string-join (reverse acc) "")
+        (match-let ([(list arabic roman) (find-max-value number)])
+          (_numerals (- number arabic) (cons roman acc))))))
+  
+(define (find-max-value number)
+  (findf (λ (pair) (<= (car pair) number)) values))
