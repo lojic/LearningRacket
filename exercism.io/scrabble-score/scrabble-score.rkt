@@ -1,5 +1,5 @@
 #lang racket
-(require "etl.rkt")
+(require "../etl/etl.rkt")
 (require threading)
 (provide score)
 

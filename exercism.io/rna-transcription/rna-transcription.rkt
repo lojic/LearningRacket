@@ -1,5 +1,5 @@
 #lang racket
-(require "listify.rkt")
+(require "../listify.rkt")
 
 (provide to-rna)
 
