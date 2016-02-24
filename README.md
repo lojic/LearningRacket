@@ -4,3 +4,5 @@ The **Racket** programming language is amazing! I've decided to begin an intensi
 
 Brian Adkins  
 [Lojic Technologies](http://lojic.com)
+
+* exercism.io - collection of solutions to [Exercism.io](http://exercism.io) problems
