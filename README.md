@@ -12,6 +12,7 @@ Directories:
 * [htdp](https://github.com/lojic/LearningRacket/tree/master/htdp) examples/exercises from How To Design Programs
 * [project-euler](https://github.com/lojic/LearningRacket/tree/master/project-euler) - solutions to [Project Euler](https://projecteuler.net/) exercises
 * [realm-of-racket](https://github.com/lojic/LearningRacket/tree/master/realm-of-racket) - examples/exercises from Realm of Racket
+* [the-scheme-programming-language](https://github.com/lojic/LearningRacket/tree/master/the-scheme-programming-language) - examples/exercises from The Scheme Programming Language
 
 Possible future:
 
