@@ -1,0 +1,16 @@
+#lang racket
+(require "../lojic.rkt")
+
+(if (get-boolean "Is the car silent when you turn the key?")
+    (if (get-boolean "Are the battery terminals corroded?")
+        (displayln "Clean the terminals and try starting again.")
+        (displayln "Replace cables and try again."))
+    (if (get-boolean "Does the car make a clicking noise?")
+        (displayln "Replace the battery.")
+        (if (get-boolean "Does the car crank up but fail to start?")
+            (displayln "Check spark plug connections.")
+            (if (get-boolean "Does the engine start and then die?")
+                (if (get-boolean "Does your car have fuel injection?")
+                    (displayln "Get it in for service.")
+                    (displayln "Check to ensure the choke is opening and closing."))
+                (displayln "I can't help you")))))
