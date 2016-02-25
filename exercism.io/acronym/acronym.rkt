@@ -8,5 +8,5 @@
       (filter non-empty-string? _)
       (map (λ (s) (substring s 0 1)) _)
       (string-join "")
-      (string-upcase)))
+      string-upcase))
 
