@@ -5,7 +5,6 @@ Most of the exercises are a port of Elixir solutions found [here](https://github
 
 **Todo:**  
 
-* run-length-encoding
 * binary
 * prime-factors
 * hamming 
