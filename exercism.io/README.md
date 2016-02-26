@@ -8,5 +8,6 @@ Most of the exercises are a port of Elixir solutions found [here](https://github
 * run-length-encoding
 * binary
 * prime-factors
-* hamming * sieve
+* hamming 
+* sieve
 * raindrops
