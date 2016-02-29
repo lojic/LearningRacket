@@ -5,6 +5,4 @@ Most of the exercises are a port of Elixir solutions found [here](https://github
 
 **Todo:**  
 
-* hamming 
-* sieve
 * raindrops
