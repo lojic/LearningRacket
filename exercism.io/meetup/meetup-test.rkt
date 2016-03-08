@@ -1,7 +1,7 @@
 #lang racket
 
-(require "meetup.rkt")
-(require gregor)
+(require "meetup.rkt"
+         gregor)
 
 (module+ test
   (require rackunit rackunit/text-ui)
