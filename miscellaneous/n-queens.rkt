@@ -28,4 +28,4 @@
                                 (cddr result)))
                     (inner (cdr result)))))])))
 
-(queens 8)
+(queens 8) ; => (list (pos 1 1) (pos 2 5) (pos 3 8) (pos 4 6) (pos 5 3) (pos 6 7) (pos 7 2) (pos 8 4))
