@@ -1,5 +1,5 @@
 #lang racket
-; Represent a position as a struct with file and rank members
+; Represent a position as a struct with x (file) and y (rank) members
 (struct pos (x y) #:transparent)
 
 ; Indicate whether q1 is attacking q2
@@ -38,7 +38,6 @@
     (if stack
         (let ([solution (queens n stack)])
           (if solution
-              (loop (next-position n solution)
-                    (cons solution solutions))
+              (loop (next-position n solution) (cons solution solutions))
               solutions))
         solutions)))
