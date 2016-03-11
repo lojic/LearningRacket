@@ -24,11 +24,11 @@
 ; Accept a board size and partial list of moves, and return the next solution
 (define (queens n stack)
   (let loop ([stack stack])
-    (match-define (pos file rank) (car stack))
+    (match-define (pos x y) (car stack))
     (cond
-      [(> file n) (cdr stack)] ; Return solution
-      [(valid? stack) (loop (cons (pos (+ file 1) 1) stack))] ; Go to next file
-      [(< rank n) (loop (cons (pos file (+ rank 1)) (cdr stack)))] ; Go to next rank
+      [(> x n) (cdr stack)] ; Return solution
+      [(valid? stack) (loop (cons (pos (+ x 1) 1) stack))] ; Go to next file
+      [(< y n) (loop (cons (pos x (+ y 1)) (cdr stack)))] ; Go to next rank
       [else (let ([next (next-position n (cdr stack))]) ;Backtrack
               (if next
                   (loop next)
@@ -46,4 +46,4 @@
               solutions))
         solutions)))
 
-(time (length (main 13)))
+(time (length (main 12)))
