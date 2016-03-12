@@ -41,3 +41,5 @@
               (loop (next-position n solution) (cons solution solutions))
               solutions))
         solutions)))
+
+(length (main 13))
