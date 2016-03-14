@@ -10,4 +10,3 @@
       (if (< count max-count)
           (loop (cdr lst) (max largest-product (series-product lst n)) (+ count 1))
           largest-product))))
-  
