@@ -4,7 +4,6 @@ This directory is a collection of solutions to [Exercism.io](http://exercism.io/
 Most of the exercises are a port of Elixir solutions found [here](https://github.com/duff/exercism-elixir).
 
 # Todo
-* largest-series-product (4d)
 * sum-of-multiples (4d)
 * palindrome-products (3d)
 * parallel-letter-frequency (3d)
