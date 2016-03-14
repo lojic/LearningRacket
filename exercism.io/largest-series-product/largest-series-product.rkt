@@ -17,4 +17,3 @@
   (if (> n 0)
       (series-product (cdr lst) (- n 1) (* (car lst) acc))
       acc))
-      
