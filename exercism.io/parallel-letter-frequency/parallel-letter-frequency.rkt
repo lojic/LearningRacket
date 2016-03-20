@@ -5,6 +5,8 @@
 
 (define (frequency texts)
   (define ch (async-task "parallel-letter-frequency.rkt" 'frequency-map texts))
+  (thread (λ () (for ([text (in-list texts)])
+                     (place-channel-put ch text))))
   (merge (for/list ([i (in-range (length texts))])
                    (place-channel-get ch))))
 
