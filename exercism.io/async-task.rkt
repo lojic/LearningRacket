@@ -1,7 +1,7 @@
 #lang racket
 (provide async-task)
 
-(define (async-task module-path fun units-of-work)
+(define (async-task module-path fun)
   ; 1) Create queue to send work to workers and retrieve results
   (define-values (parent child) (place-channel))
 
