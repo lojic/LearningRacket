@@ -12,8 +12,8 @@
 
 (define (generate beg end [sum 0])
   (for*/list ([a (in-range beg end)]
-              [b (in-range a end)]
-              [c (in-range b end)]
+              [b (in-range (+ a 1) end)]
+              [c (in-range (+ b 1) end)]
               #:when (and (or (= sum 0) (= sum (+ a b c)))
                           (pythagorean? a b c)))
              (list a b c)))
