@@ -16,4 +16,3 @@
                 #:when (and (>= element (vector-ref row-maxs row))
                             (<= element (vector-ref col-mins col))))
                (list row col))))
-
