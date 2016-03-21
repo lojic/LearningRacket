@@ -1,14 +1,9 @@
 #lang racket
 (provide (all-defined-out))
 
-(define (sum tup)
-  (apply + tup))
-
-(define (product tup)
-  (apply * tup))
-
-(define (pythagorean? a b c)
-  (= (+ (* a a) (* b b)) (* c c)))
+(define (sum tup) (apply + tup))
+(define (product tup) (apply * tup))
+(define (pythagorean? a b c) (= (+ (* a a) (* b b)) (* c c)))
 
 (define (generate beg end [sum 0])
   (for*/list ([a (in-range beg end)]
