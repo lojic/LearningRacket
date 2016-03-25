@@ -19,6 +19,7 @@ Possible future exercises:
 
 * Structure and Interpretation of Computer Programs (SICP)
 * Paradigms of Artificial Intelligence Programming (PAIP)
+* [the matasano crypto challenges](http://cryptopals.com/)
 
 **Other Racket Repositories**
 
