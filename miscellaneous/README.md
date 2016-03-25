@@ -7,3 +7,5 @@ Produces all solutions to N Queens
 Solves the Cracker Barrel pegboard puzzle
 ## towers-of-hanoi.rkt
 Simple Towers of Hanoi solver
+## word-frequency.rkt
+Produce a list of the most frequently used words in a string
