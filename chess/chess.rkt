@@ -9,6 +9,7 @@
 ; position being vacated.
 
 ; Initial board represented by a ByteString of 12x12=144 elements.
+; Index 0 is at lower left. Index 143 is at upper right.
 ;   0 0  0  0  0  0  0  0  0  0 0 0
 ;   0 0  0  0  0  0  0  0  0  0 0 0
 ; 8 0 0 10 08 09 11 12 09 08 10 0 0
@@ -44,7 +45,17 @@
 (define black-knight 8)
 (define black-pawn   7)
 
-; File of idx
+; Directions
+(define north       12)
+(define north-east  13)
+(define east         1)
+(define south-east -11)
+(define south      -12)
+(define south-west -13)
+(define west        -1)
+(define north-west  11)
+
+; Return the file for a particular board index
 ; (idx->file 40) -> 'c
 (define (idx->file idx)
   (match (remainder idx 12)
@@ -58,18 +69,20 @@
     [ 9 'h  ]
     [ _ '() ]))
 
-; Rank of idx
+; Return the rank for a particular board index
 ; (idx->rank 40) -> 2
 (define (idx->rank idx)
   (- (quotient idx 12) 1))
 
-; Convert a rank into an index where #\a is 0
+; Convert a rank into an index where a is 0.
+; Expects a byte, not a character
 ; (rank->idx (char->integer #\b)) -> 1
 (define (rank->idx rank)
   (- rank (char->integer #\a)))
 
-; Convert a file number into an index #\1 is 0
-; (file->idx (char->integer #2)) -> 1
+; Convert a file number into an index 1 is 0.
+; Expects a byte, not a character
+; (file->idx (char->integer #\2)) -> 1
 (define (file->idx file)
   (- file (char->integer #\1)))
 
@@ -223,7 +236,7 @@
                   (or (is-empty? target)
                       (is-opposite-color? target)))) _)))
 
-(define (valid-sliding-moves board idx offset is-opposite-color?)
+(define (valid-sliding-moves board idx is-opposite-color? offset)
   (let loop ([i (+ idx offset)] [accum '()])
     (let ([target (bytes-ref board i)])
       (cond [(is-empty? target) (loop (+ i offset) (cons i accum))]
@@ -231,14 +244,30 @@
             [else accum]))))
 
 (define (valid-bishop-moves board idx is-opposite-color?)
-  '())
-
+  (append-map (curry valid-sliding-moves board idx is-opposite-color?)
+              (list north-east south-east south-west north-west)))
+  
 (define (valid-rook-moves board idx is-opposite-color?)
-  '())
+  (append-map (curry valid-sliding-moves board idx is-opposite-color?)
+              (list north east south west)))
 
 ; For valid-queen-moves, simply combine valid-bishop and valid-rook
-(define (valid-queen-moves board idx is-opposite-color?)
-  '())
+;(define (valid-queen-moves board idx is-opposite-color?)
+;  (append (valid-bishop-moves board idx is-opposite-color?)
+;          (valid-rook-moves board idx is-opposite-color?)))
+
+;(define (valid-queen-moves board idx is-opposite-color?)
+;  (append-map (λ (f) (apply f (list board idx is-opposite-color?)))
+;              (list valid-bishop-moves valid-rook-moves)))
+
+;(define (valid-queen-moves . args)
+;  (append-map (λ (f) (apply f args))
+;              (list valid-bishop-moves valid-rook-moves)))
+
+(define (unionify . functions)
+  (λ args (append-map (λ (f) (apply f args)) functions)))
+
+(define valid-queen-moves (unionify valid-bishop-moves valid-rook-moves))
 
 (define (piece-symbol piece)
   (match piece
@@ -255,7 +284,6 @@
     [ (== black-knight) #\n ]
     [ (== black-pawn)   #\p ]
     [ _                 #\_ ]))
-  
 
 ; Print a text representation of the board
 (define (print-board board)
@@ -266,5 +294,11 @@
               (display (piece-symbol piece))
               (display " ")))
        (displayln "")))
-  
+
+(board-set! board #"d4" white-queen)
 (print-board board)
+;(map idx->pos (valid-knight-moves board is-black-piece? (pos->idx #"b1")))
+;(map idx->pos (valid-sliding-moves board (pos->idx #"d4") is-black-piece? north-east))
+(map idx->pos (valid-bishop-moves board (pos->idx #"d4") is-black-piece?))
+(map idx->pos (valid-rook-moves board (pos->idx #"d4") is-black-piece?))
+(map idx->pos (valid-queen-moves board (pos->idx #"d4") is-black-piece?))
