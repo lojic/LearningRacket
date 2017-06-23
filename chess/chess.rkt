@@ -27,6 +27,8 @@
 ; By having a 2-square fringe of zeros at the edge, it's easier
 ; to detect (in)valid moves, especially for knights.
 
+(define board-length 144)
+
 ; Represent pieces using a byte value (0 to 255). White pieces are >= 1 && < 7,
 ; black pieces are >= 7 && < 13
 (define empty        13)
@@ -107,7 +109,7 @@
   (bytes-set! board (pos->idx pos) piece))
 
 ; Create initial board
-(define board (let ([b (make-bytes 144 0)]
+(define board (let ([b (make-bytes board-length 0)]
                     [moves `((#"a1" . ,white-rook)
                              (#"b1" . ,white-knight)
                              (#"c1" . ,white-bishop)
@@ -176,25 +178,36 @@
                   (board-set! b (car pair) (cdr pair)))
                 b))
 
+; Return the value of the specified piece
 (define (piece-value piece)
   (match piece
-    [ (== white-king)   99 ]
     [ (== white-queen)   9 ]
     [ (== white-rook)    5 ]
     [ (== white-bishop)  3 ]
     [ (== white-knight)  3 ]
     [ (== white-pawn)    1 ]
-    [ (== black-king)   99 ]
-    [ (== black-queen)   9 ]
-    [ (== black-rook)    5 ]
-    [ (== black-bishop)  3 ]
-    [ (== black-knight)  3 ]
-    [ (== black-pawn)    1 ]
+    [ (== black-queen)  -9 ]
+    [ (== black-rook)   -5 ]
+    [ (== black-bishop) -3 ]
+    [ (== black-knight) -3 ]
+    [ (== black-pawn)   -1 ]
     [ _                  0 ]))
 
-(define (valid-moves board idx)
+; Return a list of indices to which the specified piece can move
+(define (valid-targets board idx)
   (let ([piece (bytes-ref board idx)])
-    (cond ([(= piece white-pawn) (valid-white-pawn-moves board idx)]))))
+    (cond [(= piece white-king)   (valid-king-targets   board idx is-black-piece?) ]
+          [(= piece white-queen)  (valid-queen-targets  board idx is-black-piece?) ]
+          [(= piece white-rook)   (valid-rook-targets   board idx is-black-piece?) ]
+          [(= piece white-bishop) (valid-bishop-targets board idx is-black-piece?) ]
+          [(= piece white-knight) (valid-knight-targets board idx is-black-piece?) ]
+          [(= piece white-pawn)   (valid-pawn-targets   board idx is-black-piece?) ]
+          [(= piece white-king)   (valid-king-targets   board idx is-white-piece?) ]
+          [(= piece black-queen)  (valid-queen-targets  board idx is-white-piece?) ]
+          [(= piece black-rook)   (valid-rook-targets   board idx is-white-piece?) ]
+          [(= piece black-bishop) (valid-bishop-targets board idx is-white-piece?) ]
+          [(= piece black-knight) (valid-knight-targets board idx is-white-piece?) ]
+          [(= piece black-pawn)   (valid-pawn-targets   board idx is-white-piece?) ])))
 
 (define (is-black-piece? piece)
   (and (>= piece black-pawn) (<= piece black-king)))
@@ -206,68 +219,73 @@
   (= piece empty))
 
 ; Ignores en passant, pawn promotion & moving into check
-(define (valid-white-pawn-moves board idx)
-  (let* ([forward-empty? (is-empty? (bytes-ref board (+ idx 12)))]
+(define (valid-pawn-targets board idx is-opposite-color?)
+  (define-values (forward initial-rank)
+    (if (eq? is-opposite-color? is-black-piece?)
+        (values 12 2)
+        (values -12 7)))
+  (let* ([forward-empty? (is-empty? (bytes-ref board (+ idx forward)))]
          [result '()]
          ; Forward 1
          [result (if forward-empty?
-                     (cons (+ idx 12) result)
+                     (cons (+ idx forward) result)
                      result)]
          ; Forward 2
-         [result (if (and (= 2 (idx->rank idx))
+         [result (if (and (= initial-rank (idx->rank idx))
                       forward-empty?
-                      (is-empty? (bytes-ref board (+ idx 24))))
-                     (cons (+ idx 24) result)
+                      (is-empty? (bytes-ref board (+ idx (* 2 forward)))))
+                     (cons (+ idx (* 2 forward)) result)
                      result)]
-         ; Capture forward-right
-         [result (if (is-black-piece? (bytes-ref board (+ idx 13)))
-                     (cons (+ idx 13) result)
+         ; Capture forward higher index
+         [result (if (is-opposite-color? (bytes-ref board (+ idx forward 1)))
+                     (cons (+ idx forward 1) result)
                      result)]
-         ; Capture forward-left
-         [result (if (is-black-piece? (bytes-ref board (+ idx 12)))
-                     (cons (+ idx 12) result)
+         ; Capture forward lower index
+         [result (if (is-opposite-color? (bytes-ref board (+ idx forward -1)))
+                     (cons (+ idx forward -1) result)
                      result)])
     result))
 
-(define (valid-knight-moves board idx is-opposite-color?)
-  (~> (map (curry + idx) '(25 14 -10 -23 -25 -14 10 23))
+(define (valid-knight-targets board idx is-opposite-color?)
+  (valid-target-list board idx is-opposite-color? '(25 14 -10 -23 -25 -14 10 23)))
+
+(define (valid-king-targets board idx is-opposite-color?)
+  (valid-target-list board idx is-opposite-color?
+                     (list north north-east east south-east south south-west west north-west)))  
+
+; Filter the list of possible targets to only the valid ones
+(define (valid-target-list board idx is-opposite-color? targets)
+  (~> (map (curry + idx) targets)
       (filter (λ (n)
                 (let ([target (bytes-ref board n)])
                   (or (is-empty? target)
                       (is-opposite-color? target)))) _)))
 
-(define (valid-sliding-moves board idx is-opposite-color? offset)
-  (let loop ([i (+ idx offset)] [accum '()])
+; Return a list of valid target destinations in the specified direction
+(define (valid-sliding-targets board idx is-opposite-color? direction)
+  (let loop ([i (+ idx direction)] [accum '()])
     (let ([target (bytes-ref board i)])
-      (cond [(is-empty? target) (loop (+ i offset) (cons i accum))]
+      (cond [(is-empty? target) (loop (+ i direction) (cons i accum))]
             [(is-opposite-color? target) (cons i accum)]
             [else accum]))))
 
-(define (valid-bishop-moves board idx is-opposite-color?)
-  (append-map (curry valid-sliding-moves board idx is-opposite-color?)
+(define (valid-bishop-targets board idx is-opposite-color?)
+  (append-map (curry valid-sliding-targets board idx is-opposite-color?)
               (list north-east south-east south-west north-west)))
   
-(define (valid-rook-moves board idx is-opposite-color?)
-  (append-map (curry valid-sliding-moves board idx is-opposite-color?)
+(define (valid-rook-targets board idx is-opposite-color?)
+  (append-map (curry valid-sliding-targets board idx is-opposite-color?)
               (list north east south west)))
 
-; For valid-queen-moves, simply combine valid-bishop and valid-rook
-;(define (valid-queen-moves board idx is-opposite-color?)
-;  (append (valid-bishop-moves board idx is-opposite-color?)
-;          (valid-rook-moves board idx is-opposite-color?)))
+; Apply each function given to the same set of arguments,
+; then concatenate the result lists into a single list.
+(define (juxt . funs)
+  (λ args (append-map (λ (f) (apply f args))
+                      funs)))
 
-;(define (valid-queen-moves board idx is-opposite-color?)
-;  (append-map (λ (f) (apply f (list board idx is-opposite-color?)))
-;              (list valid-bishop-moves valid-rook-moves)))
-
-;(define (valid-queen-moves . args)
-;  (append-map (λ (f) (apply f args))
-;              (list valid-bishop-moves valid-rook-moves)))
-
-(define (unionify . functions)
-  (λ args (append-map (λ (f) (apply f args)) functions)))
-
-(define valid-queen-moves (unionify valid-bishop-moves valid-rook-moves))
+(define valid-queen-targets
+  (juxt valid-bishop-targets
+        valid-rook-targets))
 
 (define (piece-symbol piece)
   (match piece
@@ -285,6 +303,23 @@
     [ (== black-pawn)   #\p ]
     [ _                 #\_ ]))
 
+(define (get-piece-indices board pred)
+  (let loop ([idx 0] [indices '()])
+    (if (< idx board-length)
+        (loop (add1 idx)
+              (if (pred (bytes-ref board idx))
+                  (cons idx indices)
+                  indices))
+        indices)))
+
+; For now, use a simplistic strategy of simply summing the value of
+; all the pieces.
+(define (evaluate-board board)
+  (let loop ([idx 0] [score 0.0])
+    (if (< idx board-length)
+        (loop (add1 idx) (+ score (piece-value (bytes-ref board idx))))
+        score)))
+
 ; Print a text representation of the board
 (define (print-board board)
   (for ([rank '(#\8 #\7 #\6 #\5 #\4 #\3 #\2 #\1)])
@@ -295,10 +330,15 @@
               (display " ")))
        (displayln "")))
 
-(board-set! board #"d4" white-queen)
-(print-board board)
-;(map idx->pos (valid-knight-moves board is-black-piece? (pos->idx #"b1")))
-;(map idx->pos (valid-sliding-moves board (pos->idx #"d4") is-black-piece? north-east))
-(map idx->pos (valid-bishop-moves board (pos->idx #"d4") is-black-piece?))
-(map idx->pos (valid-rook-moves board (pos->idx #"d4") is-black-piece?))
-(map idx->pos (valid-queen-moves board (pos->idx #"d4") is-black-piece?))
+; Minimax
+; https://www.thanassis.space/score4.html
+; count down to zero to avoid needing both level & maxlevel
+(define (minimax board minmax level maxlevel evaluator)
+  (cond [(>= level maxlevel) (evaluator board)]
+        [(eq? minmax 'min) (min (children))]
+        [else (max (children))]))
+
+;(board-set! board #"e2" empty)
+;(print-board board)
+(map idx->pos (valid-targets board (pos->idx #"e2")))
+;(map idx->pos (get-piece-indices board is-white-piece?))
