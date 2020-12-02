@@ -1,5 +1,7 @@
 #lang racket
 
+(require "./advent.rkt")
+
 ;; Advent of Code 2020 Day 1 part 2:
 ;; Find three numbers in the input that sum to 2020, then multiply
 ;; them to obtain the puzzle answer.
@@ -28,28 +30,6 @@
 ;; Returns a procedure that accepts a list of numbers and indicates
 ;; whether they sum to the specified value.
 (define (sums-to n) (λ (lst) (= n (apply + lst))))
-
-;; (filter-ascending-permutations pred? n lst) -> list?
-;; pred?  : procedure?
-;; n      : exact-nonnegative-integer?
-;; lst    : (listof number?)
-;;
-;; Return a list of permutations that satisfy the specified
-;; predicate. For example, the list '(foo bar foo baz) produces the
-;; following list of 2-tuple ascending permutations:
-;; '((foo bar) (foo foo) (foo baz) (bar foo) (bar baz) (foo baz))
-(define (filter-ascending-permutations pred? n lst)
-  (reverse
-   (let loop ([ lst lst ][ n n ][ stack '() ][ result '() ])
-     (if (= n 0)
-         (let ([ s (reverse stack) ])
-           (if (pred? s) (cons s result) result))
-         (if (null? lst)
-             result
-             (loop (cdr lst)
-                   n
-                   stack
-                   (loop (cdr lst) (sub1 n) (cons (car lst) stack) result)))))))
 
 (define (find-3 pred? lst)
   (let ([ tuple (filter-ascending-permutations pred? 3 lst) ])
@@ -97,7 +77,7 @@
   ;; ------------------------------------------------------------------------------------------
   ;; filter-ascending-permutations
   ;; ------------------------------------------------------------------------------------------
-  (check-equal? (filter-ascending-permutations identity 2 '(foo bar foo baz))
+  (check-equal? (filter-ascending-permutations (const #t) 2 '(foo bar foo baz))
                 '((foo bar) (foo foo) (foo baz) (bar foo) (bar baz) (foo baz)))
   
   (check-equal? (filter-ascending-permutations (sums-to 7) 2 '(1 2 3 4))

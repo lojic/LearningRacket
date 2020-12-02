@@ -1,6 +1,6 @@
 #lang racket
 
-(require racket/generator)
+(require "./advent.rkt")
 
 ;; Advent of Code 2020 Day 1 part 2:
 ;; Find three numbers in the input that sum to 2020, then multiply
@@ -29,17 +29,6 @@
 ;; Returns a procedure that accepts a list of numbers and indicates
 ;; whether they sum to the specified value.
 (define (sums-to n) (λ (lst) (= n (apply + lst))))
-
-(define (ascending-permutations-generator n lst)
-  (generator ()
-    (let loop ([ lst lst ][ n n ][ stack '() ])
-      (if (= n 0)
-          (yield (reverse stack))
-          (if (null? lst)
-              #f
-              (begin
-                (loop (cdr lst) (sub1 n) (cons (car lst) stack))
-              (loop (cdr lst) n stack)))))))
 
 (define (find-3 pred? lst)
   (define g (ascending-permutations-generator 3 lst))
