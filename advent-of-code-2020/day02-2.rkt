@@ -2,7 +2,7 @@
 
 (require "./advent.rkt")
 
-(define input-file "day2.txt")
+(define input-file "day02.txt")
 (define password-pat #px"^(\\d+)-(\\d+)\\s+([a-z]):\\s+([a-z]+)$")
 
 (struct spec (min max letter password) #:transparent)

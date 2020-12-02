@@ -10,7 +10,7 @@
 ;; permutations.
 
 (define expense-sum       2020)
-(define expenses-filename "day1.txt")
+(define expenses-filename "day01.txt")
 
 ;; (get-expenses fname) -> (listof number?)
 ;; fname : string?
