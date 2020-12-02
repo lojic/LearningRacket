@@ -28,7 +28,7 @@
 
 (module+ main
   (let* ([ n (for/sum ([ line (in-list input) ])
-                  (if (password-is-valid? (parse-password line)) 1 0)) ])
+               (if (password-is-valid? (parse-password line)) 1 0)) ])
     (printf "~a passwords, out of ~a, are valid.\n" n (length input))))
 
 (module+ test
