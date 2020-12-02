@@ -2,7 +2,7 @@
 
 (require "./advent.rkt")
 
-(define input-file "day02.txt")
+(define input (file->lines "day02.txt"))
 (define password-pat #px"^(\\d+)-(\\d+)\\s+([a-z]):\\s+([a-z]+)$")
 
 (struct spec (min max letter password) #:transparent)
@@ -10,12 +10,6 @@
 (define (has-letter-at? str letter pos)
   (and (<= 1 pos (string-length str))
        (char=? letter (string-ref str (sub1 pos)))))
-
-(define (get-specs fname)
-  (with-input-from-file fname
-    (thunk
-     (for/list ([ l (in-lines) ])
-       l))))
 
 (define (parse-password str)
   (match (regexp-match password-pat str)
@@ -33,10 +27,9 @@
          (has-letter-at? password letter (spec-max obj)))))
 
 (module+ main
-  (let* ([ lines (get-specs input-file)                                ]
-         [ n    (for/sum ([ line (in-list lines) ])
+  (let* ([ n (for/sum ([ line (in-list input) ])
                   (if (password-is-valid? (parse-password line)) 1 0)) ])
-    (printf "~a passwords, out of ~a, are valid.\n" n (length lines))))
+    (printf "~a passwords, out of ~a, are valid.\n" n (length input))))
 
 (module+ test
   (require rackunit)
@@ -84,7 +77,7 @@
   ;; ------------------------------------------------------------------------------------------
   ;; Solution
   ;; ------------------------------------------------------------------------------------------
-  (check-equal? (for/sum ([ line (get-specs input-file) ])
+  (check-equal? (for/sum ([ line input ])
                   (if (password-is-valid? (parse-password line)) 1 0))
                 708)
 
