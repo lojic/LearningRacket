@@ -227,7 +227,7 @@
 
   (check-equal? (count-valid-passports "day04-2-invalid.txt") 0)
   (check-equal? (count-valid-passports "day04-2-valid.txt") 4)
-  (check-equal? (count-valid-passports "day04.txt") 256)
+  (check-equal? (count-valid-passports "day04.txt") 198)
 
   ;; 4digit-range-validator -------------------------------------------------------------------
   (for ([ s (in-list '("" "x" "5x" "x5x" "5." ".5" "5.0" "0.5" "500" "2003")) ])
