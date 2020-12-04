@@ -2,11 +2,39 @@
 (require racket/vector)
 (require threading)
 
-; TODO
-; it may be easier to check for the case of moving a piece resulting in the king being checked per
-; piece vs. analyzing the entire board after the fact. The reasoning being it should be a matter of
-; checking a sliding "move" from the king to a sliding piece of the opposite color through the
-; position being vacated.
+; Task List
+; * import board from displayed board
+; * show score of manually chosen moves for debugging
+; * piece value: index into table vs. function call
+; * profiling
+; * Alpha beta pruning
+; * castling
+; * en passant
+; * pawn promotion (assume queen)
+; * discovered check (maybe check via king sliding to opposite color biship/rook/queen?)
+; * official notation for moves
+; * better static evaluation:
+;   - material
+;   - piece-square tables
+;   - mobility
+;   - center control
+;   - king safety
+; * progressive deepening & clock usage
+; * parallelization
+; * allow two versions to play many games and determine the better version
+; * heuristic continuation
+; * general optimizations
+
+;Why not c2 to c3 here (white to move)?
+;r _ _ q _ k _ r
+;p p _ _ _ p p p
+;_ _ p _ _ _ _ _
+;_ _ _ p p _ _ _
+;_ b _ n n _ b _
+;_ P _ _ _ _ _ _
+;P B P P P P P P
+;R N _ Q K B N R
+
 
 ; Initial board represented by a ByteString of 12x12=144 elements.
 ; Index 0 is at lower left. Index 143 is at upper right.
@@ -28,6 +56,9 @@
 ; to detect (in)valid moves, especially for knights.
 
 (define board-length 144)
+
+(define max-score 1000000.0)
+(define min-score -1000000.0)
 
 ; Represent pieces using a byte value (0 to 255). White pieces are >= 1 && < 7,
 ; black pieces are >= 7 && < 13
@@ -103,7 +134,7 @@
     (let ([rank-byte (bytes-ref #"00abcdefgh" rank)]
           [file-byte (bytes-ref #"0012345678" file)])
       (bytes rank-byte file-byte))))
-      
+
 ; Place piece at position pos on board
 (define (board-set! board pos piece)
   (bytes-set! board (pos->idx pos) piece))
@@ -181,11 +212,13 @@
 ; Return the value of the specified piece
 (define (piece-value piece)
   (match piece
+    [ (== white-king)   1000000 ]
     [ (== white-queen)   9 ]
     [ (== white-rook)    5 ]
     [ (== white-bishop)  3 ]
     [ (== white-knight)  3 ]
     [ (== white-pawn)    1 ]
+    [ (== black-king)  -1000000 ]
     [ (== black-queen)  -9 ]
     [ (== black-rook)   -5 ]
     [ (== black-bishop) -3 ]
@@ -202,12 +235,30 @@
           [(= piece white-bishop) (valid-bishop-targets board idx is-black-piece?) ]
           [(= piece white-knight) (valid-knight-targets board idx is-black-piece?) ]
           [(= piece white-pawn)   (valid-pawn-targets   board idx is-black-piece?) ]
-          [(= piece white-king)   (valid-king-targets   board idx is-white-piece?) ]
+          [(= piece black-king)   (valid-king-targets   board idx is-white-piece?) ]
           [(= piece black-queen)  (valid-queen-targets  board idx is-white-piece?) ]
           [(= piece black-rook)   (valid-rook-targets   board idx is-white-piece?) ]
           [(= piece black-bishop) (valid-bishop-targets board idx is-white-piece?) ]
           [(= piece black-knight) (valid-knight-targets board idx is-white-piece?) ]
           [(= piece black-pawn)   (valid-pawn-targets   board idx is-white-piece?) ])))
+
+; Return a list of valid moves e.g. '( (src-idx . dst-idx) (src-idx . dst-idx) ... )
+(define (valid-moves board is-color?)
+  ; Loop over indices of pieces
+  (let index-loop ([result '()]
+                   [indices (get-piece-indices board is-color?)])
+    (if (null? indices)
+        result
+        ; Loop over valid targets of a particular index
+        (let ([src-idx (car indices)])
+          (index-loop
+           (let moves-loop ([moves result]
+                            [targets (valid-targets board src-idx)])
+             (if (null? targets)
+                 moves
+                 (moves-loop (cons (cons src-idx (car targets)) moves)
+                             (cdr targets))))
+           (cdr indices))))))
 
 (define (is-black-piece? piece)
   (and (>= piece black-pawn) (<= piece black-king)))
@@ -251,7 +302,7 @@
 
 (define (valid-king-targets board idx is-opposite-color?)
   (valid-target-list board idx is-opposite-color?
-                     (list north north-east east south-east south south-west west north-west)))  
+                     (list north north-east east south-east south south-west west north-west)))
 
 ; Filter the list of possible targets to only the valid ones
 (define (valid-target-list board idx is-opposite-color? targets)
@@ -272,7 +323,7 @@
 (define (valid-bishop-targets board idx is-opposite-color?)
   (append-map (curry valid-sliding-targets board idx is-opposite-color?)
               (list north-east south-east south-west north-west)))
-  
+
 (define (valid-rook-targets board idx is-opposite-color?)
   (append-map (curry valid-sliding-targets board idx is-opposite-color?)
               (list north east south west)))
@@ -330,15 +381,82 @@
               (display " ")))
        (displayln "")))
 
+(define (flip-color-pred pred)
+  (if (eq? pred is-white-piece?)
+      is-black-piece?
+      is-white-piece?))
+
+(define (apply-move board move)
+  (let* ([new-board (bytes-copy board)]
+         [src-idx (car move)]
+         [dst-idx (cdr move)]
+         [src-piece (bytes-ref new-board src-idx)])
+    (bytes-set! new-board src-idx empty)
+    (bytes-set! new-board dst-idx src-piece)
+    new-board))
+
 ; Minimax
 ; https://www.thanassis.space/score4.html
-; count down to zero to avoid needing both level & maxlevel
-(define (minimax board minmax level maxlevel evaluator)
-  (cond [(>= level maxlevel) (evaluator board)]
-        [(eq? minmax 'min) (min (children))]
-        [else (max (children))]))
+(define (minimax board is-color? level evaluator)
+  (define maximizingPlayer (eq? is-color? is-white-piece?))
+  (define comparator (if maximizingPlayer > <))
+
+  (if (< level 1)
+      (cons #f (evaluator board))
+      (let loop ([moves (valid-moves board is-color?)]
+                 [best (cons #f
+                             (if maximizingPlayer
+                                 min-score
+                                 max-score))])
+        (if (null? moves)
+            best
+            (let* ([move (car moves)]
+                   [move-score (minimax (apply-move board move)
+                                        (flip-color-pred is-color?)
+                                        (- level 1)
+                                        evaluator)])
+              (loop (cdr moves)
+                    (if (comparator (cdr move-score)
+                                    (cdr best))
+                        (cons move (cdr move-score))
+                        best)))))))
+
+(define (display-move move)
+  (display (idx->pos (car move)))
+  (display " to ")
+  (displayln (idx->pos (cdr move)))
+  (displayln ""))
+
+(define (game board depth)
+  (let loop ([board board])
+    (define move-score (minimax board is-white-piece? depth evaluate-board))
+    (define move (car move-score))
+    (display-move move)
+    (define board2 (apply-move board move))
+    (print-board board2)
+    (displayln "")
+    (display "Enter source")
+    (define src (string->bytes/utf-8 (read-line)))
+    (display "Enter destination")
+    (define dst (string->bytes/utf-8 (read-line)))
+    (define board3 (apply-move board2 (cons (pos->idx src) (pos->idx dst))))
+    (print-board board3)
+    (displayln "")
+    (loop board3)))
+
+(game board 5)
 
 ;(board-set! board #"e2" empty)
 ;(print-board board)
-(map idx->pos (valid-targets board (pos->idx #"e2")))
+;(map idx->pos (valid-targets board (pos->idx #"e2")))
 ;(map idx->pos (get-piece-indices board is-white-piece?))
+
+;(define board2 (apply-move board (cons (pos->idx #"b2") (pos->idx #"b3"))))
+
+;(print-board board75)
+
+;(define move-score (minimax board83 is-white-piece? 6 evaluate-board))
+;move-score
+;(cdr move-score)
+;(cons (idx->pos (caar move-score))
+;      (idx->pos (cdar move-score)))
