@@ -1,21 +1,37 @@
 #lang racket
 
-;; Advent of Code 2020 Day 4 - Part 1
+;; Advent of Code 2020 Day 4 - Part 2
 ;;
 ;; Emphasizing clarity & extensibility over conciseness today. I tried
 ;; to make it general enough to anticipate Part 2 - time will tell how
 ;; that went! :)
 
-(struct field (key name is-required?) #:transparent)
+(define (4digit-range-validator min max)
+  (λ (str)
+    (and (regexp-match? #px"^\\d{4}$" str)
+         (<= min (string->number str) max))))
 
-(define fields (list (field "byr" "Birth Year"      #t)
-                     (field "iyr" "Issue Year"      #t)
-                     (field "eyr" "Expiration Year" #t)
-                     (field "hgt" "Height"          #t)
-                     (field "hcl" "Hair Color"      #t)
-                     (field "ecl" "Eye Color"       #t)
-                     (field "pid" "Passport ID"     #t)
-                     (field "cid" "Country ID"      #f)))
+(define (pattern-validator pat) (λ (s) (regexp-match? pat s)))
+
+(define (height-validator s)
+  (let ([ lst (regexp-match #px"^(\\d+)(cm|in)$" s) ])
+    (and lst
+         (let ([ n     (string->number (second lst)) ]
+               [ units (third lst)                   ])
+           (cond [ (string=? "cm" units) (<= 150 n 193) ]
+                 [ (string=? "in" units) (<= 59 n 76)   ]
+                 [ else                  #f             ])))))
+
+(struct field (key name is-required? is-valid?) #:transparent)
+
+(define fields (list (field "byr" "Birth Year"      #t (4digit-range-validator 1920 2002))
+                     (field "iyr" "Issue Year"      #t (4digit-range-validator 2010 2020))
+                     (field "eyr" "Expiration Year" #t (4digit-range-validator 2020 2030))
+                     (field "hgt" "Height"          #t height-validator)
+                     (field "hcl" "Hair Color"      #t (pattern-validator #px"^#[0-9a-f]{6}$"))
+                     (field "ecl" "Eye Color"       #t (pattern-validator #px"^amb|blu|brn|gry|grn|hzl|oth$"))
+                     (field "pid" "Passport ID"     #t (pattern-validator #px"^\\d{9}$"))
+                     (field "cid" "Country ID"      #f (const #t))))
 
 ;; (count-valid-passports fname) -> exact-integer?
 ;; fname : string?
@@ -74,6 +90,12 @@
 ;; Indicate whether the specified obj is a passport.
 (define (passport? obj) (hash? obj))
 
+(define (passport-field-is-valid? passport f)
+  (let ([ value (passport-get passport (field-key f)) ])
+    (if value
+        ((field-is-valid? f) value)
+        (not (field-is-required? f)))))
+
 ;; (passport-get passport key) -> (or/c any #f)
 ;; passport : passport?
 ;; key : string?
@@ -88,10 +110,7 @@
 ;; Indicate whether the passport is valid. To be valid, the passport
 ;; must have data for all required fields.
 (define (passport-is-valid? passport)
-  (andmap (λ (f)
-            (non-empty-string? (passport-get passport (field-key f))))
-          (filter (λ (f) (field-is-required? f))
-                  fields)))
+  (andmap (curry passport-field-is-valid? passport) fields))
 
 ;; (passport-set passport key data) -> passport?
 ;; passport : passport?
@@ -206,7 +225,30 @@
   ;; Solutions
   ;; ------------------------------------------------------------------------------------------
 
-  (check-equal? (count-valid-passports "day04-test.txt") 2)
+  (check-equal? (count-valid-passports "day04-2-invalid.txt") 0)
+  (check-equal? (count-valid-passports "day04-2-valid.txt") 4)
   (check-equal? (count-valid-passports "day04.txt") 256)
+
+  ;; 4digit-range-validator -------------------------------------------------------------------
+  (for ([ s (in-list '("" "x" "5x" "x5x" "5." ".5" "5.0" "0.5" "500" "2003")) ])
+    (check-false ((4digit-range-validator 1920 2002) s)))
+
+  (for ([ s (in-list '("1920" "2002" "1930" "2000")) ])
+    (check-not-false ((4digit-range-validator 1920 2002) s)))
+
+  ;; pattern-validator ------------------------------------------------------------------------
+  (for ([ s (in-list '("" "985abc" "985abc#" "#12345" "#abcdefg")) ])
+    (check-false ((pattern-validator #px"^#[0-9a-f]{6}$") s)))
+
+  (for ([ s (in-list '("#000000" "#aaaaaa" "#abc123" "#123abc" "#06af0f")) ])
+    (check-not-false ((pattern-validator #px"^#[0-9a-f]{6}$") s)))
+
+  ;; height-validator -------------------------------------------------------------------------
+  (for ([ s (in-list '("" "x" "in" "cm" "0in" "0cm" "194cm" "77in" "160 cm" "70 in")) ])
+    (check-false (height-validator s)))
+
+  (for ([ s (in-list '("150cm" "193cm" "59in" "76in" "160cm" "70in")) ])
+    (check-not-false (height-validator s)))
+
 
   )
