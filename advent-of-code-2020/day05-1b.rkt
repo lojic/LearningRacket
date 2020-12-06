@@ -24,6 +24,11 @@
   (check-equal? (encode-binary "FFFBBBFRRR") 119)
   (check-equal? (encode-binary "BBFFBBFRLL") 820)
 
+  (check-equal? (encode-binary "FFFFFFFLLL") 0)
+  (check-equal? (encode-binary "FFFFFFFLLR") 1)
+  (check-equal? (encode-binary "FFFFFFFLRL") 2)
+  (check-equal? (encode-binary "BBBBBBBRRR") 1023)
+
   (check-equal? (highest-seat-id '("FBFBBFFRLR" "BFFFBBFRRR" "FFFBBBFRRR" "BBFFBBFRLL"))
                 820)
 
