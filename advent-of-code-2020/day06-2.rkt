@@ -11,7 +11,6 @@
              (~> (string-split s "\n")
                  (map (compose list->set string->list) _)
                  (apply set-intersect _)
-                 (set-count _)
-                 ))
+                 (set-count _)))
            _)
       (apply + _)))
