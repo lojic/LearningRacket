@@ -7,7 +7,8 @@
          (contract-out [ filter-ascending-permutations
                          (-> (-> list? boolean?) exact-nonnegative-integer? list? list?) ])
          (contract-out [ find-2
-                         (-> (-> number? number? boolean?) list? (or/c pair? #f)) ]))
+                         (-> (-> number? number? boolean?) list? (or/c pair? #f)) ])
+         (struct-out pair-stream))
 
 ;; (ascending-permutations-generator n lst) -> generator?
 ;; n   : exact-nonnegative-integer?
@@ -62,3 +63,13 @@
         (if n2
             (cons n1 n2)
             (find-2 pred? (cdr lst))))))
+
+(define-struct pair-stream (v)
+  #:methods gen:stream
+  [(define (stream-empty? stream)
+     (empty? (pair-stream-v stream)))
+   (define (stream-first stream)
+     (let ([ pair (first (pair-stream-v stream)) ])
+       (values (car pair) (cdr pair))))
+   (define (stream-rest stream)
+     (pair-stream (rest (pair-stream-v stream))))])
