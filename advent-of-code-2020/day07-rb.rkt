@@ -16,5 +16,3 @@
     (part1 _ "shiny gold")
     (set-count _)
     (sub1 _))
-
-
