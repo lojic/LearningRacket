@@ -32,14 +32,14 @@
 ;; Indicate whether the outer bag can contain (directly, or
 ;; indirectly) the inner bag.
 (define (contains? hsh outer inner)
-  (let loop ([ bags (hash-ref hsh outer) ][ seen '() ])
+  (let loop ([ bags (hash-ref hsh outer) ])
     (if (null? bags)
         #f
         (let ([ bag (car bags) ])
-          (cond [ (eq? bag inner)                            #t                     ]
-                [ (or (eq? bag 'no-other) (member bag seen)) (loop (cdr bags) seen) ]
+          (cond [ (eq? bag inner)     #t                ]
+                [ (eq? bag 'no-other) (loop (cdr bags)) ]
                 [ else
-                  (loop (append (hash-ref hsh bag) (cdr bags)) (cons bag seen)) ])))))
+                  (loop (append (hash-ref hsh bag) (cdr bags))) ])))))
 
 ;; (bags-containing hsh bag) -> (listof symbol?)
 ;; hsh : hash?
