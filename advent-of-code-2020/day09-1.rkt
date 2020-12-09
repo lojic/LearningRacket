@@ -1,7 +1,5 @@
 #lang racket
 
-(provide xmas) ; Allow use in Part 2
-
 (define (validate n lst)
   (let ([ x (list-ref lst n) ])
     (if (member x (map (curry apply +) (combinations (take lst n) 2))) #f x)))
