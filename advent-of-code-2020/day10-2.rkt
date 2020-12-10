@@ -32,6 +32,4 @@
   (check-equal? (run 0 '(1 2 3)) 4)
   (check-equal? (run 0 (get-input "day10-test.txt")) 8)
   (check-equal? (run 0 (get-input "day10-test2.txt")) 19208)
-  (check-equal? (run 0 (get-input "day10.txt")) 193434623148032)
-
-  )
+  (check-equal? (run 0 (get-input "day10.txt")) 193434623148032))

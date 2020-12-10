@@ -13,8 +13,6 @@
   (let ([ hsh (run (get-input "day10.txt")) ])
     (* (hash-ref hsh 1) (hash-ref hsh 3))))
 
-(run (get-input "day10-test2.txt"))
-
 (module+ test
   (require rackunit)
 
