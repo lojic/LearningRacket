@@ -3,14 +3,13 @@
 (require "./day11-1.rkt")
 
 (define (get-seat obj row col dr dc)
-  (let ([ r (+ row dr) ]
-        [ c (+ col dc) ])
-    (if (and (valid-row? obj r) (valid-col? obj c))
+  (let ([ r (+ row dr) ] [ c (+ col dc) ])
+    (if (valid-row-col? obj r c)
         (let ([ seat (vget obj r c) ])
           (if (or (is-empty? seat) (is-occupied? seat))
               seat
               (get-seat obj r c dr dc)))
-        #\.)))
+        floor-loc)))
 
 (module+ test
   (require rackunit)
