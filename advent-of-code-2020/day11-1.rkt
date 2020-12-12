@@ -22,9 +22,9 @@
 (define empty-loc                #\L)
 (define floor-loc                #\.)
 (define occupied-loc             #\#)
-(define is-empty?                (curry char=? empty-loc))
-(define is-floor?                (curry char=? floor-loc))
-(define is-occupied?             (curry char=? occupied-loc))
+(define (is-empty? seat)         (char=? empty-loc seat))
+(define (is-floor? seat)         (char=? floor-loc seat))
+(define (is-occupied? seat)      (char=? occupied-loc seat))
 (define surrounding-deltas '((-1 . -1) (-1 . 0) (-1 . 1) (0 . -1) (0 . 1) (1 . -1) (1 . 0) (1 . 1)))
 
 (define (run fname get-seat min-occupied)
@@ -73,8 +73,6 @@
 (define (get-seat obj row col dr dc)
   (let ([ r (+ row dr) ][ c (+ col dc) ])
     (if (valid-row-col? obj r c) (vget obj r c) floor-loc)))
-
-
 
 (module+ test
   (require rackunit)
