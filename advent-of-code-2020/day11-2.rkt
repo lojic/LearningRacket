@@ -14,4 +14,4 @@
 (module+ test
   (require rackunit)
   (check-equal? (run "day11-test.txt" get-seat 5) 26)
-  (check-equal? (time (run "day11.txt" get-seat 5)) 2149))
+  (check-equal? (run "day11.txt" get-seat 5) 2149))
