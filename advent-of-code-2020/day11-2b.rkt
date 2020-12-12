@@ -96,6 +96,9 @@
 (module+ test
   (require rackunit)
 
+  (check-equal? (run "day11-test.txt") 26)
+  (check-equal? (run "day11.txt") 2149)
+
   ;; get-first-seat ---------------------------------------------------------------------------
 
   (let ([ obj (get-plan "day11-test.txt") ])
