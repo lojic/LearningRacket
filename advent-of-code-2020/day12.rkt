@@ -19,20 +19,14 @@
     [ _   point                          ]))
 
 (define (part1 pair result)
-  (match-let ([ (cons letter num)    pair   ]
-              [ (cons point default) result ])
-    (cons (if (char=? letter #\F)
-              (+ point (* default num))
-              (+ point (delta letter num)))
+  (match-let ([ (cons letter num) pair ][ (cons point default) result ])
+    (cons (if (char=? letter #\F) (+ point (* default num)) (+ point (delta letter num)))
           (rotate default letter num))))
 
 (define (part2 pair result)
-  (match-let ([ (cons letter num) pair   ]
-              [ (cons point ship) result ])
+  (match-let ([ (cons letter num) pair ][ (cons point ship) result ])
     (cons (rotate (+ point (delta letter num)) letter num)
-          (if (char=? letter #\F)
-              (+ ship (* point num))
-              ship))))
+          (if (char=? letter #\F) (+ ship (* point num)) ship))))
 
 (manhattan (car (foldl part1 (cons 0 1) input)))    ; Part 1
 (manhattan (cdr (foldl part2 (cons 10+i 0) input))) ; Part 2
