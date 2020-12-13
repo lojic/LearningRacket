@@ -34,8 +34,5 @@
               (+ ship (* point num))
               ship))))
 
-;; Part 1
-(manhattan (car (foldl part1 (cons 0 1) input)))
-
-;; Part 2
-(manhattan (cdr (foldl part2 (cons 10+i 0) input)))
+(manhattan (car (foldl part1 (cons 0 1) input)))    ; Part 1
+(manhattan (cdr (foldl part2 (cons 10+i 0) input))) ; Part 2
