@@ -5,18 +5,11 @@
 (define input             (map parse-line (file->lines "day12.txt")))
 
 (define (delta letter num)
-  (match letter
-    [ #\E num             ]
-    [ #\S (- (* +i num))  ]
-    [ #\W (- num)         ]
-    [ #\N (* +i num)      ]
-    [ _   0               ]))
+  (match letter [ #\E num ][ #\S (- (* +i num)) ][ #\W (- num) ][ #\N (* +i num) ][ _ 0 ]))
 
 (define (rotate point letter num)
   (match letter
-    [ #\L (* (expt +i (/ num 90)) point) ]
-    [ #\R (* (expt -i (/ num 90)) point) ]
-    [ _   point                          ]))
+    [ #\L (* (expt +i (/ num 90)) point) ][ #\R (* (expt -i (/ num 90)) point) ][ _ point ]))
 
 (define (part1 pair result)
   (match-let ([ (cons letter num) pair ][ (cons point default) result ])
