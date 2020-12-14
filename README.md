@@ -7,6 +7,7 @@ Brian Adkins
 
 **Directories:**  
 
+* [Advent of Code 2020](https://github.com/lojic/LearningRacket/tree/master/advent-of-code-2020) - Solutions to [Advent of Code](https://adventofcode.com/) 2020
 * [exercises-for-programmers](https://github.com/lojic/LearningRacket/tree/master/exercises-for-programmers) - solutions to "Exercises for Programmers" by Brian P. Hogan
 * [exercism.io](https://github.com/lojic/LearningRacket/tree/master/exercism.io) - solutions to [Exercism.io](http://exercism.io) exercises
 * [htdp](https://github.com/lojic/LearningRacket/tree/master/htdp) examples/exercises from How To Design Programs

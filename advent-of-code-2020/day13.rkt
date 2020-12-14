@@ -40,8 +40,8 @@
         (- t offset)
         (loop (+ t id)))))
 |#
-;; Part 2 - using Chinese Remainder theorem after reading a spoiler
 
+;; Part 2 - using Chinese Remainder theorem after reading a spoiler
 (let ([ pairs (filter car (for/list ([ i (in-naturals) ]
                                      [ id (in-list ids)])
                             (cons id (and id (- id i))))) ])
