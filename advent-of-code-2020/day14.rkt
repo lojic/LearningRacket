@@ -38,7 +38,6 @@
     (cond [ (> i sig-bit) (foldl (λ (addr obj) (hash-set obj addr val) ) mem addrs) ]
           [ else (loop (add1 i) (mask-bit (mchar mask i) i addrs)) ])))
 
-(module+ test
-  (require rackunit)
+(module+ test (require rackunit)
   (check-equal? (run part1) 10885823581193)
   (check-equal? (run part2) 3816594901962))
