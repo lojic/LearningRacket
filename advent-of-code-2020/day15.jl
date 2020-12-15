@@ -7,7 +7,7 @@ function run(numbers, limit::Int64)
     turn += 1
   end
 
-  turn::Int32, last::Int32 = (length(numbers), numbers[end])
+  turn::Int64, last::Int64 = (length(numbers), numbers[end])
 
   while turn < limit
     idx       = last + 1 # Julia's arrays are one based
