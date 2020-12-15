@@ -25,19 +25,15 @@ long run(long* numbers, long limit) {
   return last;
 }
 
-int main() {
+long get_millis() {
   struct timespec t;
-  int64_t t1;
-  int64_t t2;
-
   clock_gettime(CLOCK_REALTIME, &t);
-  t1 = t.tv_sec * INT64_C(1000) + t.tv_nsec / 1000000;
+  return t.tv_sec * INT64_C(1000) + t.tv_nsec / 1000000;
+}
 
+int main() {
+  long t1 = get_millis();
   long nums[] = {12,20,0,6,1,17,7};
-  printf("Answer is %ld\n", run(nums, 30000000));
-
-  clock_gettime(CLOCK_REALTIME, &t);
-  t2 = t.tv_sec * INT64_C(1000) + t.tv_nsec / 1000000;
-  printf("time is %lld\n", t2-t1);
+  printf("Answer = %ld. Millis = %ld\n", run(nums, 30000000), get_millis() - t1);
   return 0;
 }
