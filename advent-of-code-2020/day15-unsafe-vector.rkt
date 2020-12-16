@@ -2,21 +2,22 @@
 
 ;; Version using unsafe vector and arithmetic
 (require racket/fixnum)
+(require racket/unsafe/ops)
 
 (define (run numbers limit)
   (define vec (make-fxvector (* 32 1024  1024) 0))
   (for ([ turn (in-naturals 1)                  ]
         [ num  (in-list (drop-right numbers 1)) ])
-    (fxvector-set! vec num turn))
+    (unsafe-fxvector-set! vec num turn))
 
   (let loop ([ turn (length numbers) ][ last (last numbers) ])
-    (cond [ (fx>= turn limit) last ]
-          [ else (let* ([ turn (fx+ turn 1)                              ]
-                        [ num  (let ([ prev-turn (fxvector-ref vec last) ])
-                                 (if (fx> prev-turn 0)
-                                     (fx- (fx- turn 1) prev-turn)
+    (cond [ (unsafe-fx>= turn limit) last ]
+          [ else (let* ([ turn (unsafe-fx+ turn 1)                              ]
+                        [ num  (let ([ prev-turn (unsafe-fxvector-ref vec last) ])
+                                 (if (unsafe-fx> prev-turn 0)
+                                     (unsafe-fx- (unsafe-fx- turn 1) prev-turn)
                                      0)) ])
-                   (fxvector-set! vec last (fx- turn 1))
+                   (unsafe-fxvector-set! vec last (unsafe-fx- turn 1))
                    (loop turn num)) ])))
 
 (module+ test (require rackunit)
