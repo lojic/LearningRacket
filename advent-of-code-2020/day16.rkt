@@ -1,11 +1,9 @@
 #lang racket
-
 (require threading)
 
 (define (parse-input fname)
-  (match-let ([ (list fields ticket others)
-                (~> (string-split (file->string fname) "\n\n")
-                    (map (curryr string-split "\n") _)) ])
+  (match-let ([ (list fields ticket others) (~> (string-split (file->string fname) "\n\n")
+                                                (map (curryr string-split "\n") _)) ])
     (list
      (map parse-field fields) (parse-ticket (cadr ticket)) (map parse-ticket (cdr others)))))
 
