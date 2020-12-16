@@ -2,8 +2,6 @@
 
 (require threading)
 
-;; Parsing ------------------------------------------------------------------------------------
-
 (define (parse-input fname)
   (match-let ([ (list fields ticket others)
                 (~> (string-split (file->string fname) "\n\n")
@@ -19,8 +17,6 @@
 
 (define (parse-ticket str) (map string->number (string-split str ",")))
 
-;; Common -------------------------------------------------------------------------------------
-
 (define (run part fname) (apply part (parse-input fname)))
 
 (define (valid? n field)
@@ -31,24 +27,6 @@
 
 (define (invalid-fields fields lst [ invalid '() ])
   (foldl (λ (n inv) (if (all-invalid? fields n) (cons n inv) inv)) '() lst))
-
-;; Part 1 -------------------------------------------------------------------------------------
-
-(define (part1 fields _ others) (for/sum ([ lst others ]) (apply + (invalid-fields fields lst))))
-
-;; Part 2 -------------------------------------------------------------------------------------
-
-(define (part2 fields ticket others)
-  (~> (for/list ([ i (in-naturals) ]
-                 [ pos (foldl (reduce-fields fields)
-                              (for/list ([ i (in-range (length ticket)) ]) (map car fields))
-                              (filter (λ (t) (null? (invalid-fields fields t))) others)) ])
-        (cons pos i))
-      (get-positions fields ticket others _)
-      (map (λ (pair) (cons (caar pair) (cdr pair))) _)
-      (filter (λ (pair) (string-contains? (car pair) "departure")) _)
-      (map (λ (pair) (list-ref ticket (cdr pair))) _)
-      (apply * _)))
 
 (define (get-positions fields ticket others lst)
   (let loop ([ lst lst ] [ result '() ])
@@ -64,7 +42,19 @@
              [ n           (in-list ticket)    ])
     (filter (λ (name) (valid? n (assoc name fields))) field-names)))
 
-;; Tests --------------------------------------------------------------------------------------
+(define (part1 fields _ others) (for/sum ([ lst others ]) (apply + (invalid-fields fields lst))))
+
+(define (part2 fields ticket others)
+  (~> (for/list ([ i (in-naturals) ]
+                 [ pos (foldl (reduce-fields fields)
+                              (for/list ([ i (in-range (length ticket)) ]) (map car fields))
+                              (filter (λ (t) (null? (invalid-fields fields t))) others)) ])
+        (cons pos i))
+      (get-positions fields ticket others _)
+      (map (λ (pair) (cons (caar pair) (cdr pair))) _)
+      (filter (λ (pair) (string-contains? (car pair) "departure")) _)
+      (map (λ (pair) (list-ref ticket (cdr pair))) _)
+      (apply * _)))
 
 (module+ test (require rackunit)
   (check-equal? (run part1 "day16-test.txt") 71)
