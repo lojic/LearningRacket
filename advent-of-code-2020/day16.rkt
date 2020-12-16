@@ -57,6 +57,5 @@
       (apply * _)))
 
 (module+ test (require rackunit)
-  (check-equal? (run part1 "day16-test.txt") 71)
   (check-equal? (run part1 "day16.txt") 29019)
   (check-equal? (run part2 "day16.txt") 517827547723))
