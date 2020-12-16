@@ -5,12 +5,10 @@
 #define N 7
 
 int run(int* numbers, int limit) {
-  int vec[30000000];
-  int i;
+  int vec[30000000] = { 0 };
   int turn = 1;
 
-  for (i = 0; i < limit; i++) { vec[i] = 0l; }
-  for (i = 0; i < (N-1); i++) { vec[numbers[i]] = turn++; }
+  for (int i = 0; i < (N-1); i++) { vec[numbers[i]] = turn++; }
 
   int last = numbers[N-1];
   int prev_turn;
