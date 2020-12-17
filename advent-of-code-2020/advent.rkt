@@ -8,7 +8,8 @@
                          (-> (-> list? boolean?) exact-nonnegative-integer? list? list?) ])
          (contract-out [ find-2
                          (-> (-> number? number? boolean?) list? (or/c pair? #f)) ])
-         (struct-out pair-stream))
+         (struct-out pair-stream)
+         iterate)
 
 ;; (ascending-permutations-generator n lst) -> generator?
 ;; n   : exact-nonnegative-integer?
@@ -63,6 +64,11 @@
         (if n2
             (cons n1 n2)
             (find-2 pred? (cdr lst))))))
+
+(define (iterate fun arg n) 
+  (if (zero? n) 
+      arg 
+      (iterate fun (fun arg) (sub1 n))))
 
 (define-struct pair-stream (v)
   #:methods gen:stream

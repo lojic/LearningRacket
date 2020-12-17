@@ -1,5 +1,5 @@
 #lang racket
-(require rackunit)
+(require rackunit "./advent.rkt")
 
 (define cycles 6)
 (define (key x y [z 0] [w 0]) (list x y z w))
@@ -49,8 +49,8 @@
       (values (key x y z w) #t))))
 
 (define (run part)
-  (let* ([ lst (parse "day17.txt") ][ cycle (apply part lst) ])
-    (hash-count (cycle (cycle (cycle (cycle (cycle (cycle (car lst))))))))))
+  (let ([ lst (parse "day17.txt") ])
+    (hash-count (iterate (apply part lst) (car lst) 6))))
 
 (check-equal? (run part1) 232)
 (check-equal? (run part2) 1620)
