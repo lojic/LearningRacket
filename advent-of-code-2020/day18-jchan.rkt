@@ -5,10 +5,10 @@
 
 (define (eval1 sexp)
   (match sexp
-    [ `,(? number? n)        n                             ]
-    [ `(,tail)               (eval1 tail)                  ]
-    [ `(,rest ... + ,tail)   (+ (eval1 rest) (eval1 tail)) ]
-    [ `(,rest ... * ,tail)   (* (eval1 rest) (eval1 tail)) ]))
+    [ `,(? number? n)      n                             ]
+    [ `(,tail)             (eval1 tail)                  ]
+    [ `(,rest ... + ,tail) (+ (eval1 rest) (eval1 tail)) ]
+    [ `(,rest ... * ,tail) (* (eval1 rest) (eval1 tail)) ]))
 
 (define (eval2 sexp)
   (match sexp
