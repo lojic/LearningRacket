@@ -10,7 +10,7 @@
          (prefix-in : parser-tools/lex-sre))
 
 (define-tokens       nums [ number ])
-(define-empty-tokens syms [ + - * / lp rp eof ])
+(define-empty-tokens syms [ + - * / lp rp lb rb eof ])
 (define-lex-abbrev   digit (:/ #\0 #\9))
 
 (define arith-lexer
@@ -21,6 +21,8 @@
     [ "/" (token-/) ]
     [ "(" (token-lp) ]
     [ ")" (token-rp) ]
+    [ "[" (token-lb) ]
+    [ "]" (token-rb) ]
     [ whitespace (arith-lexer input-port) ]
     [ (:+ digit) (token-number (string->number lexeme)) ]
     [ (:: (:+ digit) #\. (:* digit)) (token-number (string->number lexeme)) ]
@@ -34,6 +36,7 @@
    [ tokens  nums syms ]
    [ precs   (left + -) (left * /) (left lp rp) ]
    [ grammar (exp [ (lp exp rp) $2        ]
+                  [ (lb exp rb) $2        ]
                   [ (exp * exp) (* $1 $3) ]
                   [ (exp / exp) (/ $1 $3) ]
                   [ (exp + exp) (+ $1 $3) ]
@@ -56,5 +59,7 @@
                           ("3.141592653589793 / 3" ,(/ 3.141592653589793 3))
                           ("3 * (5 + 6)" ,(* 3 (+ 5 6)))
                           ("(3 + 4) - 2" ,(- (+ 3 4) 2))
+                          ("[3 + 4] - 2" ,(- (+ 3 4) 2))
+                          ("([[3 + 4] - (2 * 3)])" ,(- (+ 3 4) (* 2 3)))
                           )) ])
     (check-equal? (parse (first pair)) (second pair))))
