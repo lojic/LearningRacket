@@ -1,5 +1,9 @@
 #lang racket
-(require graph threading rackunit)
+
+;; NOTE: In this version, we properly handle the fact that
+;;        maximum-bipartite-matching may swap the tuples that we gave
+;;        it!!
+(require graph threading)
 
 (struct food (ingredients allergens ing-set inert) #:mutable #:transparent)
 
@@ -35,7 +39,14 @@
                 (undirected-graph (for*/list ([ allergen (in-list (hash-keys hsh)) ]
                                               [ ing (in-set (hash-ref hsh allergen)) ])
                                     (list allergen ing)))) ])
-      (~> (sort lst string<? #:key second) (map first _) (string-join _ ","))))
+    ;; maximum-bipartite-matching may have swapped the tuples!
+    (let-values ([ (allergen ingredient) (if (set-member? (food-ing-set obj) (caar lst))
+                                             (values second first)
+                                             (values first second)) ])
+      (~> (sort lst string<? #:key allergen)
+          (map ingredient _)
+          (string-join _ ",")))))
 
-(check-equal? (part1 (parse-input "day21.txt")) 2428)
-(check-equal? (part2 (parse-input "day21.txt")) "bjq,jznhvh,klplr,dtvhzt,sbzd,tlgjzx,ctmbr,kqms")
+(module+ test (require rackunit)
+  (check-equal? (part1 (parse-input "day21.txt")) 2428)
+  (check-equal? (part2 (parse-input "day21.txt")) "bjq,jznhvh,klplr,dtvhzt,sbzd,tlgjzx,ctmbr,kqms"))
