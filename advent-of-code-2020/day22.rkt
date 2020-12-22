@@ -1,5 +1,5 @@
 #lang racket
-(require threading)
+(require threading rackunit)
 
 (define (parse-input fname)
   (define (parse-player s) (map string->number (cdr (string-split s "\n"))))
@@ -20,7 +20,5 @@
 (define (score lst) (for/sum ([ i (in-naturals 1) ][ c (in-list (reverse lst)) ]) (* c i)))
 (define (part1 players) (score (cdr (combat (car players) (cadr players) #f))))
 (define (part2 players) (score (cdr (combat (car players) (cadr players)))))
-
-(module+ test (require rackunit)
-  (check-equal? (part1 (parse-input "day22.txt")) 33010)
-  (check-equal? (part2 (parse-input "day22.txt")) 32769))
+(check-equal? (part1 (parse-input "day22.txt")) 33010)
+(check-equal? (part2 (parse-input "day22.txt")) 32769)
