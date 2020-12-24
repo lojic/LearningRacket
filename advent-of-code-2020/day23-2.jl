@@ -3,7 +3,7 @@
 
 function getcups(input::Array{Int32,1}, n)::Array{Int32,1}
   cups = Array{Int32}(undef, n)
-  len = length(input)
+  len  = length(input)
 
   for i = 1:len-1
     cups[input[i]] = input[i+1]
@@ -26,8 +26,8 @@ function play(cups, current)
   two   = cups[one]
   three = cups[two]
   four  = cups[three]
-  dest  = prev(current)
 
+  dest = prev(current)
   while dest == one || dest == two || dest == three
     dest = prev(dest)
   end
@@ -45,7 +45,7 @@ function part2(input::Array{Int32,1})
   current = input[1]
   moves   = 0
 
-  for move = 1:10000000
+  for _ = 1:10000000
     current = play(cups, current)
   end
 
