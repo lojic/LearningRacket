@@ -39,14 +39,14 @@
           0)))
 
   (define (is-black-tile? h0 key)
-    (let ([ black-tile         (hash-ref h0 key #f)    ]
+    (let ([ black-tile?         (hash-ref h0 key #f)    ]
           [ num-black-adjacent (black-adjacent h0 key) ])
-      (cond [ (and black-tile
+      (cond [ (and black-tile?
                    (or (= num-black-adjacent 0)
                        (> num-black-adjacent 2))) #f ]
-            [ (and (not black-tile)
+            [ (and (not black-tile?)
                    (= num-black-adjacent 2)) #t ]
-            [ else black-tile ])))
+            [ else black-tile? ])))
 
   (define (flip-em h0)
     (for/fold ([ h   (hash) ])
