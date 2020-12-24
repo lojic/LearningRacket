@@ -8,13 +8,13 @@
     (map (curry hash-ref directions) (regexp-match* #px"(e|se|sw|w|nw|ne)" line))))
 
 (define (part1 fname)
-  (let loop ([ dirs (parse-input fname) ][ hsh (hash) ])
-    (cond [ (null? dirs) hsh ]
-          [ else  (loop (cdr dirs)
-                        (let ([ key (apply + (car dirs)) ])
-                          (if (hash-ref hsh key #f)
-                              (hash-remove hsh key)
-                              (hash-set hsh key #t)))) ])))
+  (foldl (λ (dir hsh)
+           (let ([ key (apply + dir) ])
+             (if (hash-ref hsh key #f)
+                 (hash-remove hsh key)
+                 (hash-set hsh key #t))))
+         (hash)
+         (parse-input fname)))
 
 ;; --------------------------------------------------------------------------------------------
 
@@ -43,4 +43,4 @@
 
 (module+ test (require rackunit)
   (check-equal? (hash-count (part1 "day24.txt")) 360)
-  (check-equal? (hash-count (part2 "day24.txt" 100)) 3924))
+  (check-equal? (time (hash-count (part2 "day24.txt" 100))) 3924))
