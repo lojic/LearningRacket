@@ -17,15 +17,11 @@
 
 (define (part2 fname num-days)
   (define (adjacent-keys key) (map (curry + key) (hash-values directions)))
-  (define (flip-em h0)
-    (foldl (λ (key h) (if (is-black? h0 key) (hash-set h key #t) h))
-           (hash)
-           (set->list
-            (foldl (λ (key s) (set-add s key))
-                   (set)
-                   (foldl (λ (key result) (append (cons key (adjacent-keys key)) result))
-                          '()
-                          (hash-keys h0))))))
+  (define (all-keys keys)
+    (foldl (λ (key result) (append (cons key (adjacent-keys key)) result)) '() keys))
+  (define (key-set keys) (set->list (foldl (λ (key s) (set-add s key)) (set) keys)))
+  (define (flip-em h0) (for/fold ([ h (hash) ])([ key (key-set (all-keys (hash-keys h0))) ])
+                         (if (is-black? h0 key) (hash-set h key #t) h)))
   (define (is-black? h0 key)
     (let ([ black (hash-ref h0 key #f) ]
           [ num-black (for/sum ([ key (adjacent-keys key) ]) (if (hash-ref h0 key #f) 1 0)) ])
