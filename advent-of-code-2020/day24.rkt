@@ -8,12 +8,9 @@
     (map (curry hash-ref directions) (regexp-match* #px"(e|se|sw|w|nw|ne)" line))))
 
 (define (part1 fname)
-  (for/fold ([ hsh (hash) ])
-            ([ dir (parse-input fname) ])
+  (for/fold ([ hsh (hash) ]) ([ dir (parse-input fname) ])
     (let ([ key (apply + dir) ])
-      (if (hash-ref hsh key #f)
-          (hash-remove hsh key)
-          (hash-set hsh key #t)))))
+      (if (hash-ref hsh key #f) (hash-remove hsh key) (hash-set hsh key #t)))))
 
 (define (part2 fname num-days)
   (define (adjacent-keys key) (map (curry + key) (hash-values directions)))
