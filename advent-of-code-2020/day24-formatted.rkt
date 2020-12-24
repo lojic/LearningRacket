@@ -32,15 +32,15 @@
         (list->set _)
         (set->list _)))
 
-  (define (black-adjacent h0 key)
+  (define (black-adjacent hsh key)
     (for/sum ([ key (adjacent-keys key) ])
-      (if (hash-ref h0 key #f)
+      (if (hash-ref hsh key #f)
           1
           0)))
 
-  (define (is-black-tile? h0 key)
-    (let ([ black-tile?        (hash-ref h0 key #f)    ]
-          [ num-black-adjacent (black-adjacent h0 key) ])
+  (define (is-black-tile? hsh key)
+    (let ([ black-tile?        (hash-ref hsh key #f)    ]
+          [ num-black-adjacent (black-adjacent hsh key) ])
       (cond [ (and black-tile?
                    (or (= num-black-adjacent 0)
                        (> num-black-adjacent 2))) #f ]
@@ -48,12 +48,12 @@
                    (= num-black-adjacent 2)) #t ]
             [ else black-tile? ])))
 
-  (define (flip-em h0)
-    (for/fold ([ h   (hash) ])
-              ([ key (all-keys (hash-keys h0)) ])
-      (if (is-black-tile? h0 key)
-          (hash-set h key #t)
-          h)))
+  (define (flip-em prev-hsh)
+    (for/fold ([ next-hsh (hash) ])
+              ([ key      (all-keys (hash-keys prev-hsh)) ])
+      (if (is-black-tile? prev-hsh key)
+          (hash-set next-hsh key #t)
+          next-hsh)))
 
   (let loop ([ hsh (part1 fname) ][ day 0 ])
     (if (>= day num-days)
