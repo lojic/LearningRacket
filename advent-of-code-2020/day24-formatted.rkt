@@ -25,39 +25,33 @@
          (hash-values directions)))
 
   (define (all-keys keys)
-    (foldl (λ (key result)
-             (append (cons key (adjacent-keys key))
-                     result))
-           '()
-           keys))
+    (~> (for/fold ([ result '()            ])
+                  ([ key    (in-list keys) ])
+          (append (cons key (adjacent-keys key))
+                  result))
+        (list->set _)
+        (set->list _)))
 
-  (define (key-set keys)
-    (set->list
-     (foldl (λ (key s)
-              (set-add s key))
-            (set)
-            keys)))
-
-  (define (black-neighbors h0 key)
+  (define (black-adjacent h0 key)
     (for/sum ([ key (adjacent-keys key) ])
       (if (hash-ref h0 key #f)
           1
           0)))
 
-  (define (is-black? h0 key)
-    (let ([ black     (hash-ref h0 key #f)     ]
-          [ num-black (black-neighbors h0 key) ])
-      (cond [ (and black
-                   (or (= num-black 0)
-                       (> num-black 2))) #f ]
-            [ (and (not black)
-                   (= num-black 2)) #t ]
-            [ else black ])))
+  (define (is-black-tile? h0 key)
+    (let ([ black-tile         (hash-ref h0 key #f)    ]
+          [ num-black-adjacent (black-adjacent h0 key) ])
+      (cond [ (and black-tile
+                   (or (= num-black-adjacent 0)
+                       (> num-black-adjacent 2))) #f ]
+            [ (and (not black-tile)
+                   (= num-black-adjacent 2)) #t ]
+            [ else black-tile ])))
 
   (define (flip-em h0)
     (for/fold ([ h   (hash) ])
-              ([ key (key-set (all-keys (hash-keys h0))) ])
-      (if (is-black? h0 key)
+              ([ key (all-keys (hash-keys h0)) ])
+      (if (is-black-tile? h0 key)
           (hash-set h key #t)
           h)))
 
