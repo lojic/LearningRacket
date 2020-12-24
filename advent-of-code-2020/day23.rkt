@@ -17,16 +17,16 @@
           [ else (loop (move! obj max-n vec) (add1 moves)) ])))
 
 (define (get-destination obj three max-n vec)
-  (define v1 (q:node-val three))
-  (define v2 (q:node-val (q:node-next three)))
-  (define v3 (q:node-val (q:node-next (q:node-next three))))
-  (define (in-removed? label) (or (eqv? label v1) (eqv? label v2) (eqv? label v3)))
-  (define high (let loop ([ n max-n ]) (if (in-removed? n) (loop (sub1 n)) n)))
-  (define low  (let loop ([ n 1 ]) (if (in-removed? n) (loop (add1 n)) n)))
-  (let loop ([ label (sub1 (q:node-val obj)) ])
-    (cond [ (< label low)             (loop high)            ]
-          [ (not (in-removed? label)) (vector-ref vec label) ]
-          [ else                      (loop (sub1 label))    ])))
+  (let* ([ v1          (q:node-val three)                                               ]
+         [ v2          (q:node-val (q:node-next three))                                 ]
+         [ v3          (q:node-val (q:node-next (q:node-next three)))                   ]
+         [ in-removed? (λ (label) (or (eqv? label v1) (eqv? label v2) (eqv? label v3))) ]
+         [ high        (let loop ([ n max-n ]) (if (in-removed? n) (loop (sub1 n)) n))  ]
+         [ low         (let loop ([ n 1 ]) (if (in-removed? n) (loop (add1 n)) n))      ])
+    (let loop ([ label (sub1 (q:node-val obj)) ])
+      (cond [ (< label low)             (loop high)            ]
+            [ (not (in-removed? label)) (vector-ref vec label) ]
+            [ else                      (loop (sub1 label))    ]))))
 
 (define (move! obj max-n vec)
   (let* ([ three (q:remove-n! (q:node-next obj) 3)     ]
