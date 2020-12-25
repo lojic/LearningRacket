@@ -32,12 +32,12 @@
         (list->set _)
         (set->list _)))
 
-  (define (black-adjacent hsh key)
+  (define (count-black-adjacent hsh key)
     (count (curry hash-has-key? hsh) (adjacent-keys key)))
 
   (define (is-black-tile? hsh key)
     (let ([ black-tile?        (hash-ref hsh key #f)    ]
-          [ num-black-adjacent (black-adjacent hsh key) ])
+          [ num-black-adjacent (count-black-adjacent hsh key) ])
       (cond [ (and black-tile?
                    (or (= num-black-adjacent 0)
                        (> num-black-adjacent 2))) #f ]
