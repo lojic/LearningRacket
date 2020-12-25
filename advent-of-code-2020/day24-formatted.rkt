@@ -33,10 +33,7 @@
         (set->list _)))
 
   (define (black-adjacent hsh key)
-    (for/sum ([ key (adjacent-keys key) ])
-      (if (hash-ref hsh key #f)
-          1
-          0)))
+    (count (curry hash-has-key? hsh) (adjacent-keys key)))
 
   (define (is-black-tile? hsh key)
     (let ([ black-tile?        (hash-ref hsh key #f)    ]
