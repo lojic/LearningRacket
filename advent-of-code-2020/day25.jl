@@ -25,8 +25,6 @@ end
 
 encryptionkey(key1, key2) = transform(key2, findloopsize(subject, key1))
 
-@time encryptionkey(input...)
-
 using Test
 @test transform(subject, 8) === 5764801
 @test transform(subject, 11) === 17807724
@@ -35,3 +33,5 @@ using Test
 @test encryptionkey(5764801, 17807724) === 14897079
 @test encryptionkey(17807724, 5764801) === 14897079
 @test encryptionkey(input...) === 18293391 # Part 1
+
+@time encryptionkey(input...)
