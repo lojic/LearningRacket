@@ -1,6 +1,5 @@
 #lang racket
 (require threading)
-
 ;; Nicely formatted version
 
 (define directions (hash "ne" (+  0.5 +i) "e"  1 "se" (+  0.5 -i)
@@ -33,10 +32,11 @@
         (set->list _)))
 
   (define (count-black-adjacent hsh key)
-    (count (curry hash-has-key? hsh) (adjacent-keys key)))
+    (count (curry hash-has-key? hsh)
+           (adjacent-keys key)))
 
   (define (is-black-tile? hsh key)
-    (let ([ black-tile?        (hash-ref hsh key #f)    ]
+    (let ([ black-tile?        (hash-ref hsh key #f)          ]
           [ num-black-adjacent (count-black-adjacent hsh key) ])
       (cond [ (and black-tile?
                    (or (= num-black-adjacent 0)
