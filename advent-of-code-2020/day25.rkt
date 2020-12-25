@@ -1,11 +1,12 @@
 #lang racket
+;; Ported to Julia at:
+;; https://github.com/lojic/LearningRacket/blob/master/advent-of-code-2020/day25.jl
 
 (define input   '(3248366 4738476))
 (define divisor 20201227)
 (define subject 7)
 
-(define (transform1 subject val)
-  (remainder (* val subject) divisor))
+(define (transform1 subject val) (remainder (* val subject) divisor))
 
 (define (transform subject n [ val 1 ])
   (cond [ (< n 1) val ]
@@ -16,10 +17,12 @@
 (define (find-loop-size subject key)
   (let loop ([ val 1 ][ n 0 ])
     (cond [ (= val key) n ]
-          [ else (loop (transform1 subject val) (add1 n)) ])))
+          [ else (loop (transform1 subject val)
+                       (add1 n)) ])))
 
-(define (encryption-key key1 key2)
-  (transform key2 (find-loop-size subject key1)))
+(define (encryption-key key1 key2) (transform key2 (find-loop-size subject key1)))
+
+(time (apply encryption-key input))
 
 (module+ test
   (require rackunit)
@@ -30,5 +33,4 @@
   (check-equal? (transform subject 11) 17807724)
   (check-equal? (encryption-key 5764801 17807724) 14897079)
   (check-equal? (encryption-key 17807724 5764801) 14897079)
-
   (check-equal? (apply encryption-key input) 18293391)) ; Part 1
