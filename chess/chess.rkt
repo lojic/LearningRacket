@@ -1,8 +1,11 @@
 #lang racket
-(require racket/vector)
 (require threading)
 
 ; Task List
+; * Special check heuristics
+;   - Check by queen, rook bishop - try capture, interposing or moving king
+;   - Check by knight - try capture or moving king
+; * Think on opponent's time
 ; * import board from displayed board
 ; * show score of manually chosen moves for debugging
 ; * piece value: index into table vs. function call
@@ -35,6 +38,7 @@
 ;P B P P P P P P
 ;R N _ Q K B N R
 
+;; NOTE:  10x12 https://www.chessprogramming.org/10x12_Board
 
 ; Initial board represented by a ByteString of 12x12=144 elements.
 ; Index 0 is at lower left. Index 143 is at upper right.
