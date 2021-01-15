@@ -11,7 +11,9 @@
 
 ; Indicate whether the stack of positions is valid
 (define (valid? stack)
-  (not (ormap (curry is-attacking? (car stack)) (cdr stack))))
+  (let* ([ q1 (car stack) ]
+         [ is-attacking-q? (λ (q2) (is-attacking? q1 q2)) ])
+    (not (ormap is-attacking-q? (cdr stack)))))
 
 ; Return a stack representing the next position, or #f if none exist
 (define (next-position n stack)
@@ -42,4 +44,5 @@
               solutions))
         solutions)))
 
-(length (main 13))
+;(length (main 13))
+(time (println (queens 22 (list (pos 1 1)))))
