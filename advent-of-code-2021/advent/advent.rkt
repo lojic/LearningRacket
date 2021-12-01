@@ -7,8 +7,6 @@
 (provide (contract-out
           [ ascending-permutations-generator
             (-> exact-nonnegative-integer? list? generator?) ]
-          [ file->numbers
-            (-> string? list?) ]
           [ filter-ascending-permutations
             (-> procedure? exact-nonnegative-integer? list? list?) ]
           [ find-2
@@ -39,14 +37,6 @@
               (begin
                 (loop (cdr lst) (sub1 n) (cons (car lst) stack))
               (loop (cdr lst) n stack)))))))
-
-;; (file->numbers fname) -> (listof number?)
-;; fname : string?
-;;
-;; Return a list of numbers from a file containing one number per
-;; line.
-(define (file->numbers fname)
-  (map string->number (file->lines fname)))
 
 ;; (filter-ascending-permutations pred? n lst) -> list?
 ;; pred?  : (-> list? boolean?)

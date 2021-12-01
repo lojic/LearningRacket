@@ -4,7 +4,7 @@
 
 (require "../../advent/advent.rkt")
 
-(define input (file->numbers "day01.txt"))
+(define input (file->list "day01.txt"))
 
 (define (count-increases lst) (count (λ (pair) (> (second pair) (first pair))) (zipn lst (cdr lst))))
 (define (windows-3 lst)       (zipn lst (cdr lst) (cddr lst)))

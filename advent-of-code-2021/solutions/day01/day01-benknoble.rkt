@@ -11,7 +11,7 @@
 
 (require "../../advent/advent.rkt")
 
-(define input (file->numbers "day01.txt"))
+(define input (file->list "day01.txt"))
 
 (define ((partn n) scans) (count < (drop-right scans n) (drop scans n)))
 (define (part1) ((partn 1) input))

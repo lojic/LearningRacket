@@ -2,7 +2,7 @@
 
 (require "../../advent/advent.rkt")
 
-(define input (file->numbers "day01.txt"))
+(define input (file->list "day01.txt"))
 
 (define (count-increases lst)
   (car (foldl (match-lambda* [ (list n (cons count last)) (cons (+ count (if (> n last) 1 0)) n) ])

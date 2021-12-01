@@ -3,7 +3,7 @@
 (require "../../advent/advent.rkt")
 
 (define example '(199 200 208 210 200 207 240 269 260 263))
-(define input   (file->numbers "day01.txt"))
+(define input   (file->list "day01.txt"))
 
 ;; Return a count of the number of times a number in the list is
 ;; greater than the preceding number.
