@@ -8,53 +8,37 @@
 ;; Return a count of the number of times a number in the list is
 ;; greater than the preceding number.
 (define (count-increases lst)
-  (let loop ([ lst (cdr lst) ][ last (car lst) ][ count 0 ])
-    (if (null? lst)
-        count
-        (let ([ n (car lst) ])
-          (loop (cdr lst)
-                n
-                (if (> n last)
-                    (add1 count)
-                    count))))))
+  (car (foldl (match-lambda* [ (list n (cons count last)) (cons (+ count (if (> n last) 1 0)) n) ])
+              (cons 0 (car lst))
+              (cdr lst))))
 
-;; Return the sum of the first n numbers in a list. If there are less
-;; than n numbers in the list, return #f
-(define (sum-n n lst)
-  (let loop ([ lst lst ][ n n ][ sum 0 ])
-    (cond [ (= n 0) sum ]
-          [ (null? lst) #f ]
-          [ else
-            (loop (cdr lst) (sub1 n) (+ sum (car lst))) ])))
-
-;; Return a list of the n-element sliding window sums of the input
-;; list.
-(define (window-sums n lst)
-  (let ([ sum (sum-n n lst) ])
-    (if sum
-        (cons sum (window-sums n (cdr lst)))
+;; Return a list of 3-element sliding windows from a list.
+(define (windows n lst)
+  (let ([ window (with-handlers ([ exn:fail:contract? (λ (_) #f) ])
+                   (take lst n)) ])
+    (if window
+        (cons window (windows n (cdr lst)))
         '())))
+
+(define (part1) (count-increases input))
+
+(define (part2) (count-increases (map sum (windows 3 input))))
+
 
 (module+ test
   (require rackunit)
 
   ;; Part 1
-  (check-equal? (count-increases input) 1616)
-  
-  ;; Part 2
-  (check-equal? (count-increases (window-sums 3 input)) 1645)
+  (check-equal? (part1) 1616)
 
+  ;; Part 2
+  (check-equal? (part2) 1645)
 
   ;; count-increases
   (check-equal? (count-increases example) 7)
 
-  ;; sum-n
-  (check-false (sum-n 4 '(1 2 3) ))
-  (check-equal? (sum-n 3 '(1 2 3 4 5 6)) 6)
-  
-  ;; window-sums
-  (check-equal? (window-sums 3 example)
-                '(607 618 618 617 647 716 769 792))
-
+  ;; windows
+  (check-equal? (windows 3 '(1 2 3 4 5 6))
+                '((1 2 3) (2 3 4) (3 4 5) (4 5 6)))
 
   )
