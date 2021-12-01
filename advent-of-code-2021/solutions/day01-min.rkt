@@ -9,10 +9,7 @@
               (cons 0 (car lst))
               (cdr lst))))
 
-(define (windows n lst)
-  (let ([ window (with-handlers ([ exn:fail:contract? (λ (_) #f) ])
-                   (take lst n)) ])
-    (if window (cons window (windows n (cdr lst))) '())))
+(define (windows-3 lst) (zipn lst (cdr lst) (cddr lst)))
 
 (define (part1) (count-increases input))
-(define (part2) (count-increases (map sum (windows 3 input))))
+(define (part2) (count-increases (map sum (windows-3 input))))

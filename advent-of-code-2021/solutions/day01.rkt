@@ -13,16 +13,11 @@
               (cdr lst))))
 
 ;; Return a list of 3-element sliding windows from a list.
-(define (windows n lst)
-  (let ([ window (with-handlers ([ exn:fail:contract? (λ (_) #f) ])
-                   (take lst n)) ])
-    (if window
-        (cons window (windows n (cdr lst)))
-        '())))
+(define (windows-3 lst) (zipn lst (cdr lst) (cddr lst)))
 
 (define (part1) (count-increases input))
 
-(define (part2) (count-increases (map sum (windows 3 input))))
+(define (part2) (count-increases (map sum (windows-3 input))))
 
 
 (module+ test
@@ -37,8 +32,8 @@
   ;; count-increases
   (check-equal? (count-increases example) 7)
 
-  ;; windows
-  (check-equal? (windows 3 '(1 2 3 4 5 6))
+  ;; windows-3
+  (check-equal? (windows-3 '(1 2 3 4 5 6))
                 '((1 2 3) (2 3 4) (3 4 5) (4 5 6)))
 
   )

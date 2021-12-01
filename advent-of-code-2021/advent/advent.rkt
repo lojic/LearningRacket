@@ -16,7 +16,9 @@
           [ iterate
             (-> procedure? any/c exact-nonnegative-integer? any) ]
           [ sum
-            (-> list? number?) ])
+            (-> list? number?) ]
+          ;; Todo better contract for zipn
+          [ zipn (-> list? ... list?) ])
          (struct-out pair-stream))
 
 ;; (ascending-permutations-generator n lst) -> generator?
@@ -104,6 +106,16 @@
   (if (null? lst)
       0
       (+ (car lst) (sum (cdr lst)))))
+
+;; (zipn . args) -> (listof list?)
+;; args : (listof list?)
+;;
+;; Zip all of the lists together. For example,
+;; (zipn '(1 2 3 4 5) '(2 3 4 5) '(3 4 5)) -> '((1 2 3) (2 3 4) (3 4 5))
+(define (zipn . args)
+  (let loop ([ lists args ][ result '() ])
+    (cond [ (ormap empty? lists) (reverse result) ]
+          [ else (loop (map rest lists) (cons (map first lists) result)) ])))
 
 ;; Allow streaming a list of pairs as values, e.g. for use in for
 (define-struct pair-stream (v)
