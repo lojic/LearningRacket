@@ -14,7 +14,9 @@
           [ find-2
             (-> procedure? list? (or/c pair? #f)) ]
           [ iterate
-            (-> procedure? any/c exact-nonnegative-integer? any) ])
+            (-> procedure? any/c exact-nonnegative-integer? any) ]
+          [ sum
+            (-> list? number?) ])
          (struct-out pair-stream))
 
 ;; (ascending-permutations-generator n lst) -> generator?
@@ -94,6 +96,15 @@
       arg 
       (iterate fun (fun arg) (sub1 n))))
 
+;; (sum lst) -> number?
+;; lst : (listof number?)
+;;
+;; Return the sum of the nubmers in the list.
+(define (sum lst)
+  (if (null? lst)
+      0
+      (+ (car lst) (sum (cdr lst)))))
+
 ;; Allow streaming a list of pairs as values, e.g. for use in for
 (define-struct pair-stream (v)
   #:methods gen:stream
@@ -140,6 +151,10 @@
   (check-equal? (iterate reverse '(1 2 3) 3) '(3 2 1))
   (check-equal? (iterate (λ (s) (string-append s "Z")) "" 4)
                 "ZZZZ")
+
+  ;; sum --------------------------------------------------------------------------------------
+
+  (check-equal? (sum '(1 7 23)) 31)
 
   ;; pair-stream ------------------------------------------------------------------------------
 
