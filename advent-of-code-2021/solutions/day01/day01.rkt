@@ -3,14 +3,21 @@
 (require "../../advent/advent.rkt")
 
 (define example '(199 200 208 210 200 207 240 269 260 263))
-(define input (file->numbers "day01.txt"))
+(define input   (file->numbers "day01.txt"))
 
 ;; Return a count of the number of times a number in the list is
 ;; greater than the preceding number.
 (define (count-increases lst)
-  (car (foldl (match-lambda* [ (list n (cons count last)) (cons (+ count (if (> n last) 1 0)) n) ])
-              (cons 0 (car lst))
-              (cdr lst))))
+  (car
+   (foldl (match-lambda*
+            [ (list n (cons count last))
+              (cons (+ count
+                       (if (> n last)
+                           1
+                           0))
+                    n) ])
+          (cons 0 (car lst))
+          (cdr lst))))
 
 ;; Return a list of 3-element sliding windows from a list.
 (define (windows n lst)
