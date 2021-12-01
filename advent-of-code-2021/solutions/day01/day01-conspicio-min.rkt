@@ -2,7 +2,7 @@
 
 ;; This version uses ideas I gleaned from other solutions.
 
-(require "../advent/advent.rkt")
+(require "../../advent/advent.rkt")
 
 (define input (file->numbers "day01.txt"))
 

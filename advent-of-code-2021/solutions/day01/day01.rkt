@@ -1,6 +1,6 @@
 #lang racket
 
-(require "../advent/advent.rkt")
+(require "../../advent/advent.rkt")
 
 (define example '(199 200 208 210 200 207 240 269 260 263))
 (define input (file->numbers "day01.txt"))
