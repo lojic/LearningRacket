@@ -7,6 +7,10 @@
 (provide (contract-out
           [ ascending-permutations-generator
             (-> exact-nonnegative-integer? list? generator?) ]
+          [ bool-list->decimal
+            (-> (listof exact-integer?) exact-integer?) ]
+          [ bool-string-list->decimal
+            (-> (listof string?) exact-integer?) ]
           [ filter-ascending-permutations
             (-> procedure? exact-nonnegative-integer? list? list?) ]
           [ find-2
@@ -37,6 +41,26 @@
               (begin
                 (loop (cdr lst) (sub1 n) (cons (car lst) stack))
               (loop (cdr lst) n stack)))))))
+
+;; (bool-string-list->decimal lst) -> exact-integer?
+;; lst : (listof string?)
+;;
+;; Returns the decimal value represented by the list of strings. For example:
+;; (list->decimal '("1" "0" "1" "1")) -> 11
+(define (bool-string-list->decimal lst) (bool-list->decimal (map string->number lst)))
+
+;; (bool-list->decimal lst) -> exact-integer?
+;; lst : (listof exact-integer?)
+;;
+;; Returns the decimal value represented by the list of boolean
+;; numbers. For example:
+;; (bool-list->decimal '(1 0 1 1)) -> 11
+(define (bool-list->decimal lst)
+  (let loop ([lst lst] [acc 0])
+    (match lst [ '()        acc                              ]
+               [ (cons 0 _) (loop (cdr lst) (* 2 acc))       ]
+               [ (cons 1 _) (loop (cdr lst) (+ (* 2 acc) 1)) ]
+               [ _          0                                ])))
 
 ;; (filter-ascending-permutations pred? n lst) -> list?
 ;; pred?  : (-> list? boolean?)
@@ -131,6 +155,21 @@
     (for ([ lst (in-list '((1 2 3) (1 2 4) (1 2 5) (1 3 4) (1 3 5)
                            (1 4 5) (2 3 4) (2 3 5) (2 4 5) (3 4 5))) ])
       (check-equal? (g) lst)))
+  
+  ;; bool-string-list->decimal ----------------------------------------------------------------
+
+  (check-equal? (bool-string-list->decimal '("1" "0" "1" "1")) 11)
+
+  ;; bool-list->decimal ----------------------------------------------------------------
+
+  (for ([ pair (in-list '(((1 0 1 1) 11)
+                          ((0 0 0) 0)
+                          ((0 0 1) 1)
+                          ((0 1 0) 2)
+                          ((0 1 1) 3)
+                          ((1 0 0) 4)
+                          ((1 1 1) 7))) ])
+    (check-equal? (bool-list->decimal (first pair)) (second pair)))
 
   ;; filter-ascending-permutations ------------------------------------------------------------
 

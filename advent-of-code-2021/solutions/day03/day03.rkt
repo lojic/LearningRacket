@@ -1,6 +1,6 @@
 #lang racket
 
-(require threading)
+(require "../../advent/advent.rkt" threading)
 (define input (file->lines "day03.txt"))
 (define example '("00100" "11110" "10110" "10111" "10101" "01111"
                   "00111" "11100" "10000" "11001" "00010" "01010"))
@@ -30,14 +30,6 @@
     (if (null? lst)
         sum
         (loop (cdr lst) (add2 (car lst) sum)))))
-
-;; Convert a list boolean numbers a decimal number
-(define (list->decimal lst)
-  (let loop ([lst lst] [acc 0])
-    (match lst [ '()        acc                              ]
-               [ (cons 0 _) (loop (cdr lst) (* 2 acc))       ]
-               [ (cons 1 _) (loop (cdr lst) (+ (* 2 acc) 1)) ]
-               [ _          0                                ])))
 
 ;; Flip 1 to 0 or 0 to 1 in a list of boolean numbers
 (define (flip lst)
@@ -72,8 +64,8 @@
 (define (part1 input)
   (let* ([ common   (compute-common (parse input)) ]
          [ uncommon (flip common)                  ]
-         [ gamma    (list->decimal common)         ]
-         [ epsilon  (list->decimal uncommon)       ])
+         [ gamma    (bool-list->decimal common)         ]
+         [ epsilon  (bool-list->decimal uncommon)       ])
     (* gamma epsilon)))
 
 ;; Part 2 solution
@@ -96,8 +88,8 @@
                  (loop result (add1 bit)))))))
 
   (let ([ lst (parse input) ])
-    (* (list->decimal (life lst #t))
-       (list->decimal (life lst #f)))))
+    (* (bool-list->decimal (life lst #t))
+       (bool-list->decimal (life lst #f)))))
 
 ;; --------------------------------------------------------------------------------------------
 ;; Tests
@@ -124,13 +116,4 @@
   (check-equal? (parse '("001" "101" "010"))
                 '((0 0 1) (1 0 1) (0 1 0)))
 
-  ;; list->decimal -------------------------------------------------------------------------------
-
-  (for ([ pair (in-list '(((0 0 0) 0)
-                          ((0 0 1) 1)
-                          ((0 1 0) 2)
-                          ((0 1 1) 3)
-                          ((1 0 0) 4)
-                          ((1 1 1) 7))) ])
-    (check-equal? (list->decimal (first pair)) (second pair)))
   )

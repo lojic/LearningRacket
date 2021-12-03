@@ -1,6 +1,6 @@
 #lang racket
 
-(require threading)
+(require "../../advent/advent.rkt" threading)
 (define input (file->lines "day03.txt"))
 
 (define (parse lst)
@@ -20,13 +20,6 @@
         sum
         (loop (cdr lst) (add2 (car lst) sum)))))
 
-(define (list->decimal lst)
-  (let loop ([lst lst] [acc 0])
-    (match lst [ '()        acc                              ]
-               [ (cons 0 _) (loop (cdr lst) (* 2 acc))       ]
-               [ (cons 1 _) (loop (cdr lst) (+ (* 2 acc) 1)) ]
-               [ _          0                                ])))
-
 (define (flip lst)
   (if (null? lst)
       '()
@@ -44,8 +37,8 @@
 (define (part1 input)
   (let* ([ common   (compute-common (parse input)) ]
          [ uncommon (flip common)                  ]
-         [ gamma    (list->decimal common)         ]
-         [ epsilon  (list->decimal uncommon)       ])
+         [ gamma    (bool-list->decimal common)         ]
+         [ epsilon  (bool-list->decimal uncommon)       ])
     (* gamma epsilon)))
 
 (define (part2 input)
@@ -64,4 +57,4 @@
                (loop (scrub lst oxy bit) (add1 bit))))))
 
   (let ([ lst (parse input) ])
-    (* (list->decimal (life lst #t)) (list->decimal (life lst #f)))))
+    (* (bool-list->decimal (life lst #t)) (bool-list->decimal (life lst #f)))))
