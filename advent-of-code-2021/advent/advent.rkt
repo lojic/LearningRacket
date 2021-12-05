@@ -11,6 +11,8 @@
             (-> (listof exact-integer?) exact-integer?) ]
           [ bool-string-list->decimal
             (-> (listof string?) exact-integer?) ]
+          [ chunk
+            (-> list? exact-nonnegative-integer? list?) ]
           [ filter-ascending-permutations
             (-> procedure? exact-nonnegative-integer? list? list?) ]
           [ find-2
@@ -22,6 +24,25 @@
           ;; Todo better contract for zipn
           [ zipn (-> list? ... list?) ])
          (struct-out pair-stream))
+
+;; (chunk lst n) -> (listof list?)
+;; lst : list?
+;; n   : exact-nonnegative-integer?
+;;
+;; Return a list of chunks where each chunk is a list of n elements
+;; from lst.
+(define (chunk lst n)
+  (define (get-chunk lst n)
+    (let loop ([lst lst] [acc '()] [n n])
+      (if (or (null? lst) (< n 1))
+          (values (reverse acc) lst)
+          (loop (cdr lst) (cons (car lst) acc) (- n 1)))))
+  
+  (let loop ([lst lst] [acc '()])
+    (if (null? lst)
+        (reverse acc)
+        (let-values ([(chunk rest) (get-chunk lst n)])
+          (loop rest (cons chunk acc))))))
 
 ;; (ascending-permutations-generator n lst) -> generator?
 ;; n   : exact-nonnegative-integer?
@@ -170,6 +191,13 @@
                           ((1 0 0) 4)
                           ((1 1 1) 7))) ])
     (check-equal? (bool-list->decimal (first pair)) (second pair)))
+  
+  ;; chunk ------------------------------------------------------------------------------------
+
+  (check-equal? (chunk (range 15) 5)
+                '((0 1 2 3 4)
+                  (5 6 7 8 9)
+                  (10 11 12 13 14)))
 
   ;; filter-ascending-permutations ------------------------------------------------------------
 
