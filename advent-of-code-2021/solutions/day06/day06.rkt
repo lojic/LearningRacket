@@ -10,7 +10,7 @@
                            (vector (vr v 1) (vr v 2) (vr v 3) (vr v 4) (vr v 5) (vr v 6)
                                    (+ (vr v 0) (vr v 7)) (vr v 8) (vr v 0)))
                          (foldl (λ (n v)
-                                  (vector-set! v n (add1 (vector-ref v n)))
+                                  (vector-set! v n (add1 (vr v n)))
                                   v)
                                 (make-vector 9 0)
                                 fish)
