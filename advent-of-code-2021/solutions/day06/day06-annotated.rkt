@@ -1,6 +1,6 @@
 #lang racket
 
-(require "../../advent/advent.rkt")
+(require "../../advent/advent.rkt" threading)
 
 (define (part n)
   ;; Sum the vector result of iterating the simulation
@@ -17,9 +17,13 @@
     ;; The initial argument to the iteration. Obtain a list of
     ;; integers from the input and create an initial vector where each
     ;; slot contains the count of fishes.
-    (foldl (λ (n v) (vector-set! v n (add1 (vector-ref v n))) v)
+    (foldl (λ (n v)
+             (vector-set! v n (add1 (vector-ref v n))) v)
            (make-vector 9 0)
-           (map string->number (string-split (string-trim (file->string "day06.txt")) ",")))
+           (~> (file->string "day06.txt")
+               string-trim
+               (string-split ",")
+               (map string->number _)))
     ;; The number of times to iterate
     n)))
 
