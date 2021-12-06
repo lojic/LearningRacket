@@ -5,15 +5,10 @@
 (define (part n)
   (vector-sum (iterate (λ (v)
                          (define vr (curry vector-ref v))
-                         (vector (vr 1) (vr 2) (vr 3) (vr 4) (vr 5) (vr 6)
-                                 (+ (vr 0) (vr 7)) (vr 8) (vr 0)))
-                       (foldl (λ (n v)
-                                (vector-set! v n (add1 (vector-ref v n)))
-                                v)
+                         (vector (vr 1) (vr 2) (vr 3) (vr 4) (vr 5) (vr 6) (+ (vr 0) (vr 7)) (vr 8) (vr 0)))
+                       (foldl (λ (n v) (vector-set! v n (add1 (vector-ref v n))) v)
                               (make-vector 9 0)
-                              (map string->number
-                                   (string-split (string-trim (file->string "day06.txt"))
-                                                 ",")))
+                              (map string->number (string-split (string-trim (file->string "day06.txt")) ",")))
                        n)))
 
 ;; Tests --------------------------------------------------------------------------------------
