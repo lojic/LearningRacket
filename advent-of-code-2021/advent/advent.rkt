@@ -21,28 +21,11 @@
             (-> procedure? any/c exact-nonnegative-integer? any) ]
           [ sum
             (-> list? number?) ]
+          [ vector-sum
+            (-> vector? number?) ]
           ;; Todo better contract for zipn
           [ zipn (-> list? ... list?) ])
          (struct-out pair-stream))
-
-;; (chunk lst n) -> (listof list?)
-;; lst : list?
-;; n   : exact-nonnegative-integer?
-;;
-;; Return a list of chunks where each chunk is a list of n elements
-;; from lst.
-(define (chunk lst n)
-  (define (get-chunk lst n)
-    (let loop ([lst lst] [acc '()] [n n])
-      (if (or (null? lst) (< n 1))
-          (values (reverse acc) lst)
-          (loop (cdr lst) (cons (car lst) acc) (- n 1)))))
-  
-  (let loop ([lst lst] [acc '()])
-    (if (null? lst)
-        (reverse acc)
-        (let-values ([(chunk rest) (get-chunk lst n)])
-          (loop rest (cons chunk acc))))))
 
 ;; (ascending-permutations-generator n lst) -> generator?
 ;; n   : exact-nonnegative-integer?
@@ -82,6 +65,25 @@
                [ (cons 0 _) (loop (cdr lst) (* 2 acc))       ]
                [ (cons 1 _) (loop (cdr lst) (+ (* 2 acc) 1)) ]
                [ _          0                                ])))
+
+;; (chunk lst n) -> (listof list?)
+;; lst : list?
+;; n   : exact-nonnegative-integer?
+;;
+;; Return a list of chunks where each chunk is a list of n elements
+;; from lst.
+(define (chunk lst n)
+  (define (get-chunk lst n)
+    (let loop ([lst lst] [acc '()] [n n])
+      (if (or (null? lst) (< n 1))
+          (values (reverse acc) lst)
+          (loop (cdr lst) (cons (car lst) acc) (- n 1)))))
+
+  (let loop ([lst lst] [acc '()])
+    (if (null? lst)
+        (reverse acc)
+        (let-values ([(chunk rest) (get-chunk lst n)])
+          (loop rest (cons chunk acc))))))
 
 ;; (filter-ascending-permutations pred? n lst) -> list?
 ;; pred?  : (-> list? boolean?)
@@ -128,9 +130,9 @@
 ;;
 ;; Repeatedly applys fun to arg n times. For example, (iterate fun
 ;; 'foo 3) results in:  (fun (fun (fun arg)))
-(define (iterate fun arg n) 
-  (if (zero? n) 
-      arg 
+(define (iterate fun arg n)
+  (if (zero? n)
+      arg
       (iterate fun (fun arg) (sub1 n))))
 
 ;; (sum lst) -> number?
@@ -141,6 +143,14 @@
   (if (null? lst)
       0
       (+ (car lst) (sum (cdr lst)))))
+
+;; (vector-sum v) -> number?
+;; v : vector?
+;;
+;; Return the sum of vector elements.
+(define (vector-sum v)
+  (for/sum ([ i (in-range 9) ])
+    (vector-ref v i)))
 
 ;; (zipn . args) -> (listof list?)
 ;; args : (listof list?)
@@ -169,14 +179,14 @@
 
 (module+ test
   (require rackunit)
-  
+
   ;; ascending-permutations-generator ---------------------------------------------------------
-  
+
   (let ([ g (ascending-permutations-generator 3 '(1 2 3 4 5)) ])
     (for ([ lst (in-list '((1 2 3) (1 2 4) (1 2 5) (1 3 4) (1 3 5)
                            (1 4 5) (2 3 4) (2 3 5) (2 4 5) (3 4 5))) ])
       (check-equal? (g) lst)))
-  
+
   ;; bool-string-list->decimal ----------------------------------------------------------------
 
   (check-equal? (bool-string-list->decimal '("1" "0" "1" "1")) 11)
@@ -191,7 +201,7 @@
                           ((1 0 0) 4)
                           ((1 1 1) 7))) ])
     (check-equal? (bool-list->decimal (first pair)) (second pair)))
-  
+
   ;; chunk ------------------------------------------------------------------------------------
 
   (check-equal? (chunk (range 15) 5)
