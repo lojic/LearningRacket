@@ -2,7 +2,7 @@
 
 (require "../../advent/advent.rkt" threading)
 
-(define (part n)
+(define (solve n)
   (~> (iterate (λ (v)
                  (define vr (curry vector-ref v))
                  (vector (vr 1) (vr 2) (vr 3) (vr 4) (vr 5) (vr 6) (+ (vr 0) (vr 7)) (vr 8) (vr 0)))
@@ -20,5 +20,5 @@
 
 (module+ test
   (require rackunit)
-  (check-equal? (part 80) 371379)
-  (check-equal? (part 256) 1674303997472))
+  (check-equal? (solve 80) 371379)
+  (check-equal? (solve 256) 1674303997472))
