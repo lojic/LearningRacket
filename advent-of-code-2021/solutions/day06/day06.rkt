@@ -2,19 +2,20 @@
 
 (require "../../advent/advent.rkt" threading)
 
-(define input (~> (file->string "day06.txt") string-trim (string-split ",") (map string->number _)))
+(define input (~> (file->string "day06.txt")
+                  string-trim
+                  (string-split ",")
+                  (map string->number _)
+                  (foldl (λ (n v) (vector-update! v n add1) v)
+                         (make-vector 9 0)
+                         _)))
 
 (define (solve input n)
-  (define (initialize-fish input)
-    (foldl (λ (n v) (vector-update! v n add1) v)
-           (make-vector 9 0)
-           input))
-
   (define (spawn v)
     (define vr (curry vector-ref v))
     (vector (vr 1) (vr 2) (vr 3) (vr 4) (vr 5) (vr 6) (+ (vr 0) (vr 7)) (vr 8) (vr 0)))
 
-  (vector-sum (iterate spawn (initialize-fish input) n)))
+  (vector-sum (iterate spawn input n)))
 
 ;; Tests --------------------------------------------------------------------------------------
 
