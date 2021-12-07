@@ -7,21 +7,25 @@
 
 (require "../../advent/advent.rkt" threading racket/unsafe/ops)
 
+(define i* unsafe-fx*)
+(define i+ unsafe-fx+)
+(define i- unsafe-fx-)
+(define i= unsafe-fx=)
+(define i> unsafe-fx>)
+(define imin unsafe-fxmin)
+
 (define (solve positions)
   (let* ([ average (let loop ([ lst positions ][ sum 0 ][ count 0 ])
                      (if (null? lst)
                          (/ sum count)
-                         (loop (cdr lst)
-                               (unsafe-fx+ sum (car lst))
-                               (unsafe-fx+ 1 count)))) ]
-         [ pos (unsafe-fxmin (floor average)
-                             (ceiling average)) ])
+                         (loop (cdr lst) (i+ sum (car lst)) (i+ 1 count)))) ]
+         [ pos (imin (floor average) (ceiling average)) ])
     (for/sum ([ n (in-list positions) ])
-      (let ([ delta (unsafe-fx- n pos) ])
-        (cond [ (unsafe-fx= delta 0) 0 ]
-              [ (unsafe-fx> delta 0) (/ (unsafe-fx* delta (unsafe-fx+ 1 delta)) 2) ]
-              [ else (let ([ delta (unsafe-fx- delta) ])
-                       (/ (unsafe-fx* delta (unsafe-fx+ 1 delta)) 2)) ])))))
+      (let ([ delta (i- n pos) ])
+        (cond [ (i= delta 0) 0 ]
+              [ (i> delta 0) (/ (i* delta (i+ 1 delta)) 2) ]
+              [ else (let ([ delta (i- delta) ])
+                       (/ (i* delta (i+ 1 delta)) 2)) ])))))
 
 ;; Tests --------------------------------------------------------------------------------------
 
