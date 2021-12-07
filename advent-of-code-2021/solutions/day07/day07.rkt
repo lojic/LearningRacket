@@ -2,13 +2,10 @@
 
 (require "../../advent/advent.rkt" threading)
 
-(define (sum-fuel cost positions pos)
-  (for/sum ([ n positions ])
-    (cost (abs (- n pos)))))
-
 (define (solve cost positions)
   (~> (for/list ([ pos (range (list-max positions)) ])
-        (sum-fuel cost positions pos))
+        (for/sum ([ n positions ])
+          (cost (abs (- n pos)))))
       list-min))
 
 (define part1-cost identity)
