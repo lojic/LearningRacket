@@ -8,8 +8,7 @@
 
 (define (solve cost positions)
   (for/fold ([ least 1000000000 ])
-            ([ pos   (range (argmin identity positions)
-                            (argmax identity positions)) ])
+            ([ pos   (range (argmax identity positions)) ])
     (min least (sum-fuel cost positions pos))))
 
 (define part1-cost identity)
