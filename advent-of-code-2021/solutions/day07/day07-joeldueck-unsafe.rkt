@@ -2,7 +2,8 @@
 
 ;; This version (part 2 only) inspired by Joel Dueck, and optimized
 ;; with unsafe arithmetic. The goal is efficiency.  After parsing the
-;; input, it takes 19 micro-seconds to solve.
+;; input, it takes 17 micro-seconds to solve (2 micro-seconds less
+;; than safe version :) )
 
 (require "../../advent/advent.rkt" threading racket/unsafe/ops)
 
