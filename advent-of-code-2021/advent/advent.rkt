@@ -22,6 +22,10 @@
             (-> procedure? list? (or/c pair? #f)) ]
           [ iterate
             (-> procedure? any/c exact-nonnegative-integer? any) ]
+          [ list-max
+            (-> list? number?) ]
+          [ list-min
+            (-> list? number?) ]
           [ sum
             (-> list? number?) ]
           [ vector-sum
@@ -150,6 +154,20 @@
   (if (zero? n)
       arg
       (iterate fun (fun arg) (sub1 n))))
+
+;; (list-max lst) -> number?
+;; lst : (listof number?)
+;;
+;; Return the maximum number in the list
+(define (list-max lst)
+  (argmax identity lst))
+
+;; (list-min lst) -> number?
+;; lst : (listof number?)
+;;
+;; Return the minimum number in the list
+(define (list-min lst)
+  (argmin identity lst))
 
 ;; (sum lst) -> number?
 ;; lst : (listof number?)

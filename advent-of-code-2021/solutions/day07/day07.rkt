@@ -1,15 +1,15 @@
 #lang racket
 
-(require "../../advent/advent.rkt")
+(require "../../advent/advent.rkt" threading)
 
 (define (sum-fuel cost positions pos)
   (for/sum ([ n positions ])
     (cost (abs (- n pos)))))
 
 (define (solve cost positions)
-  (for/fold ([ least 1000000000 ])
-            ([ pos   (range (argmax identity positions)) ])
-    (min least (sum-fuel cost positions pos))))
+  (~> (for/list ([ pos (range (list-max positions)) ])
+        (sum-fuel cost positions pos))
+      list-min))
 
 (define part1-cost identity)
 
