@@ -11,7 +11,7 @@
                      (if (null? lst)
                          (/ sum count)
                          (loop (cdr lst) (+ sum (car lst)) (add1 count)))) ]
-         [ pos (min (floor average) (ceiling average)) ])
+         [ pos (floor average) ])
     (for/sum ([ n (in-list positions) ])
       (let ([ delta (- n pos) ])
         (cond [ (= delta 0) 0 ]
