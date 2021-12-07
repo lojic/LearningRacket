@@ -23,6 +23,8 @@
             (-> list? number?) ]
           [ vector-sum
             (-> vector? number?) ]
+          [ vector-update!
+            (-> vector? exact-nonnegative-integer? procedure? any) ]
           ;; Todo better contract for zipn
           [ zipn (-> list? ... list?) ])
          (struct-out pair-stream))
@@ -151,6 +153,15 @@
 (define (vector-sum v)
   (for/sum ([ i (in-range 9) ])
     (vector-ref v i)))
+
+;; (vector-update! vec i f) -> (void)
+;; vec : vector?
+;; i   : exact-nonnegative-integer?
+;; f   : procedure?
+;;
+;; Update the ith element of vec by applying f to it
+(define (vector-update! vec i f)
+  (vector-set! vec i (f (vector-ref vec i))))
 
 ;; (zipn . args) -> (listof list?)
 ;; args : (listof list?)
