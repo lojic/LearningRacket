@@ -2,7 +2,8 @@
 
 ;; General utility functions for use in Advent of Code
 
-(require racket/generator)
+(require racket/generator
+         threading)
 
 (provide (contract-out
           [ ascending-permutations-generator
@@ -13,6 +14,8 @@
             (-> (listof string?) exact-integer?) ]
           [ chunk
             (-> list? exact-nonnegative-integer? list?) ]
+          [ csv-file->numbers
+            (-> string? list?) ]
           [ filter-ascending-permutations
             (-> procedure? exact-nonnegative-integer? list? list?) ]
           [ find-2
@@ -86,6 +89,17 @@
         (reverse acc)
         (let-values ([(chunk rest) (get-chunk lst n)])
           (loop rest (cons chunk acc))))))
+
+;; (csv-file->numbers path) -> (listof number?)
+;; path : string?
+;;
+;; Read a file consisting of one line of a comma delimited list of
+;; numbers into a list of numbers.
+(define (csv-file->numbers fname)
+  (~>> (file->string fname)
+       string-trim
+       (string-split _ ",")
+       (map string->number)))
 
 ;; (filter-ascending-permutations pred? n lst) -> list?
 ;; pred?  : (-> list? boolean?)
