@@ -10,8 +10,8 @@
                          (make-vector 9 0))))
 
 (define (solve fish n)
-  (define (spawn v)
-    (define vr (curry vector-ref v))
+  (define (spawn fish)
+    (define vr (curry vector-ref fish))
     (vector (vr 1) (vr 2) (vr 3) (vr 4) (vr 5) (vr 6) (+ (vr 0) (vr 7)) (vr 8) (vr 0)))
 
   (vector-sum (iterate spawn fish n)))
