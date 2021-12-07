@@ -2,13 +2,12 @@
 
 (require "../../advent/advent.rkt" threading)
 
-(define input (~> (file->string "day06.txt")
+(define input (~>> (file->string "day06.txt")
                   string-trim
-                  (string-split ",")
-                  (map string->number _)
+                  (string-split _ ",")
+                  (map string->number)
                   (foldl (λ (n v) (vector-update! v n add1) v)
-                         (make-vector 9 0)
-                         _)))
+                         (make-vector 9 0))))
 
 (define (solve input n)
   (define (spawn v)
