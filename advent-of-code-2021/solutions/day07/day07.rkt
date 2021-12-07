@@ -7,10 +7,10 @@
     (cost (abs (- n pos)))))
 
 (define (solve cost positions)
-  (let ([ sorted (sort positions <) ])
-    (for/fold ([ least 1000000000            ])
-              ([ pos   (range (last sorted)) ])
-      (min least (sum-fuel cost sorted pos)))))
+  (for/fold ([ least 1000000000            ])
+            ([ pos   (range (argmin identity positions)
+                            (argmax identity positions)) ])
+    (min least (sum-fuel cost positions pos))))
 
 (define part1-cost identity)
 
