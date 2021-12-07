@@ -14,7 +14,8 @@
 
 (define part1-cost identity)
 
-(define (part2-cost n) (/ (* n (add1 n)) 2))
+(define (part2-cost n)
+  (/ (* n (add1 n)) 2))
 
 ;; Tests --------------------------------------------------------------------------------------
 
