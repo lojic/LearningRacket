@@ -38,10 +38,10 @@
     (let ([ h (get x y) ])
       (if (< prev-height h 9)
           (cons (list x y h)
-                (append (flood x (sub1 y) h)
-                        (flood (add1 x) y h)
-                        (flood x (add1 y) h)
-                        (flood (sub1 x) y h)))
+                (append (flood x (sub1 y) h)   ; North
+                        (flood (add1 x) y h)   ; East
+                        (flood x (add1 y) h)   ; South
+                        (flood (sub1 x) y h))) ; West
           '())))
 
   (match-let ([ (list x y h) tuple ])
