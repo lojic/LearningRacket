@@ -53,10 +53,9 @@
 
 (define (part2)
   (~> (low-points)
-      (map get-basin _)
-      (sort > #:key length)
+      (map (compose length get-basin) _)
+      (sort >)
       (take 3)
-      (map length _)
       product))
 
 ;; Tests --------------------------------------------------------------------------------------
