@@ -1,0 +1,67 @@
+#lang racket
+
+(require "../../advent/advent.rkt" threading)
+
+(define-values (get width height)
+  (let* ([ lines  (file->lines "day09.txt")     ]
+         [ width  (string-length (first lines)) ]
+         [ height (length lines)                ]
+         [ cave   (~>> lines
+                      (apply string-append)
+                      (string->list)
+                      (map (λ (c)
+                             (- (char->integer c)
+                                (char->integer #\0))))
+                      (list->vector _)) ]
+         [ get (λ (x y)
+                 (if (or (< x 0) (>= x width)
+                         (< y 0) (>= y height))
+                     9
+                     (vector-ref cave (+ (* y width) x)))) ])
+
+    (values get width height)))
+
+(define (low-points)
+  (for*/fold ([ points '() ])
+             ([ x (in-range width)  ]
+              [ y (in-range height) ])
+    (let ([ n (get x y) ])
+      (if (and (< n (get x (sub1 y)))  ; North
+               (< n (get (add1 x) y))  ; East
+               (< n (get x (add1 y)))  ; South
+               (< n (get (sub1 x) y))) ; West
+          (cons (list x y n) points)
+          points))))
+
+(define (get-basin tuple)
+  (define (flood x y prev-height)
+    (let ([ h (get x y) ])
+      (if (< prev-height h 9)
+          (cons (list x y h)
+                (append (flood x (sub1 y) h)
+                        (flood (add1 x) y h)
+                        (flood x (add1 y) h)
+                        (flood (sub1 x) y h)))
+          '())))
+
+  (match-let ([ (list x y h) tuple ])
+    (remove-duplicates (flood x y (sub1 h)))))
+
+(define (part1) (~>> (low-points)
+                     (map (compose add1 third))
+                     sum))
+
+(define (part2)
+  (~> (low-points)
+      (map get-basin _)
+      (sort > #:key length)
+      (take 3)
+      (map length _)
+      product))
+
+;; Tests --------------------------------------------------------------------------------------
+
+(module+ test
+  (require rackunit)
+  (check-equal? (part1) 566)
+  (check-equal? (part2) 891684))

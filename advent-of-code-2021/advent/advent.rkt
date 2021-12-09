@@ -26,6 +26,8 @@
             (-> list? number?) ]
           [ list-min
             (-> list? number?) ]
+          [ product
+            (-> list? number?) ]
           [ sum
             (-> list? number?) ]
           [ vector-sum
@@ -168,6 +170,15 @@
 ;; Return the minimum number in the list
 (define (list-min lst)
   (argmin identity lst))
+
+;; (product lst) -> number?
+;; lst : (listof number?)
+;;
+;; Return the product of the numbers in the list.
+(define (product lst)
+  (if (null? lst)
+      1
+      (* (car lst) (product (cdr lst)))))
 
 ;; (sum lst) -> number?
 ;; lst : (listof number?)
