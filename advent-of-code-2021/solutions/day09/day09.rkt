@@ -9,15 +9,14 @@
          [ cave   (~>> lines
                       (apply string-append)
                       (string->list)
-                      (map (λ (c)
-                             (- (char->integer c)
-                                (char->integer #\0))))
-                      (list->vector _)) ]
+                      (map (compose (curryr - (char->integer #\0))
+                                    char->integer))
+                      list->vector) ]
          [ get (λ (x y)
-                 (if (or (< x 0) (>= x width)
-                         (< y 0) (>= y height))
-                     9
-                     (vector-ref cave (+ (* y width) x)))) ])
+                 (if (and (<= 0 x (sub1 width))
+                          (<= 0 y (sub1 height)))
+                     (vector-ref cave (+ (* y width) x))
+                     9)) ])
 
     (values get width height)))
 
