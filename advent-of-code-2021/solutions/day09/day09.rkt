@@ -46,9 +46,10 @@
   (match-let ([ (list x y h) tuple ])
     (remove-duplicates (flood x y (sub1 h)))))
 
-(define (part1) (~>> (low-points)
-                     (map (compose add1 third))
-                     sum))
+(define (part1)
+  (~>> (low-points)
+       (map (compose add1 third))
+       sum))
 
 (define (part2)
   (~> (low-points)
