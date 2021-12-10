@@ -9,7 +9,7 @@
       [ #\]    57 ]
       [ #\}  1197 ]
       [ #\> 25137 ]))
-  
+
   (for/sum ([ c (filter corrupt? input) ])
     (value-of c)))
 
@@ -36,17 +36,17 @@
        (file->lines fname)))
 
 (define (stack-value stack)
-  (define (value-of open-bracket)
-    (match (closing-bracket-for open-bracket)
+  (define (value-of close-bracket)
+    (match close-bracket
       [ #\) 1 ]
       [ #\] 2 ]
       [ #\} 3 ]
       [ #\> 4 ]))
-  
+
   (for/fold ([ sum 0 ])
             ([ open-bracket stack ])
     (+ (* sum 5)
-       (value-of open-bracket))))
+       (value-of (closing-bracket-for open-bracket)))))
 
 (define (closing-bracket-for c)
   (match c
