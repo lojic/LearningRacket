@@ -23,7 +23,7 @@
 
 (define (parse fname)
   (define (parse-line chars [ stack '() ])
-    (if (null? chars)
+    (if (empty? chars)
         stack
         (let ([ c (first chars) ])
           (if (is-open-bracket? c)
