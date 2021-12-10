@@ -26,11 +26,11 @@
     (if (empty? chars)
         stack
         (let ([ c (first chars) ])
-          (if (is-open-bracket? c)
-              (parse-line (rest chars) (push c stack))
-              (if (is-bracket-pair? (top stack) c)
-                  (parse-line (rest chars) (pop stack))
-                  c)))))
+          (cond [ (is-open-bracket? c)
+                  (parse-line (rest chars) (push c stack)) ]
+                [ (is-bracket-pair? (top stack) c)
+                  (parse-line (rest chars) (pop stack)) ]
+                [ else c ]))))
 
   (map (compose parse-line string->list)
        (file->lines fname)))
