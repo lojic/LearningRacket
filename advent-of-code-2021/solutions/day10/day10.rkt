@@ -18,9 +18,9 @@
   (define (parse-line chars [ stack '() ])
     (cond [ (null? chars) stack ]
           [ else (let ([ c (car chars) ])
-                   (if (is-open? c)
+                   (if (closing-bracket c)
                        (parse-line (cdr chars) (cons c stack))
-                       (if (matches? (car stack) c)
+                       (if (equal? (closing-bracket (car stack)) c)
                            (parse-line (cdr chars) (drop stack 1))
                            c))) ]))
 
@@ -32,14 +32,9 @@
             ([ left stack ])
     (+ (* sum 5)
        (hash-ref (hash #\) 1 #\] 2 #\} 3 #\> 4)
-                 (match-char left)))))
+                 (closing-bracket left)))))
 
-(define (is-open? c)   (member c '(#\( #\[ #\{ #\<)))
-(define (match-char c) (hash-ref (hash #\( #\) #\[ #\] #\{ #\} #\< #\>) c))
-
-(define (matches? left right)
-  (member (cons left right)
-          '((#\( . #\)) (#\[ . #\]) (#\{ . #\}) (#\< . #\>))))
+(define (closing-bracket c) (hash-ref (hash #\( #\) #\[ #\] #\{ #\} #\< #\>) c #f))
 
 ;; Tests --------------------------------------------------------------------------------------
 
