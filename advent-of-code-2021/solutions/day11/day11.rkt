@@ -3,9 +3,7 @@
 ;; This version uses a list of octopus structs as the data structure,
 ;; and is completely functional with no mutation.
 
-(struct octopus (coord
-                 energy
-                 flashed?))
+(struct octopus (coord energy flashed?))
 
 (define (part1 octopi n [ sum 0 ])
   (if (< n 1)
