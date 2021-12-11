@@ -1,7 +1,9 @@
 #lang racket
 
-;; This version uses a list of octopus structs as the data structure,
-;; and is completely functional with no mutation.
+;; This version:
+;; * Uses a list of octopus structs as the data structure
+;; * Is completely functional with no mutation
+;; * Is self contained with no additional dependencies
 
 (struct octopus (coord energy flashed?))
 
