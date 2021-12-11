@@ -83,5 +83,6 @@
 
 (module+ test
   (require rackunit)
-  (check-equal? (part1 (parse "day11.txt") 100) 1647)
-  (check-equal? (part2 (parse "day11.txt")) 348))
+  (let ([ input (parse "day11.txt") ])
+    (check-equal? (part1 input 100) 1647)
+    (check-equal? (part2 input) 348)))
