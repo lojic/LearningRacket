@@ -25,8 +25,7 @@
         o)))
 
 (define (increment-energy octopi)
-  (for/list ([ o octopi ])
-    (increment-octo o)))
+  (map increment-octo octopi))
 
 (define (flash octopi)
   ;; Helper functions -------------------------------------------------------------------------
