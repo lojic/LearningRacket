@@ -15,7 +15,7 @@
   (for/list ([ o octopi ])
     (if (octopus-flashed? o) (reset-octo o) o)))
 
-(define (increment-energy octopi) (for/list ([ o octopi ]) (increment-octo o)))
+(define (increment-energy octopi) (map increment-octo octopi))
 
 (define (flash octopi)
   (define (flash-needed? octo)
@@ -23,8 +23,7 @@
   (define (flash-one-octopus octo octopi)
     (define (mark-flashed o)
       (struct-copy octopus o [ flashed? #t ]))
-    (let ([ adjacent (for/list ([ direction '(-i 1 +i -1 1-i -1-i 1+i -1+i) ])
-                       (+ (octopus-coord octo) direction)) ])
+    (let ([ adjacent (map (curry + (octopus-coord octo)) '(-i 1 +i -1 1-i -1-i 1+i -1+i)) ])
       (for/list ([ o octopi ])
         (cond [ (= (octopus-coord o) (octopus-coord octo)) (mark-flashed o)   ]
               [ (member (octopus-coord o) adjacent)        (increment-octo o) ]
@@ -42,3 +41,9 @@
 (define step               (compose flash increment-energy reset))
 (define (increment-octo o) (struct-copy octopus o [ energy (add1 (octopus-energy o)) ]))
 (define (reset-octo o)     (struct-copy octopus o [ flashed? #f ][ energy 0 ]))
+
+(module+ test
+  (require rackunit)
+  (let ([ input (parse "day11.txt") ])
+    (check-equal? (part1 input 100) 1647)
+    (check-equal? (part2 input) 348)))
