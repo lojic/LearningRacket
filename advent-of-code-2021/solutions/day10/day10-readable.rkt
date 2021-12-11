@@ -28,7 +28,7 @@
         (let ([ c (first chars) ])
           (cond [ (is-open-bracket? c)
                   (parse-line (rest chars) (push c stack)) ]
-                [ (is-bracket-pair? (top stack) c)
+                [ ((closes? (top stack)) c)
                   (parse-line (rest chars) (pop stack)) ]
                 [ else c ]))))
 
@@ -56,8 +56,8 @@
     [ #\< #\> ]
     [ _   #f  ]))
 
-(define (is-bracket-pair? left right)
-  (char=? (closing-bracket-for left) right))
+(define ((closes? open-bracket) c)
+  (char=? (closing-bracket-for open-bracket) c))
 
 ;; Aliases ------------------------------------------------------------------------------------
 

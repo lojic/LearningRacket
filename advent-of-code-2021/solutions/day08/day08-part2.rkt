@@ -52,6 +52,8 @@
        (* 10   (get third))
                (get fourth))))
 
+;; Tests --------------------------------------------------------------------------------------
+
 (module+ test
   (require rackunit)
   (check-equal? (solve input) 1027483))
