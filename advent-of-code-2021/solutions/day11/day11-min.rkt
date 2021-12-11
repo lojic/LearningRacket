@@ -41,9 +41,3 @@
 (define step               (compose flash increment-energy reset))
 (define (increment-octo o) (struct-copy octopus o [ energy (add1 (octopus-energy o)) ]))
 (define (reset-octo o)     (struct-copy octopus o [ flashed? #f ][ energy 0 ]))
-
-(module+ test
-  (require rackunit)
-  (let ([ input (parse "day11.txt") ])
-    (check-equal? (part1 input 100) 1647)
-    (check-equal? (part2 input) 348)))
