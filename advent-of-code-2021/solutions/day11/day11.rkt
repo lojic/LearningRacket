@@ -35,8 +35,7 @@
 
   (define (flash-one-octopus octo octopi)
     (define (neighbors-of coord)
-      (for/list ([ direction '(-i 1 +i -1 1-i -1-i 1+i -1+i) ])
-        (+ coord direction)))
+      (map (curry + coord) '(-i 1 +i -1 1-i -1-i 1+i -1+i)))
 
     (define (mark-flashed o)
       (struct-copy octopus o [ flashed? #t ]))
