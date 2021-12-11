@@ -23,7 +23,7 @@
 (define (reset octopi)
   (for/list ([ o octopi ])
     (if (octopus-flashed? o)
-        (struct-copy octopus o [ flashed? #f ][ energy 0 ])
+        (reset-octo o)
         o)))
 
 (define (increment-energy octopi)
@@ -57,11 +57,6 @@
         (flash (flash-one-octopus octo octopi))
         octopi)))
 
-(define step (compose flash increment-energy reset))
-
-(define (increment-octo o)
-  (struct-copy octopus o [ energy (add1 (octopus-energy o)) ]))
-
 (define (parse file-name)
   (define N 10)
   (define (->coord x y) (+ x (* y +i)))
@@ -75,9 +70,10 @@
              (- (char->integer character) 48)
              #f)))
 
-;; Aliases ------------------------------------------------------------------------------------
-
-(define all? andmap)
+(define all?               andmap)
+(define step               (compose flash increment-energy reset))
+(define (increment-octo o) (struct-copy octopus o [ energy (add1 (octopus-energy o)) ]))
+(define (reset-octo o)     (struct-copy octopus o [ flashed? #f ][ energy 0 ]))
 
 ;; Tests --------------------------------------------------------------------------------------
 
