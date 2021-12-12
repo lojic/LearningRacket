@@ -8,10 +8,13 @@
 (struct octopus (coord energy flashed?))
 (struct state (flashes octopi))
 
-(define (part1 s action)
-  (flashes (iterate action s 100)))
+(define (part1 s)
+  (flashes (iterate step s 100)))
 
-(define (part2 s action predicate?)
+(define (part2 s)
+  (define action     (λ (s) (step (clear s))))
+  (define predicate? (λ (s) (= (flashes s) 100)))
+
   (repeat-until action predicate? s))
 
 (define (reset s)
@@ -88,7 +91,5 @@
 (module+ test
   (require rackunit)
   (let ([ input (parse "day11.txt") ])
-    (check-equal? (part1 input step) 1647)
-    (check-equal? (part2 input
-                         (λ (s) (step (clear s)))
-                         (λ (s) (= (flashes s) 100))) 348)))
+    (check-equal? (part1 input) 1647)
+    (check-equal? (part2 input) 348)))
