@@ -3,7 +3,7 @@
 ;; This versions threads both the number of flashes and the list of
 ;; octopi through the pipeline.
 
-(require "../../advent/advent.rkt")
+(require threading "../../advent/advent.rkt")
 
 (struct octopus (coord energy flashed?))
 (struct state (flashes octopi))
@@ -15,6 +15,13 @@
   (repeat-until #:action (λ (s) (step (clear s)))
                 #:stop?  (λ (s) (= (flashes s) 100))
                 s))
+
+(define (step s)
+  (~> s
+      reset
+      increment-energy
+      flash
+      count-flashes))
 
 (define (reset s)
   (octopi= s (for/list ([ o (state-octopi s) ])
@@ -66,9 +73,9 @@
     (state 0 octopi)))
 
 (define (count-flashes s)
-  (let ([ octopi  (state-octopi s)  ]
-        [ flashes (state-flashes s) ])
-    (flashes= s (+ flashes (count octopus-flashed? octopi)))))
+  (flashes= s
+            (+ (state-flashes s)
+               (count octopus-flashed? (state-octopi s)))))
 
 (define (repeat-until #:action fun #:stop? stop? arg)
   (let loop ([ n 1 ][ arg arg ])
@@ -83,7 +90,6 @@
 (define (reset-octo o)     (struct-copy octopus o [ flashed? #f ][ energy 0 ]))
 (define (flashes= s n)     (struct-copy state s [ flashes n ]))
 (define (octopi= s octopi) (struct-copy state s [ octopi octopi ]))
-(define step               (compose count-flashes flash increment-energy reset))
 
 ;; Tests --------------------------------------------------------------------------------------
 
