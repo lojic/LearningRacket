@@ -62,10 +62,10 @@
   (for/list ([ line (file->lines file-name) ]
              [ y    (range N)               ]
              #:when #t
-             [ character (string->list line) ]
-             [ x         (range N)           ])
+             [ c (string->list line) ]
+             [ x (range N)           ])
     (octopus (->coord x y)
-             (- (char->integer character) 48)
+             (- (char->integer c) 48)
              #f)))
 
 (define all?               andmap)
