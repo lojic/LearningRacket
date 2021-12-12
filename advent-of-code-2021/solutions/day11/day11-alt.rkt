@@ -12,8 +12,8 @@
   (flashes (iterate step s 100)))
 
 (define (part2 s)
-  (repeat-until #:action     (λ (s) (step (clear s)))
-                #:predicate? (λ (s) (= (flashes s) 100))
+  (repeat-until #:action (λ (s) (step (clear s)))
+                #:stop?  (λ (s) (= (flashes s) 100))
                 s))
 
 (define (reset s)
@@ -70,10 +70,10 @@
         [ flashes (state-flashes s) ])
     (flashes= s (+ flashes (count octopus-flashed? octopi)))))
 
-(define (repeat-until #:action fun #:predicate? pred? arg)
+(define (repeat-until #:action fun #:stop? stop? arg)
   (let loop ([ n 1 ][ arg arg ])
     (let ([ new-arg (fun arg) ])
-      (if (pred? new-arg)
+      (if (stop? new-arg)
           n
           (loop (add1 n) new-arg)))))
 
