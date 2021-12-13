@@ -28,6 +28,8 @@
             (-> list? number?) ]
           [ product
             (-> list? number?) ]
+          [ string-upper-case?
+            (-> string? boolean?) ]
           [ sum
             (-> list? number?) ]
           [ vector-sum
@@ -180,10 +182,14 @@
       1
       (* (car lst) (product (cdr lst)))))
 
-;; (sum lst) -> number?
-;; lst : (listof number?)
+;; (string-upper-case? s) -> boolean?
+;; s : string?
 ;;
-;; Return the sum of the nubmers in the list.
+;; Indicate whether all characters in the string are upper case
+(define (string-upper-case? s)
+  (for/and ([ c s ])
+    (char-upper-case? c)))
+
 (define (sum lst)
   (if (null? lst)
       0

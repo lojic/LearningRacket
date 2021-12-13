@@ -1,7 +1,6 @@
 #lang racket
 
-;; A recursive, functional solution utilizing the Racket graph module
-;; for navigating neighbors.
+;; A recursive, functional version using the graph module for neighbors.
 
 (require graph threading "../../advent/advent.rkt")
 
@@ -17,26 +16,16 @@
       (and (non-terminal? cave)
            (first-revisit? path))))
 
-;; --------------------------------------------------------------------------------------------
-
 (define (get-all-paths g path valid-neighbor?)
-  (define cave (first path))
-
-  (define (paths-for-neighbor neighbor)
-    (for/fold ([ paths '() ])
-              ([ sub-path (get-all-paths g
-                                         (cons neighbor path)
-                                         valid-neighbor?) ])
-      (cons (cons cave sub-path)
-            paths)))
-
-  (if (end? cave)
-      end
-      (for/fold ([ all-paths '() ])
-                ([ neighbor (filter (curry valid-neighbor? path)
-                                    (get-neighbors g cave)) ])
-        (append (paths-for-neighbor neighbor)
-                all-paths))))
+  (let ([ cave (first path) ])
+    (cond [ (string=? cave "end") end ]
+          [ else (for/fold ([ all-paths '() ])
+                           ([ neighbor (filter (curry valid-neighbor? path)
+                                               (get-neighbors g cave)) ])
+                   (append (get-all-paths g
+                                          (cons neighbor path)
+                                          valid-neighbor?)
+                           all-paths)) ])))
 
 (define (first-revisit? path)
   (~>> (filter small? path)
@@ -44,21 +33,18 @@
        (count (λ (l) (> (length l) 1)))
        zero?))
 
-(define (non-terminal? v)
-  (not (member v '("start" "end"))))
-
 (define (parse fname)
   (~>> (file->lines fname)
        (map (curryr string-split "-"))
        undirected-graph))
 
-;; Aliases ------------------------------------------------------------------------------------
+;; --------------------------------------------------------------------------------------------
 
-(define end    '("end"))
-(define end?   (curryr string=? "end"))
-(define large? string-upper-case?)
-(define small? (λ (v) (and (not (large? v)) (non-terminal? v))))
-(define start  '("start"))
+(define end           '("end"))
+(define large?        string-upper-case?)
+(define non-terminal? (λ (v) (not (member v '("start" "end")))))
+(define small?        (λ (v) (and (not (large? v)) (non-terminal? v))))
+(define start         '("start"))
 
 ;; Tests --------------------------------------------------------------------------------------
 
