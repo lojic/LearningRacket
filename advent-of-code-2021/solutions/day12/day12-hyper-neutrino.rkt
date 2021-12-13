@@ -8,9 +8,7 @@
   (hash-set! edges b (cons a (hash-ref edges b '()))))
 
 (define (count node [ visited (set) ][ doubled #f ])
-  (define (add-small) (if (string=? node (string-downcase node))
-                          (set-add visited node)
-                          visited))
+  (define (add-small) (if (string=? node (string-downcase node)) (set-add visited node) visited))
 
   (cond [ (string=? node "end") 1 ]
         [ else (for/sum ([ next (hash-ref edges node) ])
