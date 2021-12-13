@@ -7,15 +7,6 @@
 (define (solve g neighbor?)
   (length (get-paths g neighbor?)))
 
-(define (valid-neighbor-1? path cave)
-  (or (large? cave)
-      (not (member cave path))))
-
-(define (valid-neighbor-2? path cave)
-  (or (valid-neighbor-1? path cave)
-      (and (non-terminal? cave)
-           (first-revisit? path))))
-
 (define (get-paths g neighbor? [ path '("start") ])
   (define cave (first path))
   (cond [ (string=? cave "end") '(#t) ]
@@ -37,6 +28,15 @@
   (~>> (file->lines fname)
        (map (curryr string-split "-"))
        undirected-graph))
+
+(define (valid-neighbor-1? path cave)
+  (or (large? cave)
+      (not (member cave path))))
+
+(define (valid-neighbor-2? path cave)
+  (or (valid-neighbor-1? path cave)
+      (and (non-terminal? cave)
+           (first-revisit? path))))
 
 (define large?        string-upper-case?)
 (define non-terminal? (λ (v) (not (member v '("start" "end")))))
