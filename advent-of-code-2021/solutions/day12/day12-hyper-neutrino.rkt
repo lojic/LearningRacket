@@ -16,8 +16,7 @@
         [ else (for/sum ([ next (hash-ref edges node) ])
                  (cond [ (or (string=? next "start")
                              (and (set-member? visited next) doubled)) 0 ]
-                       [ else
-                         (count next (add-small) (if (set-member? visited next) #t doubled)) ])) ]))
+                       [ else (count next (add-small) (if (set-member? visited next) #t doubled)) ])) ]))
 
 (displayln (count "start"))
 
