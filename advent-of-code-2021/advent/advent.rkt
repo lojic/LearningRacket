@@ -20,6 +20,8 @@
             (-> procedure? exact-nonnegative-integer? list? list?) ]
           [ find-2
             (-> procedure? list? (or/c pair? #f)) ]
+          [ inclusive-range
+            (-> real? real? list?) ]
           [ iterate
             (-> procedure? any/c exact-nonnegative-integer? any) ]
           [ list-max
@@ -146,6 +148,14 @@
         (if e2
             (cons e1 e2)
             (find-2 pred? (cdr lst))))))
+
+;; (inclusive-range start end) -> list?
+;; start : real?
+;; end   : real?
+;;
+;; Return a list of numbers from start to end inclusive.
+(define (inclusive-range start end)
+  (range start (add1 end)))
 
 ;; (iterate fun arg n) -> <type2>
 ;; fun : (-> <type1> <type2>)
