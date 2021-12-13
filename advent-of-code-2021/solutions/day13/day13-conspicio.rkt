@@ -21,20 +21,15 @@
       (- (* crease 2) val)))
 
 (define (parse fname)
-  (define (parse-points lines)
-    (for/set ([ s lines ])
-      (~>> (string-split s ",")
-           (map string->number)
-           (apply point))))
-
-  (define (parse-folds lines)
-    (for/list ([ s lines ])
-      (match-let ([ (list axis val) (string-split (substring s 11) "=") ])
-        (cons axis (string->number val)))))
-
   (let-values ([ (points folds) (splitf-at (file->lines fname) non-empty-string?) ])
-    (values (parse-points points)
-            (parse-folds (rest folds)))))
+    (values (for/set ([ s points ])
+              (~>> (string-split s ",")
+                   (map string->number)
+                   (apply point)))
+
+            (for/list ([ s (rest folds) ])
+              (match-let ([ (list axis val) (string-split (substring s 11) "=") ])
+                (cons axis (string->number val)))))))
 
 (define (display-code coords)
   (for ([ y (inclusive-range 0 (apply max (map point-y (set->list coords)))) ])
