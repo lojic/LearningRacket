@@ -7,19 +7,18 @@
 
 (struct point (x y) #:transparent)
 
-(define (solve file-name)
-  (define (fold-at val crease)
-    (if (< val crease)
-        val
-        (- (* crease 2) val)))
+(define (solve points folds)
+  (for/fold ([ points points ])
+            ([ fold   folds  ])
+    (for/set ([ p points ])
+      (if (string=? "x" (fold-type fold))
+          (update-x p (fold-at (point-x p) (fold-axis fold)))
+          (update-y p (fold-at (point-y p) (fold-axis fold)))))))
 
-  (let-values ([ (points folds) (parse file-name) ])
-    (for/fold ([ points points ])
-              ([ fold   folds  ])
-      (for/set ([ p points ])
-        (if (string=? "x" (fold-type fold))
-            (update-x p (fold-at (point-x p) (fold-axis fold)))
-            (update-y p (fold-at (point-y p) (fold-axis fold))))))))
+(define (fold-at val crease)
+  (if (< val crease)
+      val
+      (- (* crease 2) val)))
 
 (define (parse fname)
   (define (parse-points lines)
@@ -34,7 +33,8 @@
         (cons axis (string->number val)))))
 
   (let-values ([ (points folds) (splitf-at (file->lines fname) non-empty-string?) ])
-    (values (parse-points points) (parse-folds (rest folds)))))
+    (values (parse-points points)
+            (parse-folds (rest folds)))))
 
 (define (display-code coords)
   (for ([ y (inclusive-range 0 (apply max (map point-y (set->list coords)))) ])
@@ -47,4 +47,4 @@
 (define update-x  (λ (p x) (struct-copy point p [ x x ])))
 (define update-y  (λ (p y) (struct-copy point p [ y y ])))
 
-(display-code (solve "day13.txt"))
+(display-code (call-with-values (λ () (parse "day13.txt")) solve))
