@@ -1,5 +1,8 @@
 #lang racket
 
+;; This version uses ideas from:
+;; https://github.com/tginsberg/advent-2021-kotlin/blob/master/src/main/kotlin/com/ginsberg/advent2021/Day13.kt
+
 (require threading)
 
 (struct point (x y) #:transparent)
