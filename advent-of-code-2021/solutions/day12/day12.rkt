@@ -9,13 +9,12 @@
 
 (define (get-paths g neighbor? [ path '("start") ])
   (define cave (first path))
-  (cond [ (string=? cave "end") '(#t) ]
+  (cond [ (string=? cave "end") '(("end")) ]
         [ else (for/fold ([ paths '() ])
                          ([ neighbor (filter (curry neighbor? path)
                                              (get-neighbors g cave)) ])
-                 (append (get-paths g
-                                    neighbor?
-                                    (cons neighbor path))
+                 (append (map (curry cons cave)
+                              (get-paths g neighbor? (cons neighbor path)))
                          paths)) ]))
 
 (define (first-revisit? path)
