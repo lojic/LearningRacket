@@ -22,9 +22,9 @@
                [ sub-pair-count (curry + (- pair-count))                   ]
                [ left           (format "~a~a" (string-ref pair 0) letter) ]
                [ right          (format "~a~a" letter (string-ref pair 1)) ])
-          (hash-update! dst-letters letter add-pair-count)      ; Add letter
-          (hash-update! dst-pairs   pair   sub-pair-count)      ; Consume pair
-          (hash-update! dst-pairs   left   add-pair-count 0)    ; Produce left child
+          (hash-update! dst-letters letter add-pair-count)     ; Add letter
+          (hash-update! dst-pairs   pair   sub-pair-count)     ; Consume pair
+          (hash-update! dst-pairs   left   add-pair-count 0)   ; Produce left child
           (hash-update! dst-pairs   right  add-pair-count 0))) ; Produce right child
 
       (state rules dst-letters dst-pairs)))
