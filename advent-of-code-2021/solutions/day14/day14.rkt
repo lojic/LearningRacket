@@ -16,12 +16,12 @@
            [ dst-letters (hash-copy (state-letters the-state)) ]
            [ dst-pairs   (hash-copy src-pairs)                 ])
       (for ([ pair (hash-keys src-pairs) ])
-        (let* ([ letter         (hash-ref rules pair)                      ]
-               [ pair-count     (hash-ref src-pairs pair)                  ]
-               [ add-pair-count (curry + pair-count)                       ]
-               [ sub-pair-count (curry + (- pair-count))                   ]
-               [ left           (format "~a~a" (string-ref pair 0) letter) ]
-               [ right          (format "~a~a" letter (string-ref pair 1)) ])
+        (let* ([ letter         (hash-ref rules pair)           ]
+               [ pair-count     (hash-ref src-pairs pair)       ]
+               [ add-pair-count (curry + pair-count)            ]
+               [ sub-pair-count (curry + (- pair-count))        ]
+               [ left           (~a (string-ref pair 0) letter) ]
+               [ right          (~a letter (string-ref pair 1)) ])
           (hash-update! dst-letters letter add-pair-count)     ; Add letter
           (hash-update! dst-pairs   pair   sub-pair-count)     ; Consume pair
           (hash-update! dst-pairs   left   add-pair-count 0)   ; Produce left child
