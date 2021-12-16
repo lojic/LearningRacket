@@ -2,9 +2,9 @@
 (require data/heap threading)
 (struct path (risk x y))
 
-(define (solve)
+(define (solve width)
   (let* ([ dim*    100        ]
-         [ dim     (* 5 dim*) ]
+         [ dim     (* width dim*) ]
          [ vec     (~>> (file->lines "day15.txt")
                         (apply string-append)
                         string->list
@@ -37,4 +37,4 @@
                                        (not (visited? nx ny))))
                        (heap-add! paths (path (+ risk (get nx ny)) nx ny)))
                      (loop) ])))))
-(time (solve))
+(time (solve 5))
