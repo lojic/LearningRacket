@@ -20,9 +20,8 @@
     (define (get x y)
       (let-values ([ (tile-x x) (quotient/remainder x dim*) ]
                    [ (tile-y y) (quotient/remainder y dim*) ])
-        (let* ([ risk (vector-ref vec (+ (* y dim*) x)) ]
-               [ risk (wrap (+ risk tile-x tile-y))     ])
-          risk)))
+        (let* ([ risk (vector-ref vec (+ (* y dim*) x)) ])
+          (wrap (+ risk tile-x tile-y)))))
 
     (heap-add! paths (path 0 0 0))
 
