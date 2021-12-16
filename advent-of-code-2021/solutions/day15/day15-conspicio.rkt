@@ -1,5 +1,4 @@
 #lang racket ; This version uses ideas gleaned from others.
-
 (require data/heap threading)
 (struct path (risk x y))
 
@@ -20,7 +19,7 @@
     (define (get x y)
       (let-values ([ (tile-x x) (quotient/remainder x dim*) ]
                    [ (tile-y y) (quotient/remainder y dim*) ])
-        (let* ([ risk (vector-ref vec (+ (* y dim*) x)) ])
+        (let ([ risk (vector-ref vec (+ (* y dim*) x)) ])
           (wrap (+ risk tile-x tile-y)))))
 
     (heap-add! paths (path 0 0 0))
