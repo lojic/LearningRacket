@@ -8,18 +8,9 @@
 (require threading
          racket/fixnum
          racket/unsafe/ops
-         "../../advent/advent.rkt"
-         (for-syntax racket/syntax))
+         "./syntax.rkt"
+         "../../advent/advent.rkt")
 (struct image (dim vec def) #:transparent)
-
-(define-syntax (bit stx)
-  (syntax-case stx ()
-    [(_ dx dy)
-     (with-syntax ([ img       (format-id stx "img")       ]
-                   [ x         (format-id stx "x")         ]
-                   [ y         (format-id stx "y")         ]
-                   [ get-pixel (format-id stx "get-pixel") ])
-       #`(get-pixel img (unsafe-fx+ x dx) (unsafe-fx+ y dy))) ]))
 
 (define (solve file-name n)
   (let-values ([ (iea img) (parse file-name) ])
