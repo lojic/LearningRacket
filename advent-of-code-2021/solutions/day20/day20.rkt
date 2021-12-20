@@ -41,14 +41,12 @@
   (vector-set! (image-vec img) (+ (* y (image-dim img)) x) c))
 
 (define (parse file-name)
-  (define (parse-image lines)
-    (image (string-length (car lines))
-           (~> (apply string-append lines) string->list list->vector)
-           #\.))
-
   (let ([ lines (file->lines file-name) ])
     (values (~> (first lines) string->list list->vector)
-            (parse-image (cddr lines)))))
+            (let ([ lines (cddr lines) ])
+              (image (string-length (car lines))
+                     (~> (apply string-append lines) string->list list->vector)
+                     #\.)))))
 
 ;; Tests --------------------------------------------------------------------------------------
 
