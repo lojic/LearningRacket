@@ -19,8 +19,8 @@
     (or (and (char=? #\# (vector-ref iea 0)) (char=? #\. c) #\#) #\.))
 
   (define (enhance-pixel x y)
-    (~>> (for*/list ([ dy (in-range -1 2) ]
-                     [ dx (in-range -1 2) ])
+    (~>> (for*/list ([ dy (in-inclusive-range -1 1) ]
+                     [ dx (in-inclusive-range -1 1) ])
            (match (get-pixel img (+ x dx) (+ y dy))
              [ #\. 0 ][ #\# 1 ]))
          (bool-list->decimal)
