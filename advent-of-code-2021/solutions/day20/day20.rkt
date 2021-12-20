@@ -1,5 +1,10 @@
 #lang racket
 
+;; Initial, un-optimized version. Run times are as follows:
+;; This version          = 610 ms
+;; day20-fast-safe.rkt   = 165 ms
+;; day20-performance.rkt =  53 ms
+
 (require threading "../../advent/advent.rkt")
 (struct image (dim vec def))
 
@@ -47,6 +52,8 @@
               (image (string-length (car lines))
                      (~> (apply string-append lines) string->list list->vector)
                      #\.)))))
+
+(time (solve "day20.txt" 50))
 
 ;; Tests --------------------------------------------------------------------------------------
 

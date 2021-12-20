@@ -1,8 +1,9 @@
 #lang racket
 
-;; This version has some optimizations, but stops short of using
-;; Racket's unsafe operations. Total run time for part 2 is 165
-;; ms. compared to 53 ms for the fully optimized version.
+;; Some optimizations, but no unsafe operations. Run times are as follows:
+;; day20.rkt             = 610 ms
+;; This version          = 165 ms
+;; day20-performance.rkt =  53 ms
 
 (require threading
          "./syntax.rkt"
