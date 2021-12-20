@@ -13,7 +13,7 @@
                    [ x         (format-id stx "x")         ]
                    [ y         (format-id stx "y")         ]
                    [ get-pixel (format-id stx "get-pixel") ])
-       #`(if (char=? #\# (get-pixel img (+ x dx) (+ y dy)))
+       #`(if (unsafe-char=? #\# (get-pixel img (unsafe-fx+ x dx) (unsafe-fx+ y dy)))
              1
              0)) ]))
 
