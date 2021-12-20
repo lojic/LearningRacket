@@ -1,5 +1,8 @@
 #lang racket
 
+;; This version uses some advanced Racket optimizations to get the
+;; total run time for part 2 down to 53 ms.
+
 (require threading
          racket/fixnum
          racket/unsafe/ops
@@ -87,7 +90,7 @@
     (values (make-iea (first lines))
             (make-img (cddr lines)))))
 
-(time (solve "day20.txt" 50))
+(time (solve "day20.txt" 200))
 
 ;; Tests --------------------------------------------------------------------------------------
 
