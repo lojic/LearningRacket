@@ -90,11 +90,11 @@
     (values (make-iea (first lines))
             (make-img (cddr lines)))))
 
-(time (solve "day20.txt" 200))
+(time (solve "day20.txt" 50))
 
 ;; Tests --------------------------------------------------------------------------------------
 
-#;(module+ test
+(module+ test
   (require rackunit)
   (let ([ solver (curry solve "day20.txt") ])
     (check-equal? (solver 2) 5057)
