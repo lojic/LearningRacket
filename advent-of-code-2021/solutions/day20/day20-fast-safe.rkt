@@ -61,8 +61,8 @@
     (let ([ iea (make-vector 512) ])
       (for ([ i (in-range 512) ])
         (vector-set! iea i (if (char=? #\# (string-ref s i))
-                                        1
-                                        0)))
+                               1
+                               0)))
       iea))
 
   (define (make-img lines)
