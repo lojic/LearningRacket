@@ -39,27 +39,29 @@
 (define (match-scanner s0 s1)
   (define (orient n lst) (map (orientation n) lst))
 
-  (let ([ beacons0 (scanner-beacons s0) ]
-        [ beacons1 (scanner-beacons s1) ])
+  (let* ([ beacons0 (list->vector (scanner-beacons s0)) ]
+         [ b0-len   (vector-length beacons0)    ]
+         [ beacons1 (scanner-beacons s1) ]
+         [ b1-len   (length beacons1)    ])
     (let loop ([ orientation 0 ])
       (if (>= orientation 24)
           #f
           (let* ([ beacons (orient orientation beacons1) ]
-                 [ tuples (~>> (for*/list ([ b0 (in-range (length beacons0)) ]
-                                           [ b1 (in-range (length beacons))  ])
-                                 (point-sub (list-ref beacons0 b0)
-                                            (list-ref beacons b1)))
-                               (group-by identity)
-                               (map (λ (g) (cons (length g) g)))
-                               (filter (λ (tuple) (>= (car tuple) 12)))) ])
-            (if (null? tuples)
-                (loop (add1 orientation))
-                (let ([ s1-origin (cadar tuples) ])
+                 [ tuple (~>> (for*/list ([ b0 (in-range b0-len) ]
+                                          [ b1 (in-range b1-len) ])
+                                (point-sub (vector-ref beacons0 b0)
+                                           (list-ref beacons b1)))
+                              (group-by identity)
+                              (map (λ (g) (cons (length g) g)))
+                              (findf (λ (tuple) (>= (car tuple) 12)))) ])
+            (if tuple
+                (let ([ s1-origin (cadr tuple) ])
                   (struct-copy scanner s1
                                [ orientation orientation ]
                                [ origin      s1-origin   ]
                                [ beacons
-                                 (map (curry point-add s1-origin) beacons) ]))))))))
+                                 (map (λ (b) (point-add b s1-origin)) beacons) ]))
+                (loop (add1 orientation))))))))
 
 (define (largest-distance pts)
   (define (manhattan p1 p2)
@@ -108,17 +110,17 @@
 (define orientations
   (vector-immutable
    identity
-   (λ (pt) (point    (point-x pt)    (point-z pt)  (- (point-y pt))))
-   (λ (pt) (point    (point-x pt) (- (point-y pt)) (- (point-z pt))))
-   (λ (pt) (point    (point-x pt) (- (point-z pt))    (point-y pt)))
-   (λ (pt) (point    (point-y pt)    (point-x pt)  (- (point-z pt))))
-   (λ (pt) (point    (point-y pt)    (point-z pt)     (point-x pt)))
-   (λ (pt) (point    (point-y pt) (- (point-x pt))    (point-z pt)))
-   (λ (pt) (point    (point-y pt) (- (point-z pt)) (- (point-x pt))))
-   (λ (pt) (point    (point-z pt)    (point-x pt)     (point-y pt)))
-   (λ (pt) (point    (point-z pt)    (point-y pt)  (- (point-x pt))))
-   (λ (pt) (point    (point-z pt) (- (point-x pt)) (- (point-y pt))))
-   (λ (pt) (point    (point-z pt) (- (point-y pt))    (point-x pt)))
+   (λ (pt) (point    (point-x pt)     (point-z pt)  (- (point-y pt))))
+   (λ (pt) (point    (point-x pt)  (- (point-y pt)) (- (point-z pt))))
+   (λ (pt) (point    (point-x pt)  (- (point-z pt))    (point-y pt)))
+   (λ (pt) (point    (point-y pt)     (point-x pt)  (- (point-z pt))))
+   (λ (pt) (point    (point-y pt)     (point-z pt)     (point-x pt)))
+   (λ (pt) (point    (point-y pt)  (- (point-x pt))    (point-z pt)))
+   (λ (pt) (point    (point-y pt)  (- (point-z pt)) (- (point-x pt))))
+   (λ (pt) (point    (point-z pt)     (point-x pt)     (point-y pt)))
+   (λ (pt) (point    (point-z pt)     (point-y pt)  (- (point-x pt))))
+   (λ (pt) (point    (point-z pt)  (- (point-x pt)) (- (point-y pt))))
+   (λ (pt) (point    (point-z pt)  (- (point-y pt))    (point-x pt)))
    (λ (pt) (point (- (point-x pt))    (point-y pt)  (- (point-z pt))))
    (λ (pt) (point (- (point-x pt))    (point-z pt)     (point-y pt)))
    (λ (pt) (point (- (point-x pt)) (- (point-y pt))    (point-z pt)))
@@ -138,4 +140,4 @@
   (require rackunit)
   (let ([ scanners (parse "day19.txt") ])
     (check-equal? (solve part1 scanners) 438)
-    (check-equal? (solve part2 scanners) 11985)))
+    (check-equal? (time (solve part2 scanners)) 11985)))
