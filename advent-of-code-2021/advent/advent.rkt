@@ -40,7 +40,12 @@
             (-> vector? exact-nonnegative-integer? procedure? any) ]
           ;; Todo better contract for zipn
           [ zipn (-> list? ... list?) ])
+         point-add
+         point-sub
+         (struct-out point)
          (struct-out pair-stream))
+
+(struct point (x y z) #:transparent)
 
 ;; (ascending-permutations-generator n lst) -> generator?
 ;; n   : exact-nonnegative-integer?
@@ -183,6 +188,16 @@
 (define (list-min lst)
   (argmin identity lst))
 
+(define (point-add p1 p2)
+  (point (+ (point-x p1) (point-x p2))
+         (+ (point-y p1) (point-y p2))
+         (+ (point-z p1) (point-z p2))))
+
+(define (point-sub p1 p2)
+  (point (- (point-x p1) (point-x p2))
+         (- (point-y p1) (point-y p2))
+         (- (point-z p1) (point-z p2))))
+  
 ;; (product lst) -> number?
 ;; lst : (listof number?)
 ;;
