@@ -25,16 +25,15 @@
         0))
 
   (define (enhance-pixel x y)
-    (let ([ idx (+ (arithmetic-shift (bit -1 -1) 8)
-                   (arithmetic-shift (bit  0 -1) 7)
-                   (arithmetic-shift (bit  1 -1) 6)
-                   (arithmetic-shift (bit -1  0) 5)
-                   (arithmetic-shift (bit  0  0) 4)
-                   (arithmetic-shift (bit  1  0) 3)
-                   (arithmetic-shift (bit -1  1) 2)
-                   (arithmetic-shift (bit  0  1) 1)
-                   (bit  1  1)) ])
-      (vector-ref iea idx)))
+    (vector-ref iea (+ (arithmetic-shift (bit -1 -1) 8)
+                       (arithmetic-shift (bit  0 -1) 7)
+                       (arithmetic-shift (bit  1 -1) 6)
+                       (arithmetic-shift (bit -1  0) 5)
+                       (arithmetic-shift (bit  0  0) 4)
+                       (arithmetic-shift (bit  1  0) 3)
+                       (arithmetic-shift (bit -1  1) 2)
+                       (arithmetic-shift (bit  0  1) 1)
+                                         (bit  1  1))))
 
   (let* ([ dim     (+ (image-dim img) 2) ]
          [ img-out (image dim
