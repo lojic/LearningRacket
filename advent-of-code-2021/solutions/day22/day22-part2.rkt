@@ -1,5 +1,22 @@
 #lang racket
 
+;; This was a tough puzzle for me. My initial thought was to add &
+;; subtract cubes by intersecting and splitting cubes into smaller
+;; cubes. This seemed like a lot of work, so I checked a couple Slack
+;; threads to see if I was missing something. Nothing came up beyond
+;; what I had thought of already (which I came to learn is essentially
+;; CSG), so I almost began the work of splitting cubes, etc.,
+;;
+;; I was just too lazy to do it though, so I had a thought about just
+;; keeping a running list of intersections with positive and negative
+;; values. So instead of just intersecting a new cube with existing
+;; cubes, I also intersect with the previous intersections of cubes
+;; and basically flip the sign.
+;;
+;; After fixing a combinatorial explosion issue by using a hash, it
+;; worked perfectly and ran in ~ 105 ms. I'm still amazed the idea
+;; worked! :)
+
 (struct bb  (min max) #:transparent)
 (struct cmd (fun b)   #:transparent)
 (struct pt  (x y z)   #:transparent)
@@ -24,8 +41,7 @@
 
 (define (add! b pairs hsh)
   (sub! b pairs hsh)
-  (let ([ bval (add1 (hash-ref hsh b 0)) ])
-    (hash-set! hsh b bval)))
+  (hash-set! hsh b (add1 (hash-ref hsh b 0))))
 
 (define (sub! b pairs hsh)
   (for ([ pair (in-list pairs) ])
