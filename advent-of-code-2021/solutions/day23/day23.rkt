@@ -42,49 +42,10 @@
                  (play! (+ energy (move-energy move)))
                  (unmake-move! move)) ]))
 
-(define (reset-game! pods* num-slots*)
-  (set! lowest-energy 1000000)
-  (set! board (make-vector (* 11 5) #f))
-  (set! pods pods*)
-  (set! num-slots num-slots*)
-  (for ([ pod (in-list pods) ])
-    (vset! (pod-x pod) (pod-y pod) (pod-col pod))))
-
-(define-inline (make-move! a-move)
-  (match-let ([ (move pod sx sy dx dy) a-move ])
-    (vset! sx sy #f)
-    (vset! dx dy (pod-col pod))
-    (set-pod-x! pod dx)
-    (set-pod-y! pod dy)))
-
-(define-inline (unmake-move! a-move)
-  (match-let ([ (move pod sx sy dx dy) a-move ])
-    (vset! dx dy #f)
-    (vset! sx sy (pod-col pod))
-    (set-pod-x! pod sx)
-    (set-pod-y! pod sy)))
-
-(define-inline (move-energy a-move)
-  (match-let ([ (move pod sx sy dx dy) a-move ])
-    (* (pod-energy pod)
-       (+ sy (abs (- dx sx)) dy))))
-
 (define-inline (generate-moves [ pods pods ])
   (cond [ (null? pods) '() ]
         [ else (append (generate-pod-moves (car pods))
                        (generate-moves (cdr pods))) ]))
-
-(define-inline (stay-put? pod)
-  (let ([ col (pod-col pod) ]
-        [ x   (pod-x pod)   ])
-    (and (= col x)
-         (let loop ([ y* (add1 (pod-y pod)) ])
-           (if (> y* num-slots)
-               #t
-               (let ([ col* (vget col y*) ])
-                 (if (= col col*)
-                     (loop (add1 y*))
-                     #f)))))))
 
 (define-inline (generate-pod-moves pod)
   (cond [ (= 0 (pod-y pod)) (hall-to-room-moves pod) ]
@@ -105,25 +66,6 @@
               (list (move pod x y col row))
               '()))
         '())))
-
-(define-inline (hall-clear? x1 x2)
-  (let ([ maxx (max x1 x2) ])
-    (let loop ([ x (add1 (min x1 x2)) ])
-      (cond [ (>= x maxx) #t ]
-            [ (vget x 0)  #f ]
-            [ else (loop (add1 x)) ]))))
-
-(define-inline (home-row pod)
-  (let ([ col (pod-col pod) ])
-    (let loop ([ y* num-slots ])
-      (if (< y* 1)
-          #f
-          (let ([ col* (vget col y*) ])
-            (if (not col*)
-                y*
-                (if (= col col*)
-                    (loop (sub1 y*))
-                    #f)))))))
 
 (define-inline (room-to-hall-moves pod)
   (define-inline (left-moves x y)
@@ -150,14 +92,6 @@
         (append (left-moves x y) (right-moves x y))
         '())))
 
-(define-inline (room-clear? x y)
-  (let loop ([ y* (sub1 y) ])
-    (if (< y* 0)
-        #t
-        (if (vget x y*)
-            #f
-            (loop (sub1 y*))))))
-
 (define-inline (room-to-room-moves pod)
   (let ([ x   (pod-x pod)    ]
         [ y   (pod-y pod)    ]
@@ -169,6 +103,72 @@
             (list (move pod x y col row))
             '())
         '())))
+
+(define-inline (make-move! a-move)
+  (match-let ([ (move pod sx sy dx dy) a-move ])
+    (vset! sx sy #f)
+    (vset! dx dy (pod-col pod))
+    (set-pod-x! pod dx)
+    (set-pod-y! pod dy)))
+
+(define-inline (unmake-move! a-move)
+  (match-let ([ (move pod sx sy dx dy) a-move ])
+    (vset! dx dy #f)
+    (vset! sx sy (pod-col pod))
+    (set-pod-x! pod sx)
+    (set-pod-y! pod sy)))
+
+(define-inline (move-energy a-move)
+  (match-let ([ (move pod sx sy dx dy) a-move ])
+    (* (pod-energy pod)
+       (+ sy (abs (- dx sx)) dy))))
+
+(define-inline (stay-put? pod)
+  (let ([ col (pod-col pod) ]
+        [ x   (pod-x pod)   ])
+    (and (= col x)
+         (let loop ([ y* (add1 (pod-y pod)) ])
+           (if (> y* num-slots)
+               #t
+               (let ([ col* (vget col y*) ])
+                 (if (= col col*)
+                     (loop (add1 y*))
+                     #f)))))))
+
+(define-inline (home-row pod)
+  (let ([ col (pod-col pod) ])
+    (let loop ([ y* num-slots ])
+      (if (< y* 1)
+          #f
+          (let ([ col* (vget col y*) ])
+            (if (not col*)
+                y*
+                (if (= col col*)
+                    (loop (sub1 y*))
+                    #f)))))))
+
+(define-inline (hall-clear? x1 x2)
+  (let ([ maxx (max x1 x2) ])
+    (let loop ([ x (add1 (min x1 x2)) ])
+      (cond [ (>= x maxx) #t ]
+            [ (vget x 0)  #f ]
+            [ else (loop (add1 x)) ]))))
+
+(define-inline (room-clear? x y)
+  (let loop ([ y* (sub1 y) ])
+    (if (< y* 0)
+        #t
+        (if (vget x y*)
+            #f
+            (loop (sub1 y*))))))
+
+(define (reset-game! pods* num-slots*)
+  (set! lowest-energy 1000000)
+  (set! board (make-vector (* 11 5) #f))
+  (set! pods pods*)
+  (set! num-slots num-slots*)
+  (for ([ pod (in-list pods) ])
+    (vset! (pod-x pod) (pod-y pod) (pod-col pod))))
 
 ;; Tests --------------------------------------------------------------------------------------
 
