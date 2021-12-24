@@ -24,9 +24,9 @@
                  (pod  100 6 2 4) (pod 1000 8 4 4) (pod 1000 8 6 4) (pod   1 2 8 4))))
 
 (define (solve slots pods)
-    (reset-game! pods slots)
-    (play!)
-    lowest-energy)
+  (reset-game! pods slots)
+  (play!)
+  lowest-energy)
 
 (define (play! [ energy 0 ])
   (define-inline (goal-state?)
