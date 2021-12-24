@@ -48,48 +48,40 @@
                        (generate-moves (cdr pods))) ]))
 
 (define-inline (generate-pod-moves pod)
-  (cond [ (= 0 (pod-y pod)) (hall-to-room-moves pod) ]
-        [ (stay-put? pod) '() ]
-        [ (= (pod-col pod) (pod-x pod)) (room-to-hall-moves pod) ]
-        [ else (let ([ moves (room-to-room-moves pod) ])
-                 (if (null? moves)
-                     (room-to-hall-moves pod)
-                     moves)) ]))
+  (cond [ (= 0 (pod-y pod))              (hall-to-room-moves pod) ]
+        [ (stay-put? pod)                '()                      ]
+        [ (= (pod-col pod) (pod-x pod))  (room-to-hall-moves pod) ]
+        [ else
+          (let ([ moves (room-to-room-moves pod) ])
+            (if (null? moves)
+                (room-to-hall-moves pod)
+                moves)) ]))
 
 (define-inline (hall-to-room-moves pod)
-  (let ([ row (home-row pod) ])
-    (if row
-        (let ([ x   (pod-x pod)   ]
-              [ y   (pod-y pod)   ]
-              [ col (pod-col pod) ])
-          (if (hall-clear? x col)
-              (list (move pod x y col row))
-              '()))
+  (let ([ row (home-row pod) ]
+        [ x   (pod-x pod)    ]
+        [ y   (pod-y pod)    ]
+        [ col (pod-col pod)  ])
+    (if (and row
+             (hall-clear? x col))
+        (list (move pod x y col row))
         '())))
 
 (define-inline (room-to-hall-moves pod)
-  (define-inline (left-moves x y)
-    (let loop ([ x* (sub1 x) ][ result '() ])
-      (cond [ (or (< x* 0) (vget x* 0))
+  (define-inline (helper inc op lim x y)
+    (let loop ([ x* (inc x) ][ result '() ])
+      (cond [ (or (op x* lim) (vget x* 0))
               result ]
             [ (or (= x* 2) (= x* 4) (= x* 6) (= x* 8))
-              (loop (sub1 x*) result) ]
+              (loop (inc x*) result) ]
             [ else
-              (loop (sub1 x*) (cons (move pod x y x* 0) result)) ])))
-
-  (define-inline (right-moves x y)
-    (let loop ([ x* (add1 x) ][ result '() ])
-      (cond [ (or (> x* 10) (vget x* 0))
-              result ]
-            [ (or (= x* 2) (= x* 4) (= x* 6) (= x* 8))
-              (loop (add1 x*) result) ]
-            [ else
-              (loop (add1 x*) (cons (move pod x y x* 0) result)) ])))
+              (loop (inc x*) (cons (move pod x y x* 0) result)) ])))
 
   (let ([ x (pod-x pod) ]
         [ y (pod-y pod) ])
     (if (room-clear? x y)
-        (append (left-moves x y) (right-moves x y))
+        (append (helper sub1 < 0 x y)
+                (helper add1 > 10 x y))
         '())))
 
 (define-inline (room-to-room-moves pod)
@@ -97,11 +89,10 @@
         [ y   (pod-y pod)    ]
         [ col (pod-col pod)  ]
         [ row (home-row pod) ])
-    (if row
-        (if (and (room-clear? x y)
-                 (hall-clear? x col))
-            (list (move pod x y col row))
-            '())
+    (if (and row
+             (room-clear? x y)
+             (hall-clear? x col))
+        (list (move pod x y col row))
         '())))
 
 (define-inline (make-move! a-move)
