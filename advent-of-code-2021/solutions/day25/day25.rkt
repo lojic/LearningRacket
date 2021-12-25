@@ -39,8 +39,9 @@
     1))
 
 (define (solve [step 1])
-  (if (> (+ (move-all! east) (move-all! south)) 0)
-      (solve (add1 step))
-      step))
+  (if (zero? (+ (move-all! east)
+                (move-all! south)))
+      step
+      (solve (add1 step))))
 
 (= (time (solve)) 334)
