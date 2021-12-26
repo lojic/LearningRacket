@@ -25,21 +25,23 @@
          [ y (modulo (+ (imag-part idx) (imag-part dir)) height) ])
     (+ x (* y +i))))
 
-(define (movers s dir)
-  (filter-map (λ (idx)
-                (let ([ idx* (inc idx dir) ])
-                  (if (not (or (set-member? east-set idx*)
-                               (set-member? south-set idx*)))
-                      idx
-                      #f)))
-              (set->list s)))
-
 (define (move-all! dir)
-  (let ([ s (if (= dir east) east-set south-set) ])
-    (for/sum ([ idx (in-list (movers s dir)) ])
-      (set-remove! s idx)
-      (set-add! s (inc idx dir))
-      1)))
+  (let* ([ s  (if (= dir east) east-set south-set) ]
+         [ s* (mutable-set)                        ]
+         [ sum (for/sum ([ idx (in-set s) ])
+                 (let ([ n (inc idx dir) ])
+                   (if (or (set-member? east-set n)
+                           (set-member? south-set n))
+                       (begin
+                         (set-add! s* idx)
+                         0)
+                       (begin
+                         (set-add! s* n)
+                         1)))) ])
+    (if (= dir east)
+        (set! east-set s*)
+        (set! south-set s*))
+    sum))
 
 (define (solve [step 1])
   (if (zero? (+ (move-all! east)
