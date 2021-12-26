@@ -1,8 +1,6 @@
 #lang racket
 
-;; Tried using a hash table instead of a vector, but it's
-;; unsurprisingly slower. More than 15x slower. I think the grid would
-;; have to be very sparse before this version would win.
+;; This version uses two sets instead of a vector.
 
 (define-values (east-set south-set width height east south)
   (let* ([ lines     (file->lines "day25.txt")   ]
