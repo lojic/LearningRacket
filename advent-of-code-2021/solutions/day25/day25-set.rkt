@@ -11,21 +11,21 @@
 (define height (length grid))
 
 (define-values (east south)
-  (let ([ east  (make-hasheqv) ]
-        [ south (make-hasheqv) ])
+  (let ([ east  (make-hasheq) ]
+        [ south (make-hasheq) ])
     (for* ([ (line row) (in-indexed grid) ]
            [ (c col)    (in-indexed line) ])
-      (cond [ (char=? c #\>) (hash-set! east  (make-rectangular row col) #t) ]
-            [ (char=? c #\v) (hash-set! south (make-rectangular row col) #t) ]))
+      (cond [ (char=? c #\>) (hash-set! east  (+ col (* row width)) #t) ]
+            [ (char=? c #\v) (hash-set! south (+ col (* row width)) #t) ]))
     (values east south)))
 
 (let loop ([ i 1 ][ east east ][ south south ])
-  (let ([ ne (make-hasheqv) ]
-        [ ns (make-hasheqv) ])
+  (let ([ ne (make-hasheq) ]
+        [ ns (make-hasheq) ])
 
     (for ([ (idx _) (in-hash east) ])
-      (let ([ n (make-rectangular (real-part idx)
-                                  (modulo (add1 (imag-part idx)) width)) ])
+      (let*-values ([ (row col) (quotient/remainder idx width) ]
+                    [ (n) (+ (modulo (add1 col) width) (* row width)) ])
         (if (or (hash-ref east n #f)
                 (hash-ref south n #f))
             (hash-set! ne idx #t)
@@ -34,8 +34,8 @@
     (let ([ t    (equal? east ne) ]
           [ east ne               ])
       (for ([ (idx _) (in-hash south) ])
-        (let ([ n (make-rectangular (modulo (add1 (real-part idx)) height)
-                                    (imag-part idx)) ])
+        (let*-values ([ (row col) (quotient/remainder idx width) ]
+                      [ (n) (+ col (* (modulo (add1 row) height) width)) ])
           (if (or (hash-ref east n #f)
                   (hash-ref south n #f))
               (hash-set! ns idx #t)
