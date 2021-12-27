@@ -1,52 +1,46 @@
 #lang racket
 
-;; This version uses two sets instead of a vector.
+;; Port of https://github.com/hyper-neutrino/advent-of-code/blob/main/2021/day25.py
 
-(define-values (east-set south-set width height east south)
-  (let* ([ lines     (file->lines "day25.txt")   ]
-         [ width     (string-length (car lines)) ]
-         [ height    (length lines)              ]
-         [ east-set  (mutable-set)               ]
-         [ south-set (mutable-set)               ])
-    (for* ([ x (in-range width)  ]
-           [ y (in-range height) ])
-      (let ([ dir (match (string-ref (list-ref lines y) x)
-                    [ #\>  1 ]
-                    [ #\v +i ]
-                    [ _   #f ]) ])
-        (when dir
-          (if (= dir 1)
-              (set-add! east-set (+ x (* y +i)))
-              (set-add! south-set (+ x (* y +i)))))))
-    (values east-set south-set width height 1 +i)))
+(require threading)
 
-(define (inc idx dir)
-  (let* ([ x (modulo (+ (real-part idx) (real-part dir)) width) ]
-         [ y (modulo (+ (imag-part idx) (imag-part dir)) height) ])
-    (+ x (* y +i))))
+(define grid (~>> (file->lines "day25.txt")
+                  (map string->list)))
 
-(define (move-all! dir)
-  (let* ([ s  (if (= dir east) east-set south-set) ]
-         [ s* (mutable-set)                        ]
-         [ sum (for/sum ([ idx (in-set s) ])
-                 (let ([ n (inc idx dir) ])
-                   (if (or (set-member? east-set n)
-                           (set-member? south-set n))
-                       (begin
-                         (set-add! s* idx)
-                         0)
-                       (begin
-                         (set-add! s* n)
-                         1)))) ])
-    (if (= dir east)
-        (set! east-set s*)
-        (set! south-set s*))
-    sum))
+(define width (length (car grid)))
+(define height (length grid))
 
-(define (solve [step 1])
-  (if (zero? (+ (move-all! east)
-                (move-all! south)))
-      step
-      (solve (add1 step))))
+(define-values (east south)
+  (let ([ east  (make-hasheqv) ]
+        [ south (make-hasheqv) ])
+    (for* ([ (line row) (in-indexed grid) ]
+           [ (c col)    (in-indexed line) ])
+      (cond [ (char=? c #\>) (hash-set! east  (make-rectangular row col) #t) ]
+            [ (char=? c #\v) (hash-set! south (make-rectangular row col) #t) ]))
+    (values east south)))
 
-(= (time (solve)) 334)
+(let loop ([ i 1 ][ east east ][ south south ])
+  (let ([ ne (make-hasheqv) ]
+        [ ns (make-hasheqv) ])
+
+    (for ([ (idx _) (in-hash east) ])
+      (let ([ n (make-rectangular (real-part idx)
+                                  (modulo (add1 (imag-part idx)) width)) ])
+        (if (or (hash-ref east n #f)
+                (hash-ref south n #f))
+            (hash-set! ne idx #t)
+            (hash-set! ne n #t))))
+
+    (let ([ t    (equal? east ne) ]
+          [ east ne               ])
+      (for ([ (idx _) (in-hash south) ])
+        (let ([ n (make-rectangular (modulo (add1 (real-part idx)) height)
+                                    (imag-part idx)) ])
+          (if (or (hash-ref east n #f)
+                  (hash-ref south n #f))
+              (hash-set! ns idx #t)
+              (hash-set! ns n #t))))
+
+      (if (and t (equal? south ns))
+          i
+          (loop (add1 i) east ns)))))
