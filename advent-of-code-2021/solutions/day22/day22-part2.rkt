@@ -91,4 +91,4 @@
 
 (module+ test
   (require rackunit)
-  (check-equal? (solve "day22.txt") 1225064738333321))
+  (check-equal? (time (solve "day22.txt")) 1225064738333321))
