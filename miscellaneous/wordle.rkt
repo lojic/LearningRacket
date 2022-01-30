@@ -10,23 +10,35 @@
 
 ;; TODO
 ;; Encode information if a letter is included more than once
+;; Use letter frequency per position, not just globally
 
-(define (play words wordle included excluded n)
-  (if (> n 6)
+(define (play words wordle included excluded n agent)
+  (if (> n 20)
       (error "Failed to guess the Wordle!")
       (let* ([ frequencies (letter-frequencies words)                       ]
              [ guess       (guess-word words frequencies (hash-keys included) excluded) ])
-        (printf "Remaining word count: ~a\n" (length words))
-        (printf "Wordle: ~a\n" wordle)
-        (printf "Included: ~a\n" included)
-        (printf "Excluded: ~a\n" excluded)
-        (printf "Guess ~a: ~a\n" n guess)
-        (printf "Feedback: ")
         (let-values ([ (words wordle included excluded)
-                       (update-state words wordle included excluded guess (read-line)) ])
+                       (update-state words wordle included excluded guess (agent guess)) ])
           (if (solved? wordle)
-              (printf "Solved! ~a\n" wordle)
-              (play words wordle included excluded (add1 n)))))))
+              n
+              (play words wordle included excluded (add1 n) agent))))))
+
+(define (human-agent guess)
+  (printf "Guess: ~a\n" guess)
+  (printf "Feedback: ")
+  (read-line))
+
+(define ((bot-agent word) guess)
+  (let ([ s (make-string 5) ])
+    (for ([ i (in-range 5) ])
+      (let ([ wl (string-ref word i)  ]
+            [ gl (string-ref guess i) ])
+        (cond [ (char=? wl gl) (string-set! s i #\p) ]
+              [ (for/or ([ j (in-range 5) ])
+                  (char=? (string-ref word j) gl))
+                (string-set! s i #\i) ]
+              [ else (string-set! s i #\e) ])))
+    s))
 
 (define (update-state words wordle included excluded guess feedback)
   (let ([ wordle (vector-copy wordle) ])
@@ -129,4 +141,16 @@
     n))
 
 (module+ main
-  (play (file->lines "./wordle-words.txt") #(#f #f #f #f #f) (hash) '() 1))
+  (let* ([ words (take (file->lines "./wordle-words.txt") 1000) ]
+         [ num-words (length words)                 ]
+         [ total-guesses
+           (for/sum ([ word (in-list words) ])
+             (play words
+                   #(#f #f #f #f #f)
+                   (hash)
+                   '()
+                   1
+                   (bot-agent word))) ]
+         [ average (/ total-guesses num-words) ])
+    (printf "Average number of guesses = ~a\n" (exact->inexact average))))
+         
