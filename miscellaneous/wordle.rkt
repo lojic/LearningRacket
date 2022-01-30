@@ -10,20 +10,22 @@
 
 ;; TODO
 ;; Encode information if a letter is included more than once
-;; Use letter frequency per position, not just globally
 
-(define (play words wordle included excluded n agent)
+(define (play words wordle included excluded n agent [ first-guess #f ])
   (if (> n 20)
       (error "Failed to guess the Wordle!")
-      (let* ([ frequencies (letter-frequencies words)                       ]
-             [ guess       (guess-word words frequencies (hash-keys included) excluded) ])
+      (let* ([ frequencies (make-letter-frequencies words)                              ]
+             [ guess       (if (and first-guess (= n 1))
+                               first-guess
+                               (guess-word words frequencies included excluded)) ])
         (let-values ([ (words wordle included excluded)
                        (update-state words wordle included excluded guess (agent guess)) ])
           (if (solved? wordle)
               n
               (play words wordle included excluded (add1 n) agent))))))
 
-(define (human-agent guess)
+(define ((human-agent word) guess)
+  (printf "Word:  ~a\n" word)
   (printf "Guess: ~a\n" guess)
   (printf "Feedback: ")
   (read-line))
@@ -58,15 +60,18 @@
 
 (define (guess-word words frequencies included excluded)
   (define (score-word w)
-    (let ([ vec (make-vector 26 0) ])
-      (for ([ l (in-string w) ])
-        (when (not (or (memv l included)
-                       (memv l excluded)))
-          (let ([ i (letter-index l) ])
-            (vector-set! vec
-                         i
-                         (vector-ref frequencies i)))))
-      (vector-sum vec)))
+    (for/sum ([ l (in-string w) ]
+              [ pos (in-naturals) ])
+      (if (memv l excluded)
+          0 ; Don't use excluded letters
+          (let ([ freq (get-frequency frequencies pos l) ])
+            (if (not (hash-has-key? included l))
+                freq ; Unused letter, score w/ freq
+                0)))))
+                ;; (let ([ positions (hash-ref included l) ])
+                ;;   (if (memv pos positions)
+                ;;       0 ; We know the letter is *not* at this position
+                ;;       freq)))) ]))
     
   (let loop ([ words words ][ score 0 ][ guesses '() ])
     (if (null? words)
@@ -80,14 +85,23 @@
                 [ else
                   (loop (cdr words) score guesses) ])))))
 
-;; Return a vector of letter frequencies
-(define (letter-frequencies words)
-  (let ([ vec (make-vector 26 0) ])
+;; Return a two dimensional vector (implemented by a single vector) of
+;; 5 rows (one per letter position) by 26 columns one per letter:
+(define (make-letter-frequencies words)
+  (let ([ vec (make-vector (* 5 26) 0) ])
     (for ([ word (in-list words) ])
-      (for ([ letter (in-string word) ])
-        (let ([ i (letter-index letter) ])
-          (vector-set! vec i (add1 (vector-ref vec i))))))
+      (for ([ letter (in-string word) ]
+            [ pos (in-naturals) ])
+        (inc-frequency! vec pos letter)))
     vec))
+
+(define (inc-frequency! v p l)
+  (let ([ idx (+ (* p 26) (letter-index l)) ])
+    (vector-set! v idx (add1 (vector-ref v idx)))))
+
+(define (get-frequency v p l)
+  (let ([ idx (+ (* p 26) (letter-index l)) ])
+    (vector-ref v idx)))
 
 ;; Index of letter: a = 0, b = 1, ... , z = 25
 (define (letter-index l)
@@ -136,21 +150,38 @@
   (for/and ([ i (in-range 5) ])
     (vector-ref wordle i)))
 
-(define (vector-sum v)
-  (for/sum ([ n (in-vector v) ])
-    n))
+(module+ main
+  (time
+   (let* ([ targets   (file->lines "./wordle-targets.txt") ]
+          [ words     (file->lines "./wordle-guesses.txt") ]
+          [ num-words (length targets)                     ]
+          [ total-guesses
+            (for/sum ([ word (in-list targets) ])
+              (play words
+                    #(#f #f #f #f #f)
+                    (hash)
+                    '()
+                    1
+                    (bot-agent word)
+                    ; (human-agent word)
+                    )) ]
+          [ average (/ total-guesses num-words) ])
+     (printf "Average number of guesses = ~a\n" (exact->inexact average)))))
 
 (module+ main
-  (let* ([ words (take (file->lines "./wordle-words.txt") 1000) ]
-         [ num-words (length words)                 ]
-         [ total-guesses
-           (for/sum ([ word (in-list words) ])
-             (play words
-                   #(#f #f #f #f #f)
-                   (hash)
-                   '()
-                   1
-                   (bot-agent word))) ]
-         [ average (/ total-guesses num-words) ])
-    (printf "Average number of guesses = ~a\n" (exact->inexact average))))
-         
+  (require rackunit)
+  
+  ;; letter frequencies
+  (let* ([ words '("abc" "aac" "abd" "dad") ]
+         [ freq (make-letter-frequencies words) ])
+    (check-equal? (get-frequency freq 0 #\a) 3)
+    (check-equal? (get-frequency freq 0 #\b) 0)
+    (check-equal? (get-frequency freq 0 #\d) 1)
+    (check-equal? (get-frequency freq 1 #\a) 2)
+    (check-equal? (get-frequency freq 1 #\b) 2)
+    (check-equal? (get-frequency freq 1 #\c) 0)
+    (check-equal? (get-frequency freq 2 #\a) 0)
+    (check-equal? (get-frequency freq 2 #\c) 2)
+    (check-equal? (get-frequency freq 2 #\d) 2))
+
+  )
