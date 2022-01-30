@@ -1,5 +1,7 @@
 #lang racket
 
+(require debug/repl)
+
 ;; Wordle Solver for hard mode
 
 ;; After each guess is proposed by the program, enter one of 3 letters
@@ -17,7 +19,7 @@
       (let* ([ frequencies (make-letter-frequencies words)                              ]
              [ guess       (if (and first-guess (= n 1))
                                first-guess
-                               (guess-word words frequencies included excluded)) ])
+                               (guess-word words wordle frequencies included excluded)) ])
         (let-values ([ (words wordle included excluded)
                        (update-state words wordle included excluded guess (agent guess)) ])
           (if (solved? wordle)
@@ -58,27 +60,31 @@
                     (loop (add1 i) included (add-excluded excluded guess-letter)) ]
                   [ else (error "Invalid feedback") ]))))))
 
-(define (guess-word words frequencies included excluded)
+(define (guess-word words wordle frequencies included excluded)
+  (define (letter-already-included? w l pos)
+    (for/or ([ i (in-range pos) ])
+      (char=? (string-ref w i) l)))
+
   (define (score-word w)
-    (for/sum ([ l (in-string w) ]
+    (for/sum ([ l   (in-string w) ]
               [ pos (in-naturals) ])
       (if (memv l excluded)
-          0 ; Don't use excluded letters
-          (let ([ freq (get-frequency frequencies pos l) ])
-            (if (not (hash-has-key? included l))
-                freq ; Unused letter, score w/ freq
-                0)))))
-                ;; (let ([ positions (hash-ref included l) ])
-                ;;   (if (memv pos positions)
-                ;;       0 ; We know the letter is *not* at this position
-                ;;       freq)))) ]))
-    
+          0
+          (let ([ freq  (get-frequency frequencies pos l) ]
+                [ wrong (hash-ref included l #f)          ])
+            (if wrong
+                0
+                (if (letter-already-included? w l pos)
+                    0
+                    freq))))))
+
   (let loop ([ words words ][ score 0 ][ guesses '() ])
     (if (null? words)
         (car guesses)
         (let* ([ word   (car words)       ]
                [ score* (score-word word) ])
           (cond [ (> score* score)
+                  ;(printf "~a = ~a\n" word score*)
                   (loop (cdr words) score* (list word)) ]
                 [ (= score* score)
                   (loop (cdr words) score* (cons word guesses)) ]
@@ -107,33 +113,33 @@
 (define (letter-index l)
   (- (char->integer l)
      (char->integer #\a)))
-    
+
 (define (filter-words words wordle included excluded)
   (define (word-has-all-included? letters)
     (andmap (λ (l) (memv l letters)) (hash-keys included)))
-  
+
   (define (word-has-none-included-positions? letters)
     (for/and ([ (l i) (in-indexed letters) ])
       (for/and ([ pos (in-list (hash-ref included l '())) ])
         (not (= i pos)))))
-  
+
   (define (word-has-none-excluded? letters)
     (not (ormap (λ (l) (memv l letters)) excluded)))
-  
+
   (define (word-matches-wordle? letters)
     (for/and ([ i (in-range 5) ]
               [ l (in-list letters) ])
       (let ([ v (vector-ref wordle i) ])
         (or (not v)
             (char=? v l)))))
-  
+
   (define (pred? w)
     (let ([ letters (string->list w) ])
       (and (word-has-all-included? letters)
            (word-has-none-included-positions? letters)
            (word-has-none-excluded? letters)
            (word-matches-wordle? letters))))
-    
+
   (filter pred? words))
 
 (define (add-included hsh l [ pos #f ])
@@ -150,27 +156,31 @@
   (for/and ([ i (in-range 5) ])
     (vector-ref wordle i)))
 
-(module+ main
-  (time
-   (let* ([ targets   (file->lines "./wordle-targets.txt") ]
-          [ words     (file->lines "./wordle-guesses.txt") ]
-          [ num-words (length targets)                     ]
-          [ total-guesses
-            (for/sum ([ word (in-list targets) ])
-              (play words
-                    #(#f #f #f #f #f)
-                    (hash)
-                    '()
-                    1
-                    (bot-agent word)
-                    ; (human-agent word)
-                    )) ]
-          [ average (/ total-guesses num-words) ])
-     (printf "Average number of guesses = ~a\n" (exact->inexact average)))))
+(define (game start-word targets words)
+  (let* ([ num-words (length targets) ]
+         [ total-guesses
+           (for/sum ([ word (in-list targets) ])
+             (play words
+                   #(#f #f #f #f #f)
+                   (hash)
+                   '()
+                   1
+                   (bot-agent word)
+                   ;(human-agent word)
+                   start-word
+                   )) ]
+         [ average (/ total-guesses num-words) ])
+    (exact->inexact average)))
 
 (module+ main
+  (let* ([ targets (file->lines "./wordle-targets.txt") ]
+         [ words   (file->lines "./wordle-guesses.txt") ])
+    (time
+     (game "soare" targets words))))
+
+(module+ test
   (require rackunit)
-  
+
   ;; letter frequencies
   (let* ([ words '("abc" "aac" "abd" "dad") ]
          [ freq (make-letter-frequencies words) ])
