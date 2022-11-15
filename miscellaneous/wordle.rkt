@@ -26,8 +26,7 @@
               n
               (play words wordle included excluded (add1 n) agent))))))
 
-(define ((human-agent word) guess)
-  (printf "Word:  ~a\n" word)
+(define (human-agent guess)
   (printf "Guess: ~a\n" guess)
   (printf "Feedback: ")
   (read-line))
@@ -165,8 +164,8 @@
                    (hash)
                    '()
                    1
-                   (bot-agent word)
-                   ;(human-agent word)
+                   ;(bot-agent word)
+                   (human-agent word)
                    start-word
                    )) ]
          [ average (/ total-guesses num-words) ])
@@ -175,8 +174,17 @@
 (module+ main
   (let* ([ targets (file->lines "./wordle-targets.txt") ]
          [ words   (file->lines "./wordle-guesses.txt") ])
-    (time
-     (game "soare" targets words))))
+    ;; (time
+    ;;  (game #f targets words))))
+    (play words
+          #(#f #f #f #f #f)
+          (hash)
+          '()
+          1
+          ;(bot-agent word)
+          human-agent
+          "salet"
+          )))
 
 (module+ test
   (require rackunit)
