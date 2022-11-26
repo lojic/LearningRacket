@@ -64,7 +64,7 @@
               #f
               (begin
                 (loop (cdr lst) (sub1 n) (cons (car lst) stack))
-              (loop (cdr lst) n stack)))))))
+                (loop (cdr lst) n stack)))))))
 
 ;; (bool-string-list->decimal lst) -> exact-integer?
 ;; lst : (listof string?)
@@ -159,6 +159,7 @@
 ;; end   : real?
 ;;
 ;; Return a list of numbers from start to end inclusive.
+;; NOTE: As of Racket 8, this is built-in!
 (define (inclusive-range start end)
   (range start (add1 end)))
 
@@ -167,7 +168,7 @@
 ;; arg : <type1>
 ;; n   : exact-nonnegative-integer?
 ;;
-;; Repeatedly applys fun to arg n times. For example, (iterate fun
+;; Repeatedly applies fun to arg n times. For example, (iterate fun
 ;; 'foo 3) results in:  (fun (fun (fun arg)))
 (define (iterate fun arg n)
   (if (zero? n)
@@ -225,7 +226,7 @@
 ;;
 ;; Return the sum of vector elements.
 (define (vector-sum v)
-  (for/sum ([ i (in-range 9) ])
+  (for/sum ([ i (in-range (vector-length v)) ])
     (vector-ref v i)))
 
 ;; (vector-update! vec i f) -> (void)
