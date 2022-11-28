@@ -151,6 +151,14 @@
   (check-equal? (take-at-most '(1 2 3 4 5) 6) '(1 2 3 4 5))
   (check-equal? (take-at-most '(1 2 3 4 5) 100) '(1 2 3 4 5))
 
+  ;; take-right-at-most
+
+  (check-equal? (take-right-at-most '(1 2 3 4 5) 0) '())
+  (check-equal? (take-right-at-most '(1 2 3 4 5) 3) '(3 4 5))
+  (check-equal? (take-right-at-most '(1 2 3 4 5) 5) '(1 2 3 4 5))
+  (check-equal? (take-right-at-most '(1 2 3 4 5) 6) '(1 2 3 4 5))
+  (check-equal? (take-right-at-most '(1 2 3 4 5) 100) '(1 2 3 4 5))
+
   ;; vector-sum
 
   (check-equal? (vector-sum #(2 7 4 13)) 26)

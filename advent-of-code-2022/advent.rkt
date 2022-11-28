@@ -41,14 +41,17 @@
           [ parse-aoc
             (->* (positive-integer?)
                  (procedure?
-                  string?
-                  exact-nonnegative-integer?)
+                  #:sep        string?
+                  #:head-lines exact-nonnegative-integer?
+                  #:tail-lines exact-nonnegative-integer?)
                  any) ]
           [ string-left
             (-> string? exact-nonnegative-integer? string?) ]
           [ string-right
             (-> string? exact-nonnegative-integer? string?) ]
           [ take-at-most
+            (-> list? exact-nonnegative-integer? list?) ]
+          [ take-right-at-most
             (-> list? exact-nonnegative-integer? list?) ]
           [ vector-sum
             (-> vector? number?) ]
@@ -295,14 +298,17 @@
 ;;   - Example parser functions include:
 ;;     numbers, digits, atoms, words, and built-ins such as:
 ;;     string->number, identity
-(define (parse-aoc day [parser identity] [sep "\n"] [print-lines 7])
+(define (parse-aoc day [ parser identity ]
+                   #:sep        [ sep "\n" ]
+                   #:head-lines [ head-lines 5 ]
+                   #:tail-lines [ tail-lines 2 ])
   (let* ([ fname   (format "day~a.txt" (~r day #:min-width 2 #:pad-string "0")) ]
          [ text    (file->string fname) ]
          [ entries (map parser (~> text
                                    string-trim
                                    (string-split _ sep))) ])
-    (when (and print-lines (> print-lines 0))
-      (print-sample-data day fname text entries print-lines))
+    (when (or (> head-lines 0) (> tail-lines 0))
+      (print-sample-data day fname text entries head-lines tail-lines))
     entries))
 
 ;; (print-sample-data day fname text entries num-lines) -> void?
@@ -315,7 +321,7 @@
 ;; Helper function for parse-aoc, but due to its size, it's defined at
 ;; the top level.  Print out the first few lines of the file to give
 ;; an idea of the file's contents
-(define (print-sample-data day fname text entries num-lines)
+(define (print-sample-data day fname text entries head-lines tail-lines)
   ;; Helper -----------------------------------------------------------------------------------
   (define (print-list obj)
     (cond [ (null? obj)
@@ -377,16 +383,22 @@
                        (string-right s right))))
   ;; ------------------------------------------------------------------------------------------
 
-  (let* ([ all-lines (string-split text "\n")   ]
-         [ lines     (take-at-most all-lines num-lines) ]
-         [ head      (format "~a -> ~a chars, ~a lines; first ~a lines:"
-                             fname
-                             (string-length text)
-                             (length all-lines)
-                             (length lines)) ]
+  (let* ([ all-lines    (string-split text "\n")                  ]
+         [ top-lines    (take-at-most all-lines head-lines)       ]
+         [ bottom-lines (take-right-at-most all-lines tail-lines) ]
+         [ head (format "~a -> ~a chars, ~a lines; first ~a lines; last ~a lines:"
+                        fname
+                        (string-length text)
+                        (length all-lines)
+                        (length top-lines)
+                        (length bottom-lines)) ]
          [ dash      (make-string 100 #\-) ])
     (printf "~a\n~a\n~a\n" dash head dash)
-    (for ([line (in-list lines) ])
+    (for ([line (in-list top-lines) ])
+      (printf "~a\n" (trunc line)))
+    (when (not (or (null? top-lines) (null? bottom-lines)))
+      (printf "...\n"))
+    (for ([line (in-list bottom-lines) ])
       (printf "~a\n" (trunc line)))
     (printf "~a\n(parse ~a) -> ~a entries:\n" dash day (length entries))
     (printf "~a\n" dash)
@@ -420,6 +432,18 @@
   (if (or (null? lst) (< n 1))
       '()
       (cons (car lst) (take-at-most (cdr lst) (sub1 n)))))
+
+;; (take-right-at-most lst n) -> list?
+;; lst : list?
+;; n   : exact-nonnegative-integer?
+;;
+;; Like take-right, but if there are less than n elements in the list,
+;; return as many as there are.
+(define (take-right-at-most lst n)
+  (let ([ len (length lst) ])
+    (if (< len n)
+        lst
+        (take-right lst n))))
 
 ;; (vector-sum v) -> number?
 ;; v : vector?
