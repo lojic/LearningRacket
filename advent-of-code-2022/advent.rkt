@@ -8,6 +8,10 @@
 (provide (contract-out
           [ ascending-permutations-generator
             (-> exact-nonnegative-integer? list? generator?) ]
+          [ atom
+            (-> string? (or/c string? number?)) ]
+          [ atoms
+            (-> string? list?) ]
           [ bool-list->decimal
             (-> (listof exact-integer?) exact-integer?) ]
           [ bool-string-list->decimal
@@ -16,8 +20,12 @@
             (-> list? exact-nonnegative-integer? list?) ]
           [ csv-file->numbers
             (-> string? list?) ]
+          [ digits
+            (-> string? list?) ]
           [ filter-ascending-permutations
             (-> procedure? exact-nonnegative-integer? list? list?) ]
+          [ numbers
+            (-> string? list?) ]
           [ iterate
             (-> procedure? any/c exact-nonnegative-integer? any) ]
           [ list-max
@@ -28,10 +36,24 @@
             (-> list? number?) ]
           [ list-sum
             (-> list? number?) ]
+          [ parse-aoc
+            (->* (positive-integer?)
+                 (procedure?
+                  string?
+                  exact-nonnegative-integer?)
+                 any) ]
+          [ string-left
+            (-> string? exact-nonnegative-integer? string?) ]
+          [ string-right
+            (-> string? exact-nonnegative-integer? string?) ]
           [ vector-sum
             (-> vector? number?) ]
           [ vector-update!
             (-> vector? exact-nonnegative-integer? procedure? any) ]
+          [ windows
+            (-> exact-positive-integer? list? list?) ]
+          [ words
+            (-> string? list?) ]
           [ zipn
             (-> list? ... list?) ]
           )
@@ -75,7 +97,7 @@
        (values (car pair) (cdr pair))))
    (define (stream-rest stream)
      (pair-stream (rest (pair-stream-v stream))))])
-  
+
 ;; (ascending-permutations-generator n lst) -> generator?
 ;; n   : exact-nonnegative-integer?
 ;; lst : list?
@@ -94,6 +116,23 @@
               (begin
                 (loop (cdr lst) (sub1 n) (cons (car lst) stack))
                 (loop (cdr lst) n stack)))))))
+
+;; (atom str) -> (or/c number? symbol?)
+;; str : string?
+;;
+;; Parse str into a single atom (number or string)
+(define (atom str)
+  (cond [ (regexp-match? #px"^-?[0-9]+(\\.[0-9]*)?$" str)
+          (string->number str) ]
+        [ else str ]))
+
+;; (atoms str) -> list?
+;; str : string?
+;;
+;; Return a list of all atoms (numbers or symbol name) in str.
+(define (atoms str)
+  (map atom
+       (regexp-match* #px"[a-zA-Z_0-9.+-]+" str)))
 
 ;; (bool-list->decimal lst) -> exact-integer?
 ;; lst : (listof exact-integer?)
@@ -144,6 +183,15 @@
        string-trim
        (string-split _ ",")
        (map string->number)))
+
+;; (digits str) -> list?
+;; str : string?
+;;
+;; Return a list of all digits in str (as integers 0 to 9), ignoring
+;; non-digit characters.
+(define (digits str)
+  (map string->number
+       (regexp-match* #px"[0-9]" str)))
 
 ;; (filter-ascending-permutations pred? n lst) -> list?
 ;; pred?  : (-> list? boolean?)
@@ -207,6 +255,82 @@
 (define (list-sum lst)
   (foldl + 0 lst))
 
+;; (numbers str) -> list?
+;; str : string?
+;;
+;; Return a list of all numbers in str, ignoring non-number characters.
+(define (numbers str)
+  (map string->number
+       (regexp-match* #px"-?[0-9.]+" str)))
+
+;; (parse-aoc day parser sep print-lines) -> list?
+;; day         : positive-integer?
+;; parser      : (-> string? any/c)
+;; sep         : string?
+;; print-lines : exact-nonnegative-integer?
+;;
+;; Translation of Peter Norvig's Advent of Code parse function.
+;;
+;; * Read the input file for <day>
+;; * Print out the first few lines of the file to give an idea of the
+;;   file's contents
+;; * Break the file into a sequence of entries separated by <sep>
+;; * Apply <parser> to each entry and return the results as a list
+;;   - Example parser functions include:
+;;     numbers, digits, atoms, words, and built-ins such as:
+;;     string->number, identity
+(define (parse-aoc day [parser identity] [sep "\n"] [print-lines 7])
+  ;; Helper -----------------------------------------------------------------------------------
+  (define (print-sample fname text entries num-lines)
+    (let* ([ all-lines (string-split text "\n")   ]
+           [ lines     (take all-lines num-lines) ]
+           [ head      (format "~a -> ~a chars, ~a lines; first ~a lines:"
+                               fname
+                               (string-length text)
+                               (length all-lines)
+                               (length lines)) ]
+           [ dash      (make-string 100 #\-) ])
+      (printf "~a\n~a\n~a\n" dash head dash)
+      (for ([line (in-list lines) ])
+        (printf "~a\n" (trunc line)))
+      (printf "~a\n(parse ~a) -> ~a entries:\n" dash day (length entries))
+      (printf "~a\n~a\n~a" dash (trunc (format "~s" entries)) dash)))
+
+  (define (trunc s [left 70] [right 25] [dots " ... "])
+    (if (<= (string-length s)
+            (+ left right (string-length dots)))
+        s
+        (string-append (string-left s left)
+                       dots
+                       (string-right s right))))
+  ;; ------------------------------------------------------------------------------------------
+
+  (let* ([ fname   (format "day~a.txt" (~r day #:min-width 2 #:pad-string "0")) ]
+         [ text    (file->string fname) ]
+         [ entries (map parser (~> text
+                                   string-trim
+                                   (string-split _ sep))) ])
+    (when (and print-lines (> print-lines 0))
+      (print-sample fname text entries print-lines))
+    entries))
+
+;; (string-left str n) -> string?
+;; str : string?
+;; n   : exact-nonnegative-integer?
+;;
+;; Return a string consisting of the leftmost <n> characters in str.
+(define (string-left str n)
+  (substring str 0 n))
+
+;; (string-right str n) -> string?
+;; str : string?
+;; n   : exact-nonnegative-integer?
+;;
+;; Return a string consisting of the rightmost <n> characters in str.
+(define (string-right str n)
+  (let ([ len (string-length str) ])
+    (substring str (- len n))))
+
 ;; (vector-sum v) -> number?
 ;; v : vector?
 ;;
@@ -224,6 +348,26 @@
 (define (vector-update! vec i f)
   (vector-set! vec i (f (vector-ref vec i))))
 
+;; (windows n lst) -> list?
+;; n   : exact-positive-integer?
+;; lst : list?
+;;
+;; Return a list of n-element sliding windows. For example:
+;; (windows 3 '(1 2 3 4 5 6)) -> '((1 2 3) (2 3 4) (3 4 5) (4 5 6))
+(define (windows n lst)
+  (let ([ window (with-handlers ([ exn:fail:contract? (λ (_) #f) ])
+                   (take lst n)) ])
+    (if window
+        (cons window (windows n (cdr lst)))
+        '())))
+
+;; (words str) -> list?
+;; str : string?
+;;
+;; Return a list of all alphabetic words in str, ignoring non-letters.
+(define (words str)
+  (regexp-match* #px"[a-zA-Z]+" str))
+
 ;; (zipn . args) -> (listof list?)
 ;; args : (listof list?)
 ;;
@@ -233,4 +377,3 @@
   (let loop ([ lists args ][ result '() ])
     (cond [ (ormap empty? lists) (reverse result) ]
           [ else (loop (map rest lists) (cons (map first lists) result)) ])))
-
