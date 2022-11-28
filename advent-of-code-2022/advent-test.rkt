@@ -22,6 +22,24 @@
                           ( "my-symbol" "my-symbol"))) ])
     (check-equal? (atom (first pair)) (second pair)))
 
+  ;; atom?
+
+  (for ([ pair (in-list '(("foo" #t)
+                          (3.14 #t)
+                          (2.0+0.1i #t)
+                          (foo #t)
+                          (#t #t)
+                          (#f #t)
+                          (#"foo" #t)
+                          (#\f #t)
+                          (() #f)
+                          (("foo" 7) #f)
+                          (#(1 2 3) #f)
+                          (#hash(("foo" . 7)) #f))) ])
+    (let ([ x (first pair) ]
+          [ b (second pair) ])
+      (check-equal? (atom? x) b x)))
+
   ;; atoms
 
   (check-equal? (atoms " a-symbol 3.14\n -78 foo")
@@ -124,6 +142,14 @@
   (check-equal? (point-sub (point 1 2 3)
                            (point 2 3 4))
                 (point -1 -1 -1))
+
+  ;; take-at-most
+
+  (check-equal? (take-at-most '(1 2 3 4 5) 0) '())
+  (check-equal? (take-at-most '(1 2 3 4 5) 3) '(1 2 3))
+  (check-equal? (take-at-most '(1 2 3 4 5) 5) '(1 2 3 4 5))
+  (check-equal? (take-at-most '(1 2 3 4 5) 6) '(1 2 3 4 5))
+  (check-equal? (take-at-most '(1 2 3 4 5) 100) '(1 2 3 4 5))
 
   ;; vector-sum
 

@@ -10,6 +10,8 @@
             (-> exact-nonnegative-integer? list? generator?) ]
           [ atom
             (-> string? (or/c string? number?)) ]
+          [ atom?
+            (-> any/c boolean?) ]
           [ atoms
             (-> string? list?) ]
           [ bool-list->decimal
@@ -46,6 +48,8 @@
             (-> string? exact-nonnegative-integer? string?) ]
           [ string-right
             (-> string? exact-nonnegative-integer? string?) ]
+          [ take-at-most
+            (-> list? exact-nonnegative-integer? list?) ]
           [ vector-sum
             (-> vector? number?) ]
           [ vector-update!
@@ -125,6 +129,18 @@
   (cond [ (regexp-match? #px"^-?[0-9]+(\\.[0-9]*)?$" str)
           (string->number str) ]
         [ else str ]))
+
+;; (atom? x) -> boolean?
+;; x : any/c
+;;
+;; Indicate whether the argument is an atom
+(define (atom? x)
+  (or (string? x)
+      (number? x)
+      (symbol? x)
+      (boolean? x)
+      (bytes? x)
+      (char? x)))
 
 ;; (atoms str) -> list?
 ;; str : string?
@@ -280,21 +296,77 @@
 ;;     numbers, digits, atoms, words, and built-ins such as:
 ;;     string->number, identity
 (define (parse-aoc day [parser identity] [sep "\n"] [print-lines 7])
+  (let* ([ fname   (format "day~a.txt" (~r day #:min-width 2 #:pad-string "0")) ]
+         [ text    (file->string fname) ]
+         [ entries (map parser (~> text
+                                   string-trim
+                                   (string-split _ sep))) ])
+    (when (and print-lines (> print-lines 0))
+      (print-sample-data day fname text entries print-lines))
+    entries))
+
+;; (print-sample-data day fname text entries num-lines) -> void?
+;; day         : positive-integer?
+;; fname       : string?
+;; text        : string?
+;; entries     : list?
+;; num-lines   : exact-positive-integer?
+;;
+;; Helper function for parse-aoc, but due to its size, it's defined at
+;; the top level.  Print out the first few lines of the file to give
+;; an idea of the file's contents
+(define (print-sample-data day fname text entries num-lines)
   ;; Helper -----------------------------------------------------------------------------------
-  (define (print-sample fname text entries num-lines)
-    (let* ([ all-lines (string-split text "\n")   ]
-           [ lines     (take all-lines num-lines) ]
-           [ head      (format "~a -> ~a chars, ~a lines; first ~a lines:"
-                               fname
-                               (string-length text)
-                               (length all-lines)
-                               (length lines)) ]
-           [ dash      (make-string 100 #\-) ])
-      (printf "~a\n~a\n~a\n" dash head dash)
-      (for ([line (in-list lines) ])
-        (printf "~a\n" (trunc line)))
-      (printf "~a\n(parse ~a) -> ~a entries:\n" dash day (length entries))
-      (printf "~a\n~a\n~a" dash (trunc (format "~s" entries)) dash)))
+  (define (print-list obj)
+    (cond [ (null? obj)
+            (printf "()") ]
+          [ (atom? (first obj))
+            (printf "~a" (trunc (format "~s" obj))) ]
+          [ else
+            (printf "(")
+            (print-list-elements obj)
+            (printf ")") ]))
+
+  (define (print-list-elements obj)
+    (let ([ len (length obj) ])
+      (cond [ (= len 0)
+              (void) ]
+            [ (= len 1)
+              (let ([ x (first obj) ])
+                (if (list? x)
+                    (print-list x)
+                    (printf "~a" (trunc (format "~s" x))))) ]
+            [ (= len 2)
+              (let ([ x (first obj)  ]
+                    [ y (second obj) ])
+                (cond [ (list? x)
+                        (print-list x)
+                        (printf "\n") ]
+                      [ else
+                        (printf "~a" (trunc (format "~s" x))) ])
+                (cond [ (list? y)
+                        (print-list y) ]
+                      [ else
+                        (printf "~a" (trunc (format "~s" y))) ])) ]
+            [ else
+              (let ([ x (first obj)  ]
+                    [ y (second obj) ]
+                    [ z (last obj)   ])
+                (cond [ (list? x)
+                        (print-list x)
+                        (printf "\n") ]
+                      [ else
+                        (printf "~a" (trunc (format "~s" x))) ])
+                (cond [ (list? y)
+                        (print-list y)
+                        (printf "\n") ]
+                      [ else
+                        (printf "~a" (trunc (format "~s" y))) ])
+                (printf "...\n")
+                (cond [ (list? z)
+                        (print-list z) ]
+                      [ else
+                        (printf "~a" (trunc (format "~s" z))) ])) ])))
 
   (define (trunc s [left 70] [right 25] [dots " ... "])
     (if (<= (string-length s)
@@ -305,14 +377,21 @@
                        (string-right s right))))
   ;; ------------------------------------------------------------------------------------------
 
-  (let* ([ fname   (format "day~a.txt" (~r day #:min-width 2 #:pad-string "0")) ]
-         [ text    (file->string fname) ]
-         [ entries (map parser (~> text
-                                   string-trim
-                                   (string-split _ sep))) ])
-    (when (and print-lines (> print-lines 0))
-      (print-sample fname text entries print-lines))
-    entries))
+  (let* ([ all-lines (string-split text "\n")   ]
+         [ lines     (take-at-most all-lines num-lines) ]
+         [ head      (format "~a -> ~a chars, ~a lines; first ~a lines:"
+                             fname
+                             (string-length text)
+                             (length all-lines)
+                             (length lines)) ]
+         [ dash      (make-string 100 #\-) ])
+    (printf "~a\n~a\n~a\n" dash head dash)
+    (for ([line (in-list lines) ])
+      (printf "~a\n" (trunc line)))
+    (printf "~a\n(parse ~a) -> ~a entries:\n" dash day (length entries))
+    (printf "~a\n" dash)
+    (print-list entries)
+    (printf "\n~a\n"  dash)))
 
 ;; (string-left str n) -> string?
 ;; str : string?
@@ -330,6 +409,17 @@
 (define (string-right str n)
   (let ([ len (string-length str) ])
     (substring str (- len n))))
+
+;; (take-at-most lst n) -> list?
+;; lst : list?
+;; n   : exact-nonnegative-integer?
+;;
+;; Like take, but if there are less than n elements in the list,
+;; return as many as there are.
+(define (take-at-most lst n)
+  (if (or (null? lst) (< n 1))
+      '()
+      (cons (car lst) (take-at-most (cdr lst) (sub1 n)))))
 
 ;; (vector-sum v) -> number?
 ;; v : vector?

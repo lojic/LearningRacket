@@ -2,7 +2,10 @@
 
 My Racket solutions to the Advent of Code 2022 puzzles.
 
-* [advent](./advent.rkt) - Support code
+* [Blog](https://blog.lojic.com/2022/11/25/advent-of-code-2022.html) - Table of Contents blog post
+* [advent.rkt](./advent.rkt) - Support code
+* Python solutions - *coming soon*
+* Javascript solutions - *coming soon*
 
 **Prior Years**
 
