@@ -24,6 +24,10 @@
             (-> string? list?) ]
           [ digits
             (-> string? list?) ]
+          [ enumerate
+            (->* (list?)
+                 (exact-nonnegative-integer?)
+                 list?) ]
           [ filter-ascending-permutations
             (-> procedure? exact-nonnegative-integer? list? list?) ]
           [ numbers
@@ -212,6 +216,20 @@
   (map string->number
        (regexp-match* #px"[0-9]" str)))
 
+;; (enumerate lst [i]) -> list?
+;; lst : list?
+;; i   : exact-nonnegative-integer?
+;;
+;; map a list of <a> to a list of (cons <a> <i>) where <i> begins at
+;; 0, by default, and is incremented for each subsequent element.
+;;
+;; (enumerate '(a b c)) -> '((a . 0) (b . 1) (c . 2))
+(define (enumerate lst [i 0])
+  (if (null? lst)
+      '()
+      (cons (cons (car lst) i)
+            (enumerate (cdr lst) (add1 i)))))
+
 ;; (filter-ascending-permutations pred? n lst) -> list?
 ;; pred?  : (-> list? boolean?)
 ;; n      : exact-nonnegative-integer?
@@ -300,7 +318,7 @@
 ;;     string->number, identity
 (define (parse-aoc day [ parser identity ]
                    #:sep        [ sep "\n" ]
-                   #:head-lines [ head-lines 5 ]
+                   #:head-lines [ head-lines 3 ]
                    #:tail-lines [ tail-lines 2 ])
   (let* ([ fname   (format "day~a.txt" (~r day #:min-width 2 #:pad-string "0")) ]
          [ text    (file->string fname) ]

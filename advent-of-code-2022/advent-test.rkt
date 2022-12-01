@@ -87,6 +87,11 @@
   (check-equal? (digits "0123\n456\n78910")
                 '(0 1 2 3 4 5 6 7 8 9 1 0))
 
+  ;; enumerate
+
+  (check-equal? (enumerate '(a b c))
+                '((a . 0) (b . 1) (c . 2)))
+
   ;; filter-ascending-permutations ------------------------------------------------------------
 
   (let ([ sum-is-even? (λ (lst) (even? (foldl + 0 lst))) ])
