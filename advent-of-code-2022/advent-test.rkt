@@ -60,6 +60,12 @@
 
   (check-equal? (bool-string-list->decimal '("1" "0" "1" "1")) 11)
 
+  ;; chars ------------------------------------------------------------------------------------
+
+  (check-equal? (chars " a b, c d") '(#\a #\b #\c #\d))
+
+  (check-exn exn:fail? (thunk (chars " a bb, c d"))) ; "bb" is not a single character
+
   ;; chunk ------------------------------------------------------------------------------------
 
   (check-equal? (chunk (range 15) 5)
@@ -97,6 +103,12 @@
   (let ([ sum-is-even? (λ (lst) (even? (foldl + 0 lst))) ])
     (check-equal? (filter-ascending-permutations sum-is-even? 3 '(1 2 3 4 5))
                   '((1 2 3) (1 2 5) (1 3 4) (1 4 5) (2 3 5) (3 4 5))))
+
+  ;; flip -------------------------------------------------------------------------------------
+
+  (check-true ((flip <) 5 3))
+
+  (check-equal? ((flip string-append) "b" "a") "ab")
 
   ;; iterate
 

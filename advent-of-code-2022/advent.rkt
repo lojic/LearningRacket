@@ -18,6 +18,8 @@
             (-> (listof exact-integer?) exact-integer?) ]
           [ bool-string-list->decimal
             (-> (listof string?) exact-integer?) ]
+          [ chars
+            (-> string? list?) ]
           [ chunk
             (-> list? exact-nonnegative-integer? list?) ]
           [ csv-file->numbers
@@ -30,6 +32,8 @@
                  list?) ]
           [ filter-ascending-permutations
             (-> procedure? exact-nonnegative-integer? list? list?) ]
+          [ flip
+            (-> procedure? any) ]
           [ numbers
             (-> string? list?) ]
           [ iterate
@@ -47,7 +51,8 @@
                  (procedure?
                   #:sep        string?
                   #:head-lines exact-nonnegative-integer?
-                  #:tail-lines exact-nonnegative-integer?)
+                  #:tail-lines exact-nonnegative-integer?
+                  #:print-sample boolean?)
                  any) ]
           [ string-left
             (-> string? exact-nonnegative-integer? string?) ]
@@ -177,6 +182,19 @@
 ;; (list->decimal '("1" "0" "1" "1")) -> 11
 (define (bool-string-list->decimal lst) (bool-list->decimal (map string->number lst)))
 
+;; (chars str) -> list?
+;; str : string?
+;;
+;; Return a list of all chars in str.
+(define (chars str)
+  (define (string->char s)
+    (if (not (= (string-length s) 1))
+        (error "chars: error - string not of length 1")
+        (string-ref s 0)))
+
+  (map string->char
+       (regexp-match* #px"\\b[a-zA-Z_0-9.+-]+\\b" str)))
+
 ;; (chunk lst n) -> (listof list?)
 ;; lst : list?
 ;; n   : exact-nonnegative-integer?
@@ -252,6 +270,15 @@
                    stack
                    (loop (cdr lst) (sub1 n) (cons (car lst) stack) result)))))))
 
+;; (flip proc) -> procedure?
+;; proc : procedure?
+;;
+;; Given a function of arity 2, return a function that accepts the 2
+;; arguments in reverse order.
+(define (flip fun)
+  (λ (b a)
+    (fun a b)))
+
 ;; (iterate fun arg n) -> any/c
 ;; fun : procedure?
 ;; arg : any/c
@@ -317,15 +344,17 @@
 ;;     numbers, digits, atoms, words, and built-ins such as:
 ;;     string->number, identity
 (define (parse-aoc day [ parser identity ]
-                   #:sep        [ sep "\n" ]
-                   #:head-lines [ head-lines 3 ]
-                   #:tail-lines [ tail-lines 2 ])
+                   #:sep          [ sep "\n" ]
+                   #:head-lines   [ head-lines 3 ]
+                   #:tail-lines   [ tail-lines 2 ]
+                   #:print-sample [ print-sample #t ])
   (let* ([ fname   (format "day~a.txt" (~r day #:min-width 2 #:pad-string "0")) ]
          [ text    (file->string fname) ]
          [ entries (map parser (~> text
                                    string-trim
                                    (string-split _ sep))) ])
-    (when (or (> head-lines 0) (> tail-lines 0))
+    (when (and print-sample
+               (or (> head-lines 0) (> tail-lines 0)))
       (print-sample-data day fname text entries head-lines tail-lines))
     entries))
 
