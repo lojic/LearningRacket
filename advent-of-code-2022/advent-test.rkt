@@ -170,6 +170,12 @@
   (check-equal? (split-at-list '(1 2 3 4) 3)
                 '((1 2 3) (4)))
 
+  ;; string-index-ov
+
+  (check-equal? (string-index-of "abc" #\b) 1)
+
+  (check-false (string-index-of "abc" #\d))
+
   ;; take-at-most
 
   (check-equal? (take-at-most '(1 2 3 4 5) 0) '())

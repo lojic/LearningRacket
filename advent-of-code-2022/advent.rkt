@@ -60,6 +60,8 @@
             (-> list? exact-nonnegative-integer? list?) ]
           [ string-left
             (-> string? exact-nonnegative-integer? string?) ]
+          [ string-index-of
+            (-> string? char? (or/c exact-nonnegative-integer? #f)) ]
           [ string-right
             (-> string? exact-nonnegative-integer? string?) ]
           [ take-at-most
@@ -480,6 +482,18 @@
 ;; Return a string consisting of the leftmost <n> characters in str.
 (define (string-left str n)
   (substring str 0 n))
+
+;; (string-index-of str c) -> (or/c exact-nonnegative-integer? #f)
+;; str : string?
+;; c   : char?
+;;
+;; Return the index of the specified character in the string.
+(define (string-index-of str c)
+  (let ([ len (string-length str) ])
+    (let loop ([ i 0 ])
+      (cond [ (>= i len)                    #f ]
+            [ (char=? c (string-ref str i)) i  ]
+            [ else (loop (add1 i))             ]))))
 
 ;; (string-right str n) -> string?
 ;; str : string?
