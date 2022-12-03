@@ -68,7 +68,7 @@
 
   ;; chunk ------------------------------------------------------------------------------------
 
-  (check-equal? (chunk (range 15) 5)
+  (check-equal? (chunk 5 (range 15))
                 '((0 1 2 3 4)
                   (5 6 7 8 9)
                   (10 11 12 13 14)))
@@ -159,6 +159,16 @@
   (check-equal? (point-sub (point 1 2 3)
                            (point 2 3 4))
                 (point -1 -1 -1))
+
+  ;; split-2
+
+  (check-equal? (split-2 '(1 2 3 4))
+                '((1 2) (3 4)))
+
+  ;; split-at-list
+
+  (check-equal? (split-at-list '(1 2 3 4) 3)
+                '((1 2 3) (4)))
 
   ;; take-at-most
 

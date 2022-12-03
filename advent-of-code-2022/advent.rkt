@@ -21,7 +21,7 @@
           [ chars
             (-> string? list?) ]
           [ chunk
-            (-> list? exact-nonnegative-integer? list?) ]
+            (-> exact-nonnegative-integer? list? list?) ]
           [ csv-file->numbers
             (-> string? list?) ]
           [ digits
@@ -54,6 +54,10 @@
                   #:tail-lines exact-nonnegative-integer?
                   #:print-sample boolean?)
                  any) ]
+          [ split-2
+            (-> list? list?) ]
+          [ split-at-list
+            (-> list? exact-nonnegative-integer? list?) ]
           [ string-left
             (-> string? exact-nonnegative-integer? string?) ]
           [ string-right
@@ -195,13 +199,13 @@
   (map string->char
        (regexp-match* #px"\\b[a-zA-Z_0-9.+-]+\\b" str)))
 
-;; (chunk lst n) -> (listof list?)
-;; lst : list?
+;; (chunk n lst) -> (listof list?)
 ;; n   : exact-nonnegative-integer?
+;; lst : list?
 ;;
 ;; Return a list of chunks where each chunk is a list of n elements
 ;; from lst.
-(define (chunk lst n)
+(define (chunk n lst)
   (define (get-chunk lst n)
     (let loop ([lst lst] [acc '()] [n n])
       (if (or (null? lst) (< n 1))
@@ -451,6 +455,23 @@
     (printf "~a\n" dash)
     (print-list entries)
     (printf "\n~a\n"  dash)))
+
+;; (split-2 lst) -> list?
+;; lst : list?
+;;
+;; Split a list into two equal halves
+(define (split-2 lst)
+  (split-at-list lst (/ (length lst) 2)))
+
+;; (split-at-list lst n) -> list?
+;; lst : list?
+;; n   : exact-nonnegative-integer?
+;;
+;; Like split-at, but returns a list of 2 elements, instead of 2
+;; values.
+(define (split-at-list lst pos)
+  (let-values ([ (left right) (split-at lst pos) ])
+    (list left right)))
 
 ;; (string-left str n) -> string?
 ;; str : string?
