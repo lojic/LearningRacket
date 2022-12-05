@@ -2,17 +2,14 @@
 (require "../advent.rkt")
 
 (define (parse-stacks stack-lines)
-  (define (parse-stack lines i)
-    (define (get-crate line) (string-ref line (add1 (* i 4))))
-    (~> (map get-crate lines)
-        (filter char-alphabetic? _)))
-
   (let* ([ lines (take stack-lines (sub1 (length stack-lines))) ]
          [ n     (/ (+ (string-length (first lines)) 1) 4)      ])
-    (let loop ([ i 0 ][ stacks '(()) ])
-      (if (>= i n)
-          (reverse stacks)
-          (loop (add1 i) (cons (parse-stack lines i) stacks))))))
+    (~> (for/list ([ line lines ])
+          (for/list ([ i (in-range n) ])
+            (string-ref line (add1 (* i 4)))))
+        (apply zipn _)
+        (map (curry filter char-alphabetic?) _)
+        (cons '() _))))
 
 (define (move-crates strategy stacks n from-i to-i)
   (let* ([ from   (list-ref stacks from-i)                                    ]
@@ -24,7 +21,8 @@
   (let ([ pair (~> (file->string "./day05.txt")
                    (string-split _ "\n\n")
                    (map (λ (s) (string-split s "\n")) _)) ])
-    (values (parse-stacks (first pair)) ((curry map numbers) (second pair)))))
+    (values (parse-stacks (first pair))
+            ((curry map numbers) (second pair)))))
 
 (define (solve strategy)
   (let loop ([ stacks stacks ][ commands commands ])
