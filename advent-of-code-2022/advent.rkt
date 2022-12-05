@@ -82,7 +82,8 @@
          point-add
          point-sub
          (struct-out pair-stream)
-         (struct-out point))
+         (struct-out point)
+         (all-from-out threading))
 
 ;; 3D Point
 (struct point (x y z) #:transparent)
@@ -331,7 +332,7 @@
 ;; Return a list of all numbers in str, ignoring non-number characters.
 (define (numbers str)
   (map string->number
-       (regexp-match* #px"-?[0-9.]+" str)))
+       (regexp-match* #px"((?<![0-9])-)?[0-9.]+" str)))
 
 ;; (parse-aoc day parser sep print-lines) -> list?
 ;; day         : positive-integer?

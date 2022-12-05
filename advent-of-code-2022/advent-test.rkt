@@ -147,6 +147,12 @@
 
   (check-equal? (numbers "012,3.14,56\n123;67->78")
                 '(12 3.14 56 123 67 78))
+  (check-equal? (numbers "2-6,6-8")
+                '(2 6 6 8))
+  (check-equal? (numbers "2 -6,6-8")
+                '(2 -6 6 8))
+  (check-equal? (numbers "2 -6,6 -8")
+                '(2 -6 6 -8))
 
   ;; point-add
 
