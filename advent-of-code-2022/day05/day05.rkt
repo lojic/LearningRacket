@@ -20,12 +20,6 @@
           (reverse stacks)
           (loop (add1 i) (cons (parse-stack lines i) stacks))))))
 
-(define parse-commands (curry map numbers))
-(define stacks         (parse-stacks stack-lines))
-(define commands       (parse-commands command-lines))
-(define strategy-fofo  reverse)
-(define strategy-folo  identity)
-
 (define (move-crates strategy stacks n from-i to-i)
   (let* ([ from   (list-ref stacks from-i)                                    ]
          [ to     (list-ref stacks to-i)                                      ]
@@ -33,10 +27,10 @@
     (list-set stacks from-i (drop from n))))
 
 (define (solve strategy)
-  (let loop ([ stacks stacks ][ commands commands ])
+  (let loop ([ stacks (parse-stacks stack-lines) ][ commands ((curry map numbers) command-lines) ])
     (if (null? commands)
         (list->string (map car (cdr stacks)))
         (loop (apply move-crates strategy stacks (car commands)) (cdr commands)))))
 
-(solve strategy-fofo) ; Part 1
-(solve strategy-folo) ; Part 2
+(solve reverse)  ; Part 1
+(solve identity) ; Part 2
