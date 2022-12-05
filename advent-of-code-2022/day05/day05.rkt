@@ -1,15 +1,9 @@
 #lang racket
 (require "../advent.rkt")
 
-(match-define (list stack-lines command-lines)
-  (~> (file->string "./day05.txt")
-      (string-split _ "\n\n")
-      (map (λ (s) (string-split s "\n")) _)))
-
 (define (parse-stacks stack-lines)
   (define (parse-stack lines i)
     (define (get-crate line) (string-ref line (add1 (* i 4))))
-
     (~> (map get-crate lines)
         (filter char-alphabetic? _)))
 
@@ -26,8 +20,14 @@
          [ stacks (list-set stacks to-i (append (strategy (take from n)) to)) ])
     (list-set stacks from-i (drop from n))))
 
+(define-values (stacks commands)
+  (let ([ pair (~> (file->string "./day05.txt")
+                   (string-split _ "\n\n")
+                   (map (λ (s) (string-split s "\n")) _)) ])
+    (values (parse-stacks (first pair)) ((curry map numbers) (second pair)))))
+
 (define (solve strategy)
-  (let loop ([ stacks (parse-stacks stack-lines) ][ commands ((curry map numbers) command-lines) ])
+  (let loop ([ stacks stacks ][ commands commands ])
     (if (null? commands)
         (list->string (map car (cdr stacks)))
         (loop (apply move-crates strategy stacks (car commands)) (cdr commands)))))
