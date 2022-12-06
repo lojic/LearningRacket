@@ -13,6 +13,5 @@
           i
           (loop (add1 i) (mutable-set))))))
 
-(time
- (solve 4)
- (solve 14))
+(solve 4)
+(solve 14)
