@@ -18,11 +18,10 @@
     (list-set stacks from-i (drop from n))))
 
 (define-values (stacks commands)
-  (let ([ pair (~> (file->string "./day05.txt")
-                   (string-split _ "\n\n")
-                   (map (λ (s) (string-split s "\n")) _)) ])
-    (values (parse-stacks (first pair))
-            ((curry map numbers) (second pair)))))
+  (~> (file->string "./day05.txt")
+      (string-split _ "\n\n")
+      (map (λ (s) (string-split s "\n")) _)
+      (spread-combine _ (list parse-stacks (curry map numbers)))))
 
 (define (solve strategy)
   (let loop ([ stacks stacks ][ commands commands ])
