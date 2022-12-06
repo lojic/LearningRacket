@@ -176,6 +176,13 @@
   (check-equal? (split-at-list '(1 2 3 4) 3)
                 '((1 2 3) (4)))
 
+  ;; spread-combine
+
+  (check-equal? (spread-combine '(a 7 "foo")
+                                (list symbol->string add1 string->list)
+                                list)
+                '("a" 8 (#\f #\o #\o)))
+
   ;; string-index-ov
 
   (check-equal? (string-index-of "abc" #\b) 1)

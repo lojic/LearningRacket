@@ -58,6 +58,10 @@
             (-> list? list?) ]
           [ split-at-list
             (-> list? exact-nonnegative-integer? list?) ]
+          [ spread-combine
+            (->* (list? list?)
+                 (procedure?)
+                 any) ]
           [ string-left
             (-> string? exact-nonnegative-integer? string?) ]
           [ string-index-of
@@ -475,6 +479,22 @@
 (define (split-at-list lst pos)
   (let-values ([ (left right) (split-at lst pos) ])
     (list left right)))
+
+;; (spread-combine vals funs [ comb values ]) -> any/c
+;; vals : list?
+;; funs : list?
+;; comb : procedure?
+;;
+;; Applies each function in funs to the corresponding value in vals,
+;; and then returns the application of comb to the results.
+;;
+;; For example:
+;; (spread-combine '(a 7 "foo") (list symbol->string add1 string->list) list) ->
+;; '("a" 8 (#\f #\o #\o))
+(define (spread-combine vals funs [ comb values ])
+  (apply comb (for/list ([ val vals ]
+                         [ fun funs ])
+                (fun val))))
 
 ;; (string-left str n) -> string?
 ;; str : string?
