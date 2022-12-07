@@ -171,7 +171,7 @@
 ;; Return a list of all atoms (numbers or symbol name) in str.
 (define (atoms str)
   (map atom
-       (regexp-match* #px"[a-zA-Z_0-9.+-]+" str)))
+       (regexp-match* #px"[/$?a-zA-Z_0-9.+-]+" str)))
 
 ;; (bool-list->decimal lst) -> exact-integer?
 ;; lst : (listof exact-integer?)

@@ -45,6 +45,9 @@
   (check-equal? (atoms " a-symbol 3.14\n -78 foo")
                 '("a-symbol" 3.14 -78 "foo"))
 
+  (check-equal? (atoms "$ cd / dir? 78 foo")
+                '("$" "cd" "/" "dir?" 78 "foo"))
+
   ;; bool-list->decimal ----------------------------------------------------------------
 
   (for ([ pair (in-list '(((1 0 1 1) 11)
