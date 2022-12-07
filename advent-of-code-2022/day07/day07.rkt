@@ -3,19 +3,6 @@
 
 (struct dir (size dirs files))
 
-(define in (cdr (parse-aoc 7 atoms)))
-
-(define part1 (λ (s sizes) (list-sum (filter (curry > 100001) sizes))))
-(define part2 (λ (s sizes) (findf (curry < (+ -40000000 (last sizes))) sizes)))
-
-(define (solve part in)
-  (let*-values ([ (s)     (process-commands (hash "/" (dir 0 (set) (set))) "/" in) ]
-                [ (s n)   (compute-dir-sizes s "/") ]
-                [ (sizes) (sort (for/list ([ (_ obj) (in-hash s) ]) (dir-size obj)) <) ])
-    (part s sizes)))
-
-;; --------------------------------------------------------------------------------------------
-
 (define +dir (curry format "~a~a/"))
 
 (define (process-commands s cwd entries)
@@ -49,7 +36,6 @@
             [ (== "dir") (ls (add-dir s cwd entry)  cwd (cdr entries)) ]
             [ _          (ls (add-file s cwd entry) cwd (cdr entries)) ]))))
   ;; ------------------------------------------------------------------------------------------
-
   (if (null? entries)
       s
       (let ([ entry (car entries) ])
@@ -71,5 +57,12 @@
                                    (for/sum ([ size (in-set (dir-files obj)) ]) size)) ])
       (values (hash-set s path (struct-copy dir obj [ size total ])) total)))
 
-(solve part1 in)
-(solve part2 in)
+(define-values (sizes total)
+  (let*-values ([ (s)     (process-commands (hash "/" (dir 0 (set) (set))) "/" (cdr (parse-aoc 7 atoms))) ]
+                [ (s n)   (compute-dir-sizes s "/") ]
+                [ (sizes) (sort (for/list ([ (_ obj) (in-hash s) ]) (dir-size obj)) <) ])
+    (values sizes n)))
+
+(list-sum (filter (curry > 100001) sizes))  ; Part 1
+
+(findf (curry < (+ -40000000 total)) sizes) ; Part 2
