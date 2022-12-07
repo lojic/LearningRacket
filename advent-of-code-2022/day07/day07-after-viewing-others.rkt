@@ -1,10 +1,10 @@
 #lang racket
 (require "../advent.rkt")
 
-(define in  (parse-aoc 7 atoms))
-(define hsh (make-hash))
+(define in   (parse-aoc 7 atoms))
+(define hsh  (make-hash))
 (define seen (make-hash))
-(define cwd #f)
+(define cwd  #f)
 
 (define (add-file! size [cwd cwd])
   (hash-set! hsh cwd (+ size (hash-ref hsh cwd 0)))
