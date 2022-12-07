@@ -3,6 +3,7 @@
 
 (define in  (parse-aoc 7 atoms))
 (define hsh (make-hash))
+(define seen (make-hash))
 (define cwd #f)
 
 (define (add-file! size [cwd cwd])
@@ -18,7 +19,10 @@
     [ (list "$" "cd" dir)  (if (string=? "/" dir)
                                (set! cwd '())
                                (set! cwd (cons dir cwd))) ]
-    [ (list size _)        (add-file! size) ]))
+    [ (list size name)     (let ([ key (cons name cwd) ])
+                             (when (not (hash-has-key? seen key))
+                               (hash-set! seen key #t)
+                               (add-file! size))) ]))
 
 (define sizes (~> (hash->list hsh) (map cdr _)))
 
