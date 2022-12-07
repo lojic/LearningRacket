@@ -5,13 +5,13 @@
 (define dirs (hash))
 (define seen (hash))
 
-(define (add-file dirs size cwd)
-  (let ([ dirs (hash-set dirs cwd (+ size (hash-ref dirs cwd 0))) ])
-    (if (null? cwd)
-        dirs
-        (add-file dirs size (cdr cwd)))))
-
 (define (process dirs seen cwd in)
+  (define (add-file dirs size cwd)
+    (let ([ dirs (hash-set dirs cwd (+ size (hash-ref dirs cwd 0))) ])
+      (if (null? cwd)
+          dirs
+          (add-file dirs size (cdr cwd)))))
+
   (if (null? in)
       dirs
       (let ([ lst (car in) ]
@@ -29,6 +29,10 @@
                                        (process (add-file dirs size cwd) (hash-set seen key #t) cwd rem))) ]))))
 
 (let* ([ dirs  (process dirs seen #f in)          ]
-       [ sizes (~> (hash->list dirs) (map cdr _)) ])
-  (values (list-sum (filter (curry > 100001) sizes))                            ; Part 1
-          (findf (curry < (+ -40000000 (hash-ref dirs '() ))) (sort sizes <)))) ; Part 2
+       [ sizes (~> (hash->list dirs) (map cdr _)) ]
+       [ root  (hash-ref dirs '() )               ])
+  (values (~> sizes
+              (filter (curry > 100001) _)
+              list-sum) ; Part 1
+          (~> (sort sizes <)
+              (findf (curry < (+ -40000000 root)) _)))) ; Part 2
