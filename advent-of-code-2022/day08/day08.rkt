@@ -42,7 +42,8 @@
     (part x y result)))
 
 ;; Part 1 functionality
-(define (part1 x y result) (if (visible? x y)
+(define (part1 x y result)
+  (if (visible? x y)
       (add1 result)
       result))
 
