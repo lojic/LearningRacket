@@ -34,18 +34,16 @@
 ;; Compute the scenic score for Tree at (x, y)
 (define scenic-score (compose (curry apply *) viewing-distances))
 
-;; Main solve loop
+;; Main solve loop that accepts a <part> high order function
 (define (solve part)
   (for*/fold ([ result 0 ])
              ([ x (in-range N) ]
               [ y (in-range N) ])
     ((part x y) result)))
 
-;; Part 1 functionality
 (define (part1 x y)
   (if (visible? x y) add1 identity))
 
-;; Part 2 functionality
 (define (part2 x y)
   (curry max (scenic-score x y)))
 
