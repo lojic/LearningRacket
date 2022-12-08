@@ -13,15 +13,11 @@
       (let ([ rem (cdr in) ])
         (match (car in)
           [ (list "$" _)         (process dirs seen cwd rem) ]
-
           [ (list "dir" _)       (process dirs seen cwd rem) ]
-
           [ (list "$" "cd" "..") (process dirs seen (drop cwd 1) rem) ]
-
           [ (list "$" "cd" dir)  (if (string=? "/" dir)
                                      (process dirs seen '() rem)
                                      (process dirs seen (cons dir cwd) rem)) ]
-
           [ (list size name)     (let ([ key (cons name cwd) ])
                                    (if (hash-has-key? seen key)
                                        (process dirs seen cwd rem)
