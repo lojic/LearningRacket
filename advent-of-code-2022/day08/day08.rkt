@@ -49,10 +49,7 @@
 
 ;; Part 2 functionality
 (define (part2 x y result)
-  (let ([ score (scenic-score x y) ])
-    (if (> score result)
-        score
-        result)))
+  (max result (scenic-score x y)))
 
 (solve part1)
 (solve part2)
