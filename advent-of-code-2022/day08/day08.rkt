@@ -39,17 +39,15 @@
   (for*/fold ([ result 0 ])
              ([ x (in-range N) ]
               [ y (in-range N) ])
-    (part x y result)))
+    ((part x y) result)))
 
 ;; Part 1 functionality
-(define (part1 x y result)
-  (if (visible? x y)
-      (add1 result)
-      result))
+(define (part1 x y)
+  (if (visible? x y) add1 identity))
 
 ;; Part 2 functionality
-(define (part2 x y result)
-  (max result (scenic-score x y)))
+(define (part2 x y)
+  (curry max (scenic-score x y)))
 
 (solve part1)
 (solve part2)
