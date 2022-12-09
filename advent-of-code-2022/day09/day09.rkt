@@ -49,4 +49,3 @@
 
 (time (set-count (solve in 2)))
 (time (set-count (solve in 10)))
-
