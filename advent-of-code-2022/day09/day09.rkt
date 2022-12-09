@@ -1,7 +1,7 @@
 #lang racket
 (require "../advent.rkt")
 
-(define in (parse-aoc 9 atoms #:print-sample #f))
+(define in (parse-aoc 9 atoms))
 
 (define (solve in knots)
   ;; Helpers ----------------------------------------------------------------------------------
@@ -47,5 +47,5 @@
                                     (step (dir->num dir) n snake positions))
                                   next-step)))))))
 
-(set-count (solve in 2))
-(set-count (solve in 10))
+(set-count (solve in 2))  ; Part 1
+(set-count (solve in 10)) ; Part 2
