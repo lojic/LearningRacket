@@ -22,6 +22,8 @@
             (-> string? list?) ]
           [ chunk
             (-> exact-nonnegative-integer? list? list?) ]
+          [ clamp
+            (-> number? number? number? number?) ]
           [ csv-file->numbers
             (-> string? list?) ]
           [ digits
@@ -224,6 +226,17 @@
         (reverse acc)
         (let-values ([(chunk rest) (get-chunk lst n)])
           (loop rest (cons chunk acc))))))
+
+;; (clamp val a b) -> number?
+;; val : number?
+;; a   : number?
+;; b   : number?
+;;
+;; Limit the value of val to the interval [a, b]
+(define (clamp a b val)
+  (let ([ a* (min a b) ]
+        [ b* (max a b) ])
+    (max a* (min b* val))))
 
 ;; (csv-file->numbers path) -> (listof number?)
 ;; path : string?
