@@ -227,7 +227,7 @@
         (let-values ([(chunk rest) (get-chunk lst n)])
           (loop rest (cons chunk acc))))))
 
-;; (clamp val a b) -> number?
+;; (clamp a b val) -> number?
 ;; val : number?
 ;; a   : number?
 ;; b   : number?
