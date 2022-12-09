@@ -18,24 +18,23 @@
       (values (sub1 n)
               (cons h t)
               (set-add positions (last t)))))
-  
+
   (define (update-tail h snake)
     (define (move-one h t)
       (define (inc n) (if (positive? n) 1 (if (negative? n) -1 0)))
-      
+
       (let ([ delta (- h t) ])
         (if (< (magnitude delta) 2)
             t
-            (+ t
-               (make-rectangular (inc (real-part delta))
-                                 (inc (imag-part delta)))))))
-    
+            (+ t (make-rectangular (inc (real-part delta))
+                                   (inc (imag-part delta)))))))
+
     (if (null? snake)
         '()
         (let ([ t (move-one h (car snake)) ])
           (cons t (update-tail t (cdr snake))))))
   ;; ------------------------------------------------------------------------------------------
-  
+
   (let next-command ([ in in ][ snake (make-list knots 0) ][ positions (set 0) ])
     (if (null? in)
         positions
