@@ -20,13 +20,11 @@
 
   (define (update-tail h snake)
     (define (move-one h t)
-      (define inc (curry clamp -1 1))
-
       (let ([ delta (- h t) ])
         (if (< (magnitude delta) 2)
             t
-            (+ t (make-rectangular (inc (real-part delta))
-                                   (inc (imag-part delta)))))))
+            (+ t (clamp -1-i 1+i delta)))))
+
     (if (null? snake)
         '()
         (let ([ t (move-one h (car snake)) ])
