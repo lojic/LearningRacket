@@ -234,10 +234,21 @@
 ;;
 ;; Limit the value of val to the interval [a, b]
 (define (clamp a b val)
-  (let ([ a* (min a b) ]
-        [ b* (max a b) ])
-    (max a* (min b* val))))
-
+  (cond [ (and (real? a) (real? b) (real? val))
+          ;; Fast path for all real?
+          (let ([ a* (min a b) ]
+                [ b* (max a b) ])
+            (max a* (min b* val))) ]
+        [ (real? val)
+          ;; Fast path for real? val
+          (let ([ a* (min (real-part a) (real-part b)) ]
+                [ b* (max (real-part a) (real-part b)) ])
+            (max a* (min b* val))) ]
+        [ else
+          ;; Assume complex?
+          (make-rectangular (clamp (real-part a) (real-part b) (real-part val))
+                            (clamp (imag-part a) (imag-part b) (imag-part val))) ]))
+      
 ;; (csv-file->numbers path) -> (listof number?)
 ;; path : string?
 ;;
