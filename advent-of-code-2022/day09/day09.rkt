@@ -4,7 +4,6 @@
 (define in (parse-aoc 9 atoms))
 
 (define (solve in knots)
-  ;; Helpers ----------------------------------------------------------------------------------
   (define (dir->num dir)
     (match dir
       [ "U"  0-1i ]
@@ -28,12 +27,10 @@
             t
             (+ t (make-rectangular (inc (real-part delta))
                                    (inc (imag-part delta)))))))
-
     (if (null? snake)
         '()
         (let ([ t (move-one h (car snake)) ])
           (cons t (update-tail t (cdr snake))))))
-  ;; ------------------------------------------------------------------------------------------
 
   (let next-command ([ in in ][ snake (make-list knots 0) ][ positions (set 0) ])
     (if (null? in)
