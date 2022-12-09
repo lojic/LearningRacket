@@ -228,9 +228,9 @@
           (loop rest (cons chunk acc))))))
 
 ;; (clamp a b val) -> number?
-;; val : number?
 ;; a   : number?
 ;; b   : number?
+;; val : number?
 ;;
 ;; Limit the value of val to the interval [a, b]
 (define (clamp a b val)
