@@ -20,7 +20,7 @@
 
   (define (update-tail h snake)
     (define (move-one h t)
-      (define (inc n) (if (positive? n) 1 (if (negative? n) -1 0)))
+      (define inc (curry clamp -1 1))
 
       (let ([ delta (- h t) ])
         (if (< (magnitude delta) 2)
