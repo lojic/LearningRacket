@@ -47,5 +47,5 @@
                                     (step (dir->num dir) n snake positions))
                                   next-step)))))))
 
-(time (set-count (solve in 2)))
-(time (set-count (solve in 10)))
+(set-count (solve in 2))
+(set-count (solve in 10))
