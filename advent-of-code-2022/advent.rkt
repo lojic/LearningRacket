@@ -238,15 +238,17 @@
 ;;       components of the complex number will be clamped to the
 ;;       bounding box described by a & b
 (define (clamp a b val)
+  ;; clamp* assumes a <= b
+  (define (clamp* a b val)
+    (max a (min b val)))
+
   (cond [ (and (real? a) (real? b) (real? val))
           ;; Fast path for all real?
-          (max (min a b)
-               (min (max a b)
-                    val)) ]
+          (clamp* (min a b) (max a b) val) ]
         [ else
           (make-rectangular (clamp (real-part a) (real-part b) (real-part val))
                             (clamp (imag-part a) (imag-part b) (imag-part val))) ]))
-      
+
 ;; (csv-file->numbers path) -> (listof number?)
 ;; path : string?
 ;;
