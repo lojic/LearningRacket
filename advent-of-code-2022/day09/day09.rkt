@@ -1,9 +1,7 @@
 #lang racket
 (require "../advent.rkt")
 
-(define in (parse-aoc 9 atoms))
-
-(define (solve in knots)
+(define (solve knots)
   (define (dir->num dir)
     (match dir
       [ "U"  0-1i ]
@@ -30,9 +28,9 @@
         (let ([ t (move-one h (car snake)) ])
           (cons t (update-tail t (cdr snake))))))
 
-  (let next-command ([ in in ][ snake (make-list knots 0) ][ positions (set 0) ])
+  (let next-command ([ in (parse-aoc 9 atoms) ][ snake (make-list knots 0) ][ positions (set 0) ])
     (if (null? in)
-        positions
+        (set-count positions)
         (match-let ([ (list dir n) (car in) ])
           (let next-step ([ n n ][ snake snake ][ positions positions ])
             (if (= n 0)
@@ -41,5 +39,5 @@
                                     (step (dir->num dir) n snake positions))
                                   next-step)))))))
 
-(set-count (solve in 2))  ; Part 1
-(set-count (solve in 10)) ; Part 2
+(solve 2)  ; Part 1
+(solve 10) ; Part 2
