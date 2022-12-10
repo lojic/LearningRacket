@@ -28,11 +28,15 @@
         (let ([ t (move-one h (car snake)) ])
           (cons t (update-tail t (cdr snake))))))
 
-  (let next-command ([ in (parse-aoc 9 atoms) ][ snake (make-list knots 0) ][ positions (set 0) ])
+  (let next-command ([ in        (parse-aoc 9 atoms) ]
+                     [ snake     (make-list knots 0) ]
+                     [ positions (set 0)             ])
     (if (null? in)
         (set-count positions)
         (match-let ([ (list dir n) (car in) ])
-          (let next-step ([ n n ][ snake snake ][ positions positions ])
+          (let next-step ([ n         n         ]
+                          [ snake     snake     ]
+                          [ positions positions ])
             (if (= n 0)
                 (next-command (cdr in) snake positions)
                 (call-with-values (λ ()
