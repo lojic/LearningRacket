@@ -233,19 +233,17 @@
 ;; val : number?
 ;;
 ;; Limit the value of val to the interval [a, b]
+
+;; NOTE: in the case of val being a complex?, the individual
+;;       components of the complex number will be clamped to the
+;;       bounding box described by a & b
 (define (clamp a b val)
   (cond [ (and (real? a) (real? b) (real? val))
           ;; Fast path for all real?
-          (let ([ a* (min a b) ]
-                [ b* (max a b) ])
-            (max a* (min b* val))) ]
-        [ (real? val)
-          ;; Fast path for real? val
-          (let ([ a* (min (real-part a) (real-part b)) ]
-                [ b* (max (real-part a) (real-part b)) ])
-            (max a* (min b* val))) ]
+          (max (min a b)
+               (min (max a b)
+                    val)) ]
         [ else
-          ;; Assume complex?
           (make-rectangular (clamp (real-part a) (real-part b) (real-part val))
                             (clamp (imag-part a) (imag-part b) (imag-part val))) ]))
       
