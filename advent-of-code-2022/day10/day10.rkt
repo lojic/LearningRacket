@@ -14,7 +14,7 @@
               (step cycle x result))))) ; Delegate to Part step
 
 (define (part1 cycle x result)
-  (if (memq cycle '(20 60 100 140 180 220))
+  (if (memq cycle (inclusive-range 20 220 40))
       (cons (* cycle x) result)
       result))
 
