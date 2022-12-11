@@ -7,7 +7,7 @@
                           (list 0 (cadr inst))
                           (list 0))) _)
                flatten
-               (fold-list + 1 _)))
+               (scanl + 1 _)))
 
 (define (render lst)
   (for ([ line (chunk 40 lst) ])

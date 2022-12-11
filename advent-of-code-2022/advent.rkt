@@ -36,7 +36,7 @@
             (-> procedure? exact-nonnegative-integer? list? list?) ]
           [ flip
             (-> procedure? any) ]
-          [ fold-list
+          [ scanl
             (-> procedure? any/c list? list?) ]
           [ numbers
             (-> string? list?) ]
@@ -316,24 +316,6 @@
   (λ (b a)
     (fun a b)))
 
-;; (fold-list proc initial lst) -> list?
-;; proc    : procedure?
-;; initial : any/c
-;; lst     : list?
-;;
-;; Like foldl, but instead of returning the folded result, it returns
-;; a list of accumulated intermediate results.
-;; e.g. (fold-list + 0 '(0 1 2 3 4)) -> '(0 1 3 6 10)
-;;      (fold-list cons '() '(0 1 2)) -> '((0) (1 0) (2 1 0))
-(define (fold-list proc initial lst)
-  (define (helper lst acc)
-    (if (null? lst)
-        '()
-        (let ([ acc (proc (car lst) acc) ])
-          (cons acc (helper (cdr lst) acc)))))
-
-  (helper lst initial))
-
 ;; (iterate fun arg n) -> any/c
 ;; fun : procedure?
 ;; arg : any/c
@@ -506,6 +488,24 @@
     (printf "~a\n" dash)
     (print-list entries)
     (printf "\n~a\n"  dash)))
+
+;; (scanl proc initial lst) -> list?
+;; proc    : procedure?
+;; initial : any/c
+;; lst     : list?
+;;
+;; Like foldl, but instead of returning the folded result, it returns
+;; a list of accumulated intermediate results.
+;; e.g. (scanl + 0 '(0 1 2 3 4)) -> '(0 1 3 6 10)
+;;      (scanl cons '() '(0 1 2)) -> '((0) (1 0) (2 1 0))
+(define (scanl proc initial lst)
+  (define (helper lst acc)
+    (if (null? lst)
+        '()
+        (let ([ acc (proc (car lst) acc) ])
+          (cons acc (helper (cdr lst) acc)))))
+
+  (helper lst initial))
 
 ;; (split-2 lst) -> list?
 ;; lst : list?
