@@ -23,6 +23,9 @@
 (define (in-bounds? c) (and (< -1 (real-part c) width)
                             (< -1 (imag-part c) height)))
 
+(define (part1-valid? pos height)
+  (<= (- (vget pos) height) 1))
+
 (define dirs    '(-i 1 +i -1))
 (define visited (make-hash))
 
@@ -32,7 +35,7 @@
                (+ pos dir)) dirs)
         (filter (λ (pos*)
                   (and (in-bounds? pos*)                         ; In bounds
-                       (<= (- (vget pos*) height) 1)             ; Not too high
+                       (part1-valid? pos* height)                      ; Not too high
                        (< len (hash-ref visited pos* 1000000)))) ; Not already seen with <= len
                 _))))
 
