@@ -42,7 +42,7 @@
           (let ([ monk* (vector-ref monkeys idx*) ])
             (do-round monk* idx* item* calm))))))
 
-(define (divisible-by? n d) (= 0 (remainder n d)))
+(define (divisible-by? n d) (zero? (remainder n d)))
 (define (part1 n)           (floor (/ n 3)))
 
 (define part2
