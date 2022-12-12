@@ -18,10 +18,10 @@
     (vector-map! char->integer vec)
     (values vec width height (i->c S*) (i->c E*))))
 
-(define (c->i c)   (+ (* width (imag-part c)) (real-part c)))
-(define (vget c)   (vector-ref vec (c->i c)))
-(define (valid? c) (and (< -1 (real-part c) width)
-                        (< -1 (imag-part c) height)))
+(define (c->i c)       (+ (* width (imag-part c)) (real-part c)))
+(define (vget c)       (vector-ref vec (c->i c)))
+(define (in-bounds? c) (and (< -1 (real-part c) width)
+                            (< -1 (imag-part c) height)))
 
 (define dirs    '(-i 1 +i -1))
 (define visited (make-hash))
@@ -31,7 +31,7 @@
     (~> (map (λ (dir)
                (+ pos dir)) dirs)
         (filter (λ (pos*)
-                  (and (valid? pos*)                         ; In bounds
+                  (and (in-bounds? pos*)                         ; In bounds
                        (<= (- (vget pos*) height) 1)             ; Not too high
                        (< len (hash-ref visited pos* 1000000)))) ; Not already seen with <= len
                 _))))
