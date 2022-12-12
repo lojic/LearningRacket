@@ -34,7 +34,7 @@
                (+ pos dir)) dirs)
         (filter (λ (pos*)
                   (and (in-bounds? pos*)                         ; In bounds
-                       ((part-valid? part) pos* height)          ; Not too high
+                       ((part-valid? part) pos* height)          ; Part specific validation
                        (< len (hash-ref visited pos* 1000000)))) ; Not already seen with <= len
                 _))))
 
@@ -56,4 +56,10 @@
                       (<= (- (vget pos) height) 1))
                     (curry = E)))
 
-(time (check-equal? (solve part1 S 0) 490))
+(define part2 (part (λ (pos height)
+                      (<= (- height (vget pos)) 1))
+                    (λ (pos)
+                      (= (vget S) (vget pos)))))
+
+;(time (check-equal? (solve part1 S 0) 490))
+(time (check-equal? (solve part2 E 0) 488))
