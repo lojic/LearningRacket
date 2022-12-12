@@ -2,6 +2,8 @@
 (require "../advent.rkt")
 (require rackunit)
 
+(struct part (valid? goal?))
+
 (define-values (vec width height S E)
   (let* ([ in      (parse-aoc 12)           ]
          [ width   (string-length (car in)) ]
@@ -29,30 +31,32 @@
 (define dirs    '(-i 1 +i -1))
 (define visited (make-hash))
 
-(define (get-candidates pos len)
+(define (get-candidates part pos len)
   (let ([ height (vget pos) ])
     (~> (map (λ (dir)
                (+ pos dir)) dirs)
         (filter (λ (pos*)
                   (and (in-bounds? pos*)                         ; In bounds
-                       (part1-valid? pos* height)                      ; Not too high
+                       ((part-valid? part) pos* height)          ; Not too high
                        (< len (hash-ref visited pos* 1000000)))) ; Not already seen with <= len
                 _))))
 
-(define (solve goal? pos len)
+(define (solve part pos len)
   (hash-set! visited pos len)
-  (if (goal? pos)
+  (if ((part-goal? part) pos)
       len
       (let* ([ len*       (add1 len)                ]
-             [ candidates (get-candidates pos len*) ])
+             [ candidates (get-candidates part pos len*) ])
         (and (not (null? candidates))
              (let ([ lengths (filter identity
                                      (map (λ (pos*)
-                                            (solve goal? pos* len*))
+                                            (solve part pos* len*))
                                           candidates)) ])
                (and (not (null? lengths))
                     (car (sort lengths <))))))))
 
 (define part1-goal? (curry = E))
 
-(time (check-equal? (solve part1-goal? S 0) 490))
+(define part1 (part part1-valid? part1-goal?))
+
+(time (check-equal? (solve part1 S 0) 490))
