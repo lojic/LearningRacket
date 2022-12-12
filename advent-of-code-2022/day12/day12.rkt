@@ -25,9 +25,6 @@
 (define (in-bounds? c) (and (< -1 (real-part c) width)
                             (< -1 (imag-part c) height)))
 
-(define (part1-valid? pos height)
-  (<= (- (vget pos) height) 1))
-
 (define dirs    '(-i 1 +i -1))
 (define visited (make-hash))
 
@@ -55,8 +52,8 @@
                (and (not (null? lengths))
                     (car (sort lengths <))))))))
 
-(define part1-goal? (curry = E))
-
-(define part1 (part part1-valid? part1-goal?))
+(define part1 (part (λ (pos height)
+                      (<= (- (vget pos) height) 1))
+                    (curry = E)))
 
 (time (check-equal? (solve part1 S 0) 490))
