@@ -31,23 +31,25 @@
     (~> (map (λ (dir)
                (+ pos dir)) dirs)
         (filter (λ (pos*)
-                  (and (valid? pos*)                             ; In bounds
+                  (and (valid? pos*)                         ; In bounds
                        (<= (- (vget pos*) height) 1)             ; Not too high
                        (< len (hash-ref visited pos* 1000000)))) ; Not already seen with <= len
                 _))))
 
-(define (solve pos len)
+(define (solve goal? pos len)
   (hash-set! visited pos len)
-  (if (= pos E)
+  (if (goal? pos)
       len
       (let* ([ len*       (add1 len)                ]
              [ candidates (get-candidates pos len*) ])
         (and (not (null? candidates))
              (let ([ lengths (filter identity
                                      (map (λ (pos*)
-                                            (solve pos* len*))
+                                            (solve goal? pos* len*))
                                           candidates)) ])
                (and (not (null? lengths))
                     (car (sort lengths <))))))))
 
-(time (check-equal? (solve S 0) 490))
+(define part1-goal? (curry = E))
+
+(time (check-equal? (solve part1-goal? S 0) 490))
