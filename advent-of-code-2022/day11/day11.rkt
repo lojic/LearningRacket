@@ -43,9 +43,13 @@
           (let ([ monk* (vector-ref monkeys idx*) ])
             (do-round monk* idx* item* calm))))))
 
-(define (part1 n)           (floor (/ n 3)))
-(define (part2 n)           (modulo n 9699690)) ; lcm of all the test divisors
 (define (divisible-by? n d) (= 0 (remainder n d)))
+(define (part1 n)           (floor (/ n 3)))
+
+(define part2
+  (let ([ div (apply lcm (map monkey-div (vector->list monkeys))) ])
+    (λ (n)
+      (modulo n div))))
 
 (solve part1 20)
-(solve part2 10000)
+(time (solve part2 10000))
