@@ -39,7 +39,7 @@
   (hash-set! (part-visited part) pos len)
   (if ((part-goal? part) pos)
       len
-      (let* ([ len*       (add1 len)                ]
+      (let* ([ len*       (add1 len)                     ]
              [ candidates (get-candidates part pos len*) ])
         (and (not (null? candidates))
              (let ([ lengths (filter identity
