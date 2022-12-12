@@ -3,6 +3,8 @@
 ;; Support code for the Advent of Code contest. See advent-test.rkt for tests.
 
 (require racket/generator
+         racket/fixnum
+         rackunit
          threading)
 
 (provide (contract-out
@@ -89,9 +91,13 @@
           )
          point-add
          point-sub
+         MAX-INTEGER
          (struct-out pair-stream)
          (struct-out point)
+         check-equal?
          (all-from-out threading))
+
+(define MAX-INTEGER (most-positive-fixnum))
 
 ;; 3D Point
 (struct point (x y z) #:transparent)
