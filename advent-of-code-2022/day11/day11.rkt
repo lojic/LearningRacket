@@ -52,4 +52,4 @@
       (modulo n div))))
 
 (solve part1 20)
-(time (solve part2 10000))
+(solve part2 10000)
