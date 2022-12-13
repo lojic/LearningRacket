@@ -32,12 +32,11 @@
                             (< -1 (imag-part c) height)))
 
 (define (get-candidates part pos)
-  (let ([ height (vget pos) ])
-    (~> (map (curry + pos) dirs)
-        (filter (λ (pos*)
-                  (and (in-bounds? pos*)                    ; In bounds
-                       ((part-valid? part) pos* height)))   ; Part specific validation
-                _))))
+  (~> (map (curry + pos) dirs)
+      (filter (λ (pos*)
+                (and (in-bounds? pos*)                      ; In bounds
+                     ((part-valid? part) pos* (vget pos)))) ; Part specific validation
+              _)))
 
 (define (solve part pos*)
   (let ([ seen  (mutable-set) ]
@@ -50,8 +49,7 @@
               [ else (set-add! seen pos)
                      (let ([ candidates (get-candidates part pos) ]
                            [ len*       (add1 len)                ])
-                       (cond [ (ormap (λ (pos*)
-                                        ((part-goal? part) pos*)) candidates) len* ]
+                       (cond [ (ormap (part-goal? part) candidates) len* ]
                              [ else (for ([ pos* (in-list candidates) ])
                                       (enqueue! queue (cons pos* len*)))
                                     (bfs) ])) ])))))
