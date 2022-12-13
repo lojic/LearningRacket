@@ -86,11 +86,7 @@
 ;;
 ;; Return the last node of the queue, starting from head
 (define (queue-last head)
-  (let loop ([ obj head ])
-    (let ([ next (node-next obj) ])
-      (if (eq? head next)
-          obj
-          (loop next)))))
+  (node-prev head))
 
 ;; (list->queue lst) -> queue
 ;; lst : list?
