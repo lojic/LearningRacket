@@ -96,6 +96,35 @@
                            (1 5 13.3 5))) ])
     (match-let ([ (list a b val result) tuple ])
       (check-within (clamp a b val) result 0.0001)))
+  
+  ;; coordinates-range ------------------------------------------------------------------------
+
+  (for ([ tuple (in-list '((0 0 (0))
+                           (0 1 (0 1))
+                           (0 -1 (0 -1))
+                           (0 +i (0 +i))
+                           (0 -i (0 -i))
+                           (0 1+i (0 1+i))
+                           (0 2+2i (0 1+i 2+2i))
+                           (0 2 (0 1 2))
+                           (0 -2 (0 -1 -2))
+                           (0 +2i (0 +i +2i))
+                           (0 -2i (0 -i -2i))
+                           (0 +2+2i (0 1+i 2+2i))
+                           (0 +2-2i (0 1-i 2-2i))
+                           (0 -2+2i (0 -1+i -2+2i))
+                           (0 -2-2i (0 -1-i -2-2i))
+                           )) ])
+    (match-let ([ (list c1 c2 result) tuple ])
+      (check-equal? (coordinates-range c1 c2) result)))
+
+  (for ([ tuple (in-list '((0 2+i)
+                           (0 2-i)
+                           (0 -2+i)
+                           (0 -2-i)
+                           (3-2i 7+i))) ])
+    (match-let ([ (list c1 c2) tuple ])
+      (check-exn exn:fail? (thunk (coordinates-range c1 c2)))))
 
   ;; csv-file->numbers ------------------------------------------------------------------------
 

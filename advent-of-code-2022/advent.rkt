@@ -26,6 +26,8 @@
             (-> exact-nonnegative-integer? list? list?) ]
           [ clamp
             (-> number? number? number? number?) ]
+          [ coordinates-range
+            (-> number? number? list?) ]
           [ csv-file->numbers
             (-> string? list?) ]
           [ digits
@@ -256,6 +258,25 @@
         [ else
           (make-rectangular (clamp (real-part a) (real-part b) (real-part val))
                             (clamp (imag-part a) (imag-part b) (imag-part val))) ]))
+
+(define (coordinates-range c1 c2)
+  (define (coords c1 step)
+    (if (= c1 c2)
+        (list c2)
+        (cons c1 (coords (+ c1 step) step))))
+        
+  (let* ([ delta (- c2 c1)         ]
+         [ x     (real-part delta) ]
+         [ y     (imag-part delta) ])
+    (cond [ (and (zero? x) (zero? y))
+            (list c1) ] ; c1 = c2
+          [ (or (zero? x) (zero? y))
+            (coords c1 (/ delta (magnitude delta))) ] ; horiz or vert line
+          [ (= (abs x) (abs y))
+            (coords c1 (make-rectangular (if (negative? x) -1 1)
+                                         (if (negative? y) -1 1))) ]
+          [ else
+            (error "invalid args: step must be 1 unit horiz, vert or diag") ])))
 
 ;; (csv-file->numbers path) -> (listof number?)
 ;; path : string?
