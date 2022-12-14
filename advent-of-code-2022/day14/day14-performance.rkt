@@ -10,22 +10,19 @@
              (for/list ([ pair (chunk 2 path) ])
                (apply make-rectangular pair))))
 
-(define source 500)
-(define bottom (list-max (map imag-part (flatten in))))
-(define floor  (+ 2 bottom))
-(define W      (+ source floor 3))
-(define cave   (make-vector (* W (+ 2 floor)) #f))
-
 (define (solve [ floor? #f ])
-  (define (add! p)       (vector-set! cave (p->i p) #t))
-  (define (clear!)       (vector-fill! cave #f))
-  (define (member? p)    (vector-ref cave (p->i p)))
-  (define (p->i p)       (+ (* (imag-part p) W) (real-part p)))
-  (define (set-point! p) (add! p))
+  (define source    500)
+  (define bottom    (list-max (map imag-part (flatten in))))
+  (define floor     (+ 2 bottom))
+  (define W         (+ source floor 3))
+  (define cave      (make-vector (* W (+ 2 floor)) #f))
 
-  (define (set-line! p1 p2)
-    (for ([ p (coordinates-range p1 p2) ])
-      (set-point! p)))
+  (define (add! p)    (vector-set! cave (p->i p) #t))
+  (define (clear!)    (vector-fill! cave #f))
+  (define (member? p) (vector-ref cave (p->i p)))
+  (define (p->i p)    (+ (* (imag-part p) W) (real-part p)))
+  (define set-point!  add!)
+  (define set-line!   (compose (curry map set-point!) coordinates-range))
 
   (define (move-sand! path)
     (let* ([ point (car path)     ]
