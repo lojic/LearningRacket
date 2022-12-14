@@ -1,7 +1,7 @@
 #lang racket
 (require "../advent.rkt")
 
-;; Using a vector instead of a hash dropped from 2,700 ms to 249 ms
+;; Using a vector and backtracking dropped from 2,700 ms to 7 ms !!
 
 (define in (for/list ([ path (parse-aoc 14 numbers) ])
              (for/list ([ pair (chunk 2 path) ])
@@ -24,15 +24,18 @@
     (for ([ p (coordinates-range p1 p2) ])
       (set-point! p)))
 
-  (define (move-sand! point)
-    (let ([ d  (+ point  0+i) ]
-          [ dl (+ point -1+i) ]
-          [ dr (+ point  1+i) ])
-      (cond [ (> (imag-part point) floor) #f     ]    ; Into the void !
-            [ (not (member? d))  (move-sand! d)  ]    ; Down
-            [ (not (member? dl)) (move-sand! dl) ]    ; Down to left
-            [ (not (member? dr)) (move-sand! dr) ]    ; Down to right
-            [ else (set-point! point) point      ]))) ; Sleeeep (in voice of Mantis)
+  (define (move-sand! path)
+    (let* ([ point (car path)     ]
+           [ d     (+ point  0+i) ]
+           [ dl    (+ point -1+i) ]
+           [ dr    (+ point  1+i) ])
+      (cond [ (> (imag-part point) floor) #f                 ] ; Into the void !
+            [ (not (member? d))  (move-sand! (cons d path))  ] ; Down
+            [ (not (member? dl)) (move-sand! (cons dl path)) ] ; Down to left
+            [ (not (member? dr)) (move-sand! (cons dr path)) ] ; Down to right
+            [ else                                             ; Sleeeep (in voice of Mantis)
+              (set-point! point)
+              path ])))
   ;; ------------------------------------------------------------------------------------------
   (clear!)
   (for ([ path in ]) ; Add rocks
@@ -42,11 +45,12 @@
     (set-line! (make-rectangular 0        floor)
                (make-rectangular (sub1 W) floor)))
 
-  (let loop ([ grains 0 ])
-    (let ([ p (move-sand! source) ])
-      (cond [ (not p)      grains               ]
-            [ (= p source) (add1 grains)        ]
-            [ else         (loop (add1 grains)) ]))))
+  (let loop ([ grains 0 ][ path (list source) ])
+    (let ([ path (move-sand! path) ])
+      (cond [ (not path)            grains        ]
+            [ (= (car path) source) (add1 grains) ]
+            [ else
+              (loop (add1 grains) (cdr path)) ]))))
 
 (time (check-equal? (solve)      862))
 (time (check-equal? (solve #t) 28744))
