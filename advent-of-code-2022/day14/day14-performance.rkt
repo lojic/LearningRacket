@@ -1,7 +1,10 @@
 #lang racket
 (require "../advent.rkt")
 
-;; Using a vector and backtracking dropped from 2,700 ms to 7 ms !!
+;; Original w/ hash             = 7,300 ms
+;; Original w/ hasheqv          = 2,700 ms
+;; This version w/ vector       =   249 ms
+;; This version w/ backtracking =     7 ms !!
 
 (define in (for/list ([ path (parse-aoc 14 numbers) ])
              (for/list ([ pair (chunk 2 path) ])
