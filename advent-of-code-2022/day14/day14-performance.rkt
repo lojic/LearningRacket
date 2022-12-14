@@ -29,13 +29,11 @@
            [ d     (+ point  0+i) ]
            [ dl    (+ point -1+i) ]
            [ dr    (+ point  1+i) ])
-      (cond [ (> (imag-part point) floor) #f                 ] ; Into the void !
-            [ (not (member? d))  (move-sand! (cons d path))  ] ; Down
-            [ (not (member? dl)) (move-sand! (cons dl path)) ] ; Down to left
-            [ (not (member? dr)) (move-sand! (cons dr path)) ] ; Down to right
-            [ else                                             ; Sleeeep (in voice of Mantis)
-              (set-point! point)
-              path ])))
+      (cond [ (> (imag-part point) floor) #f                 ]    ; Into the void !
+            [ (not (member? d))  (move-sand! (cons d path))  ]    ; Down
+            [ (not (member? dl)) (move-sand! (cons dl path)) ]    ; Down to left
+            [ (not (member? dr)) (move-sand! (cons dr path)) ]    ; Down to right
+            [ else (set-point! point) path                   ]))) ; Sleeeep (in voice of Mantis)
   ;; ------------------------------------------------------------------------------------------
   (clear!)
   (for ([ path in ]) ; Add rocks
@@ -47,10 +45,9 @@
 
   (let loop ([ grains 0 ][ path (list source) ])
     (let ([ path (move-sand! path) ])
-      (cond [ (not path)            grains        ]
-            [ (= (car path) source) (add1 grains) ]
-            [ else
-              (loop (add1 grains) (cdr path)) ]))))
+      (cond [ (not path)            grains                          ]
+            [ (= (car path) source) (add1 grains)                   ]
+            [ else                  (loop (add1 grains) (cdr path)) ]))))
 
 (time (check-equal? (solve)      862))
 (time (check-equal? (solve #t) 28744))
