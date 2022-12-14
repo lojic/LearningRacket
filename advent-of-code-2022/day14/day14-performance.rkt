@@ -29,8 +29,8 @@
     (for ([ pair (zipn path (cdr path)) ])
       (set-line! (car pair) (cadr pair))))
   (when floor?       ; Add floor
-    (set-line! (make-rectangular 300 bottom)
-               (make-rectangular 700 bottom)))
+    (set-line! (make-rectangular (- source 200) bottom)
+               (make-rectangular (+ source 200) bottom)))
 
   (let loop ([ grains 0 ][ path (list source) ])
     (let ([ path (move-sand! path) ])
