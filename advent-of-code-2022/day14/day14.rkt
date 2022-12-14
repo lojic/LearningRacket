@@ -5,7 +5,7 @@
              (for/list ([ pair (chunk 2 path) ])
                (apply make-rectangular pair))))
 
-(define cave   (make-hash))
+(define cave   (make-hasheqv))
 (define source 500)
 
 (define (solve [ floor? #f ])
@@ -58,5 +58,5 @@
           [ else (set-point! point 'sand)                         ; Rest
                  point ])))
 
-(check-equal? (solve)      862)
-(check-equal? (solve #t) 28744)
+(time (check-equal? (solve)      862))
+(time (check-equal? (solve #t) 28744))
