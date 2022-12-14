@@ -6,13 +6,12 @@
                (apply make-rectangular pair))))
 
 (define (solve [ floor? #f ])
-  (define source   500)
-  (define cave     (make-hasheqv))
-  (define bottom   (+ 2 (list-max (map imag-part (flatten in)))))
-  (define member?  (curry hash-has-key? cave))
-
-  (define (add! p)          (hash-set! cave p #t))
-  (define (set-line! p1 p2) (map add! (coordinates-range p1 p2)))
+  (define source    500)
+  (define cave      (make-hasheqv))
+  (define bottom    (+ 2 (list-max (map imag-part (flatten in)))))
+  (define member?   (curry hash-has-key? cave))
+  (define add!      (λ (p) (hash-set! cave p #t)))
+  (define set-line! (compose (curry map add!)  coordinates-range))
 
   (define (move-sand! path)
     (let* ([ point (car path)     ]
@@ -23,7 +22,7 @@
             [ (not (member? d))  (move-sand! (cons d path))  ]    ; Down
             [ (not (member? dl)) (move-sand! (cons dl path)) ]    ; Down to left
             [ (not (member? dr)) (move-sand! (cons dr path)) ]    ; Down to right
-            [ else (add! point) path                         ]))) ; Sleeeep (in voice of Mantis)
+            [ else               (add! point) path           ]))) ; Sleeeep (in voice of Mantis)
   ;; ------------------------------------------------------------------------------------------
   (hash-clear! cave)
   (for ([ path in ]) ; Add rocks
