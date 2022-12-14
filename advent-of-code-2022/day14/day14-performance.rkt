@@ -11,12 +11,11 @@
                (apply make-rectangular pair))))
 
 (define (solve [ floor? #f ])
-  (define source    500)
-  (define bottom    (list-max (map imag-part (flatten in))))
-  (define floor     (+ 2 bottom))
-  (define W         (+ source floor 3))
-  (define cave      (make-vector (* W (+ 2 floor)) #f))
-
+  (define source      500)
+  (define bottom      (list-max (map imag-part (flatten in))))
+  (define floor       (+ 2 bottom))
+  (define W           (+ source floor 3))
+  (define cave        (make-vector (* W (+ 2 floor)) #f))
   (define (add! p)    (vector-set! cave (p->i p) #t))
   (define (clear!)    (vector-fill! cave #f))
   (define (member? p) (vector-ref cave (p->i p)))
