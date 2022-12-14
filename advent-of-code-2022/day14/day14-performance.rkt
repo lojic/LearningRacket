@@ -10,7 +10,7 @@
 (define source 500)
 (define bottom (list-max (map imag-part (flatten in))))
 (define floor  (+ 2 bottom))
-(define W      678) ; Shhh....
+(define W      (+ source floor 3))
 (define cave   (make-vector (* W (+ 2 floor)) #f))
 
 (define (solve [ floor? #f ])
@@ -25,9 +25,9 @@
       (set-point! p)))
 
   (define (move-sand! point)
-    (let ([ d  (+ point +i)   ]
+    (let ([ d  (+ point  0+i) ]
           [ dl (+ point -1+i) ]
-          [ dr (+ point 1+i)  ])
+          [ dr (+ point  1+i) ])
       (cond [ (> (imag-part point) floor) #f     ]    ; Into the void !
             [ (not (member? d))  (move-sand! d)  ]    ; Down
             [ (not (member? dl)) (move-sand! dl) ]    ; Down to left
