@@ -1,46 +1,37 @@
 #lang racket
 (require "../advent.rkt")
 
-;; Original w/ hash             = 7,300 ms
-;; Original w/ hasheqv          = 2,700 ms
-;; This version w/ vector       =   249 ms
-;; This version w/ backtracking =     7 ms !!
-
 (define in (for/list ([ path (parse-aoc 14 numbers) ])
              (for/list ([ pair (chunk 2 path) ])
                (apply make-rectangular pair))))
 
 (define (solve [ floor? #f ])
-  (define source      500)
-  (define bottom      (list-max (map imag-part (flatten in))))
-  (define floor       (+ 2 bottom))
-  (define W           (+ source floor 3))
-  (define cave        (make-vector (* W (+ 2 floor)) #f))
-  (define (add! p)    (vector-set! cave (p->i p) #t))
-  (define (clear!)    (vector-fill! cave #f))
-  (define (member? p) (vector-ref cave (p->i p)))
-  (define (p->i p)    (+ (* (imag-part p) W) (real-part p)))
-  (define set-point!  add!)
-  (define set-line!   (compose (curry map set-point!) coordinates-range))
+  (define source   500)
+  (define cave     (make-hasheqv))
+  (define bottom   (+ 2 (list-max (map imag-part (flatten in)))))
+  (define member?  (curry hash-has-key? cave))
+
+  (define (add! p)          (hash-set! cave p #t))
+  (define (set-line! p1 p2) (map add! (coordinates-range p1 p2)))
 
   (define (move-sand! path)
     (let* ([ point (car path)     ]
            [ d     (+ point  0+i) ]
            [ dl    (+ point -1+i) ]
            [ dr    (+ point  1+i) ])
-      (cond [ (> (imag-part point) floor) #f                 ]    ; Into the void !
+      (cond [ (> (imag-part point) bottom)  #f               ]    ; Into the void !
             [ (not (member? d))  (move-sand! (cons d path))  ]    ; Down
             [ (not (member? dl)) (move-sand! (cons dl path)) ]    ; Down to left
             [ (not (member? dr)) (move-sand! (cons dr path)) ]    ; Down to right
-            [ else (set-point! point) path                   ]))) ; Sleeeep (in voice of Mantis)
+            [ else (add! point) path                         ]))) ; Sleeeep (in voice of Mantis)
   ;; ------------------------------------------------------------------------------------------
-  (clear!)
+  (hash-clear! cave)
   (for ([ path in ]) ; Add rocks
     (for ([ pair (zipn path (cdr path)) ])
       (set-line! (car pair) (cadr pair))))
   (when floor?       ; Add floor
-    (set-line! (make-rectangular 0        floor)
-               (make-rectangular (sub1 W) floor)))
+    (set-line! (make-rectangular 300 bottom)
+               (make-rectangular 700 bottom)))
 
   (let loop ([ grains 0 ][ path (list source) ])
     (let ([ path (move-sand! path) ])
