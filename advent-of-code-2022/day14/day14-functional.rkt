@@ -16,8 +16,6 @@
   (define (free? c p)
     (not (or (and floor? (= bottom (imag-part p)))
              (member? c p))))
-    ;; (and (not (and floor? (= bottom (imag-part p))))
-    ;;      (not (member? c p))))
 
   (define (add-line cave p1 p2)
     (foldl add-rock
