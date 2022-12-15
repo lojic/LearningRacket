@@ -9,13 +9,20 @@
   (define source   500)
   (define bottom   (+ 2 (list-max (map imag-part (flatten in)))))
   (define invalid? (compose (curry <= bottom) imag-part))
+
   (define add-sand (λ (p c) (hash-set c p 'sand)))
   (define add-rock (λ (p c) (hash-set c p 'rock)))
-  (define member?  (λ (c p) (hash-has-key? c p)))
+  (define member?  (λ (p c) (hash-has-key? c p)))
+
+  (define (count-sand c)
+    (~> (hash-values c)              ; Types of items
+        (filter (curry eq? 'sand) _) ; Keep only 'sand
+        length))                     ; How many?
 
   (define (free? c p)
-    (not (or (and floor? (= bottom (imag-part p)))
-             (member? c p))))
+    (not                                       ; If neither of the following, it's free
+     (or (and floor? (= bottom (imag-part p))) ; We have a floor and the point is on it
+         (member? p c))))                      ; Something is already at that point
 
   (define (add-line cave p1 p2)
     (foldl add-rock
@@ -40,13 +47,10 @@
             [ (free? cave dr)  (move-sand cave (cons dr path))     ]    ; Down to right
             [ else             (values (add-sand point cave) path) ]))) ; Sleeeep (in voice of Mantis)
 
-  (define create-cave (compose add-rocks hasheqv))
-  (define count-sand  (λ (c) (length (filter (curry eq? 'sand) (hash-values c)))))
-
   ;; ------------------------------------------------------------------------------------------
 
-  (let drop-sand ([ cave (create-cave) ]
-                  [ path (list source) ])
+  (let drop-sand ([ cave (add-rocks (hasheqv)) ]
+                  [ path (list source)         ])
     (let-values ([ (cave path) (move-sand cave path) ])
       (if (or (not path)              ; Fell into void
               (= (car path) source))  ; Source can't move
