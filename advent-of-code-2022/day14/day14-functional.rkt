@@ -25,9 +25,9 @@
          (member? p c))))                      ; Something is already at that point
 
   (define (add-line cave p1 p2)
-    (foldl add-rock
-           cave
-           (coordinates-range p1 p2)))
+    (foldl add-rock                    ; Folding procedure
+           cave                        ; Accumulate state
+           (coordinates-range p1 p2))) ; List of coordinates
 
   (define (add-rocks cave)
     (for/fold ([ cave cave ])
