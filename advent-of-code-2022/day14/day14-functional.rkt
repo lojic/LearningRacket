@@ -12,7 +12,12 @@
   (define add-sand (λ (p c) (hash-set c p 'sand)))
   (define add-rock (λ (p c) (hash-set c p 'rock)))
   (define member?  (λ (c p) (hash-has-key? c p)))
-  (define free?    (λ (c p) (not (member? c p))))
+
+  (define (free? c p)
+    (not (or (and floor? (= bottom (imag-part p)))
+             (member? c p))))
+    ;; (and (not (and floor? (= bottom (imag-part p))))
+    ;;      (not (member? c p))))
 
   (define (add-line cave p1 p2)
     (foldl add-rock
@@ -26,13 +31,6 @@
                 ([ pair (in-list (zipn path (cdr path))) ])
         (apply add-line cave pair))))
 
-  (define (add-floor cave)
-    (if floor?
-        (add-line cave
-                  (make-rectangular (- source 200) bottom)
-                  (make-rectangular (+ source 200) bottom))
-        cave))
-
   (define (move-sand cave path)
     (let* ([ point (car path)     ]
            [ d     (+ point  0+i) ]
@@ -44,7 +42,7 @@
             [ (free? cave dr)  (move-sand cave (cons dr path))     ]    ; Down to right
             [ else             (values (add-sand point cave) path) ]))) ; Sleeeep (in voice of Mantis)
 
-  (define create-cave (compose add-floor add-rocks hasheqv))
+  (define create-cave (compose add-rocks hasheqv))
   (define count-sand  (λ (c) (length (filter (curry eq? 'sand) (hash-values c)))))
 
   ;; ------------------------------------------------------------------------------------------
