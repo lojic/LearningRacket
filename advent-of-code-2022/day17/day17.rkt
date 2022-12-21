@@ -89,7 +89,7 @@
 (define (prune-coords coords)
   (let ([ y (lowest-column-height coords) ])
     (filter (λ (c)
-              (>= (imag-part c) (- y 5)))
+              (>= (imag-part c) (- y 2)))
             coords)))
 
 (define (lowest-column-height coords) (list-min (column-heights coords)))
