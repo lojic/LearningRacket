@@ -71,5 +71,5 @@
   (for/sum ([ side (cube-sides cube) ])
     (if (hash-ref sides side #f) 1 0)))
 
-(check-equal? (hash-count (part1 in)) 3390)
-(check-equal? (let-values ([(sum _) (part2 in)]) sum) 2058)
+(time (check-equal? (hash-count (part1 in)) 3390))
+(time (check-equal? (let-values ([(sum _) (part2 in)]) sum) 2058))
