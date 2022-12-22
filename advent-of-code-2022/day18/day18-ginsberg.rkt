@@ -1,3 +1,6 @@
+;; Port of Todd Ginsberg's solution for Advent of Code 2022 Day 18
+;; https://github.com/tginsberg/advent-2022-kotlin/blob/main/src/main/kotlin/com/ginsberg/advent2022/Day18.kt
+
 #lang racket
 (require "./ginsberg-support.rkt")
 
