@@ -23,9 +23,8 @@
                                                  (in-range? (it.y p) y-range)
                                                  (in-range? (it.z p) z-range))) _)) ])
           (set-add! seen look-next)
-          (if (in? neighbor points)
-              (set! sides-found (add1 sides-found))
-              (enqueue! que neighbor)))))
+          (cond [ (in? neighbor points) (set! sides-found (add1 sides-found)) ]
+                [ else (enqueue! que neighbor) ]))))
 
     sides-found))
 
