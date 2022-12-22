@@ -13,6 +13,7 @@
   (let* ([ x-range     (range-of points it.x) ]
          [ y-range     (range-of points it.y) ]
          [ z-range     (range-of points it.z) ]
+
          [ que         (add (make-queue) (point3d (car x-range) (car y-range) (car z-range))) ]
          [ seen        (mutable-set) ]
          [ sides-found 0             ])
@@ -28,4 +29,5 @@
 
     sides-found))
 
-(define range-of (λ (st fun) (cons (sub1 (min-of st fun)) (add1 (max-of st fun)))))
+(define (range-of st fun)
+  (cons (sub1 (min-of st fun)) (add1 (max-of st fun))))
