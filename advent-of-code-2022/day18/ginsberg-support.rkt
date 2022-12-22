@@ -8,9 +8,9 @@
          input
          in?
          in-range?
-         it-x
-         it-y
-         it-z
+         it.x
+         it.y
+         it.z
          max-of
          min-of
          point3d-of
@@ -45,9 +45,9 @@
   (and (>= val (car pair))
        (<= val (cdr pair))))
 
-(define it-x point3d-x)
-(define it-y point3d-y)
-(define it-z point3d-z)
+(define it.x point3d-x)
+(define it.y point3d-y)
+(define it.z point3d-z)
 
 (define (min-of st fun) (list-min (map fun (set->list st))))
 (define (max-of st fun) (list-max (map fun (set->list st))))
