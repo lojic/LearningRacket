@@ -41,7 +41,7 @@
                [ cly      (- (state-cly a-state) (robot-cly-cost bot))                       ]
                [ obs      (- (state-obs a-state) (robot-obs-cost bot))                       ]))
 
-(define (collect a-state [ steps 0 ])
+(define (collect a-state [ steps 1 ])
   (struct-copy state a-state
                [ steps (- (state-steps a-state) steps)                  ]
                [ ore   (+ (state-ore a-state) (* steps (state-ore-bots a-state))) ]
@@ -74,7 +74,7 @@
                                         (generate-move a-state bot))
                                       (blueprint-bots bp))) ])
     (if (null? moves)
-        (list (collect a-state 1))
+        (list (collect a-state))
         moves)))
 
 (define (initialize-state steps) (state steps 0 0 0 0 1 0 0 0))
