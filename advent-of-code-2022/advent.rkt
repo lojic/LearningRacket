@@ -389,7 +389,7 @@
 ;; Return a list of all numbers in str, ignoring non-number characters.
 (define (numbers str)
   (map string->number
-       (regexp-match* #px"((?<![0-9])-)?[0-9.]+" str)))
+       (regexp-match* #px"((?<![0-9])-)?[0-9]+([.][0-9]+)?" str)))
 
 ;; (parse-aoc day parser sep print-lines) -> list?
 ;; day         : positive-integer?
