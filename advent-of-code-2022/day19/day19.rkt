@@ -31,10 +31,8 @@
                   state*
                   best))))))
 
-(define (build-bot a-state bot steps)
-  (define steps* (- (state-steps a-state) steps))
+(define (build-bot a-state bot)
   (struct-copy state a-state
-               [ steps    steps* ]
                [ ore-bots (+ (state-ore-bots a-state) (if (eq? 'ore (robot-type bot)) 1 0) ) ]
                [ cly-bots (+ (state-cly-bots a-state) (if (eq? 'cly (robot-type bot)) 1 0) ) ]
                [ obs-bots (+ (state-obs-bots a-state) (if (eq? 'obs (robot-type bot)) 1 0) ) ]
@@ -46,10 +44,10 @@
 (define (collect a-state [ steps 0 ])
   (struct-copy state a-state
                [ steps (- (state-steps a-state) steps)                  ]
-               [ ore   (+ (state-ore a-state) (state-ore-bots a-state)) ]
-               [ cly   (+ (state-cly a-state) (state-cly-bots a-state)) ]
-               [ obs   (+ (state-obs a-state) (state-obs-bots a-state)) ]
-               [ geo   (+ (state-geo a-state) (state-geo-bots a-state)) ]))
+               [ ore   (+ (state-ore a-state) (* steps (state-ore-bots a-state))) ]
+               [ cly   (+ (state-cly a-state) (* steps (state-cly-bots a-state))) ]
+               [ obs   (+ (state-obs a-state) (* steps (state-obs-bots a-state))) ]
+               [ geo   (+ (state-geo a-state) (* steps (state-geo-bots a-state))) ]))
 
 (define (generate-move a-state bot)
   (if (>= ((robot-count bot) a-state) (robot-max bot))
@@ -68,7 +66,7 @@
                                             (if (positive? cly-needed) (ceiling (/ cly-needed cly-bots)) 0)
                                             (if (positive? obs-needed) (ceiling (/ obs-needed obs-bots)) 0))) ])
               (if (<= steps-needed (- (state-steps a-state) (robot-min bot)))
-                  (build-bot (iterate collect a-state steps-needed) bot steps-needed)
+                  (build-bot (collect a-state steps-needed) bot)
                   #f)))))) ; Ran out of time
 
 (define (generate-moves bp a-state)
