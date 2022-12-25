@@ -1,7 +1,6 @@
 #lang racket
 
-(provide (contract-out
-          #:∃ queue
+#;(provide (contract-out #:∃ queue
           [ list->queue         (-> list? queue)                         ]
           [ queue->list         (-> queue list?)                         ]
           [ queue-copy          (-> queue queue)                         ]
@@ -17,6 +16,22 @@
           [ queue-previous      (-> queue queue)                         ]
           [ queue-remove-n!     (-> queue exact-positive-integer? queue) ]
           [ queue-val           (-> queue any)                           ]))
+
+(provide list->queue         
+         queue->list         
+         queue-copy          
+         queue-count         
+         queue-eq?           
+         queue-equal?        
+         queue-findf         
+         queue-insert!       
+         queue-insert-queue! 
+         queue-last          
+         queue-memv          
+         queue-next          
+         queue-previous      
+         queue-remove-n!     
+         queue-val)
 
 ;; Implementation details hidden through the (#:∃ queue) contract
 (struct node (val next prev) #:mutable #:transparent)
