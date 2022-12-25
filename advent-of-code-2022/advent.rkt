@@ -7,7 +7,7 @@
          rackunit
          threading)
 
-(provide (contract-out
+#;(provide (contract-out
           [ ascending-permutations-generator
             (-> exact-nonnegative-integer? list? generator?) ]
           [ atom
@@ -91,6 +91,50 @@
           [ zipn
             (-> list? ... list?) ]
           )
+         point-add
+         point-sub
+         MAX-INTEGER
+         (struct-out pair-stream)
+         (struct-out point)
+         check-equal?
+         (all-from-out threading))
+
+(provide ascending-permutations-generator
+         atom
+         atom?
+         atoms
+         bool-list->decimal
+         bool-string-list->decimal
+         chars
+         chunk
+         clamp
+         coordinates-range
+         csv-file->numbers
+         digits
+         enumerate
+         filter-ascending-permutations
+         flip
+         scanl
+         numbers
+         iterate
+         list-max
+         list-min
+         list-prod
+         list-sum
+         parse-aoc
+         split-2
+         split-at-list
+         spread-combine
+         string-left
+         string-index-of
+         string-right
+         take-at-most
+         take-right-at-most
+         vector-sum
+         vector-update!
+         windows
+         words
+         zipn
          point-add
          point-sub
          MAX-INTEGER
