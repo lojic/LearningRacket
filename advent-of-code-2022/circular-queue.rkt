@@ -6,6 +6,7 @@
           [ queue->list         (-> queue list?)                         ]
           [ queue-copy          (-> queue queue)                         ]
           [ queue-count         (-> queue exact-positive-integer?)       ]
+          [ queue-eq?           (-> queue queue boolean?)                ]
           [ queue-equal?        (-> queue queue boolean?)                ]
           [ queue-findf         (-> procedure? queue queue)              ]
           [ queue-insert!       (-> queue any/c queue)                   ]
@@ -129,6 +130,14 @@
 ;;
 ;; Return the queue preceding head
 (define (queue-previous head) (node-prev head))
+
+;; (queue-eq? q1 q2) -> boolean?
+;; q1 : queue
+;; q2 : queue
+;;
+;; Indicate whether the two queues are the same queue.
+(define (queue-eq? q1 q2)
+  (eq? q1 q2))
 
 ;; (queue-equal? q1 q2) -> boolean?
 ;; q1 : queue
