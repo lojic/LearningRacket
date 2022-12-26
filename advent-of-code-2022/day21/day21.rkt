@@ -11,16 +11,17 @@
                                    (list (eval (string->symbol op) ns) left right))))) _)
                 (make-immutable-hash _)))
 
-(define (eval-monkey id [ result identity ][ key #f ][ xform identity ])
+(define (traverse id result key xform)
   (cond [ (and key (string=? key id)) #t ]
         [ else (let ([ monkey (hash-ref hsh id) ])
                  (if (number? monkey)
                      (result monkey)
                      (match-let ([ (list op left right) monkey ])
-                       ((xform op) (eval-monkey left result key xform)
-                                   (eval-monkey right result key xform))))) ]))
+                       ((xform op) (traverse left result key xform)
+                                   (traverse right result key xform))))) ]))
 
-(define has-human? (λ (id) (eval-monkey id (const #f) "humn" (λ (op) (λ (a b) (or a b))))))
+(define eval-monkey (λ (id) (traverse id identity #f identity)))
+(define has-human?  (λ (id) (traverse id (const #f) "humn" (λ (op) (λ (a b) (or a b))))))
 
 (define (solve-for left? result op val)
   (cond [ (eq? op +) (- result val)                           ]
