@@ -138,12 +138,14 @@
          point-add
          point-sub
          MAX-INTEGER
+         MIN-INTEGER
          (struct-out pair-stream)
          (struct-out point)
          check-equal?
          (all-from-out threading))
 
 (define MAX-INTEGER (most-positive-fixnum))
+(define MIN-INTEGER (most-negative-fixnum))
 
 ;; 3D Point
 (struct point (x y z) #:transparent)
@@ -227,7 +229,7 @@
 ;; Return a list of all atoms (numbers or symbol name) in str.
 (define (atoms str)
   (map atom
-       (regexp-match* #px"[/$?a-zA-Z_0-9.+-]+" str)))
+       (regexp-match* #px"[/$?a-zA-Z_0-9.*+-]+" str)))
 
 ;; (bool-list->decimal lst) -> exact-integer?
 ;; lst : (listof exact-integer?)
