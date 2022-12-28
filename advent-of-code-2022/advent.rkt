@@ -122,6 +122,7 @@
          list-prod
          list-sum
          parse-aoc
+         rotate-list
          split-2
          split-at-list
          spread-combine
@@ -310,7 +311,7 @@
     (if (= c1 c2)
         (list c2)
         (cons c1 (coords (+ c1 step) step))))
-        
+
   (let* ([ delta (- c2 c1)         ]
          [ x     (real-part delta) ]
          [ y     (imag-part delta) ])
@@ -561,6 +562,15 @@
     (printf "~a\n" dash)
     (print-list entries)
     (printf "\n~a\n"  dash)))
+
+;; (rotate-list lst) -> list?
+;; lst : list?
+;;
+;; Return a new list with the first element moved to the end of the list.
+(define (rotate-list lst)
+  (if (or (null? lst) (null? (cdr lst)))
+      lst
+      (append (cdr lst) (list (car lst)))))
 
 ;; (scanl proc initial lst) -> list?
 ;; proc    : procedure?

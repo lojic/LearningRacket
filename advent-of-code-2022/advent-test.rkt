@@ -96,7 +96,7 @@
                            (1 5 13.3 5))) ])
     (match-let ([ (list a b val result) tuple ])
       (check-within (clamp a b val) result 0.0001)))
-  
+
   ;; coordinates-range ------------------------------------------------------------------------
 
   (for ([ tuple (in-list '((0 0 (0))
@@ -219,7 +219,14 @@
                            (point 2 3 4))
                 (point -1 -1 -1))
 
-  ;; scanl --------------------------------------------------------------------------------
+  ;; rotate-list ------------------------------------------------------------------------------
+
+  (check-equal? (rotate-list '()) '())
+  (check-equal? (rotate-list '(7)) '(7))
+  (check-equal? (rotate-list '(1 2)) '(2 1))
+  (check-equal? (rotate-list '(1 2 3)) '(2 3 1))
+
+  ;; scanl ------------------------------------------------------------------------------------
 
   (check-equal? (scanl + 0 '(0 1 2 3 4)) '(0 1 3 6 10))
   (check-equal? (scanl cons '() '(0 1 2))
