@@ -462,7 +462,6 @@
   (let* ([ fname   (format "day~a.txt" (~r day #:min-width 2 #:pad-string "0")) ]
          [ text    (file->string fname) ]
          [ entries (map parser (~> text
-                                   string-trim
                                    (string-split _ sep))) ])
     (when (and print-sample
                (or (> head-lines 0) (> tail-lines 0)))
