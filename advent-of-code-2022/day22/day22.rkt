@@ -3,9 +3,9 @@
 
 (define-values (vget width height commands)
   (match-let ([ (list str path) (parse-aoc 22 #:sep "\n\n" #:print-sample #f) ])
-    (let* ([ lines    (string-split str "\n")               ]
-           [ width    (list-max (map string-length lines))  ]
-           [ height   (length lines)                        ]
+    (let* ([ lines    (string-split str "\n")              ]
+           [ width    (list-max (map string-length lines)) ]
+           [ height   (length lines)                       ]
            [ lines    (map (λ (s)
                              (let ([ len (string-length s) ])
                                (if (< len width)
@@ -16,7 +16,7 @@
            [ vget     (λ (c)
                         (vector-ref vec (+ (* (sub1 (imag-part c)) width)
                                            (sub1 (real-part c))))) ]
-           [ commands (map atom (regexp-match* #px"(\\d+|[LR])" path))          ])
+           [ commands (map atom (regexp-match* #px"(\\d+|[LR])" path)) ])
       (values vget width height commands))))
 
 (define right 1)
@@ -111,7 +111,6 @@
 (define (hop-tile a-tile pos dir)
   (define (transform src-origin src-pos src-dir dst-origin dst-dir)
     (define len tile-size-1)
-
     (values (cond [ (= src-dir dst-dir)
                     (let* ([ pos* (+ src-pos src-dir) ]
                            [ y    (imag-part pos*)    ])
@@ -135,26 +134,26 @@
   (match-let ([ (cons key dir*) (hash-ref (tile-neighbors a-tile) dir) ])
     (transform (tile-origin a-tile) pos dir (tile-origin (hash-ref tiles key)) dir*)))
 
-(define (leaving-tile? a-tile pos dir)
-  (let* ([ origin (tile-origin a-tile) ]
-         [ ox     (real-part origin)   ]
-         [ oy     (imag-part origin)   ]
-         [ x      (real-part pos)      ]
-         [ y      (imag-part pos)      ]
-         [ len    tile-size-1     ])
-    (or (and (= dir right) (= x (+ ox len)))
-        (and (= dir down)  (= y (+ oy len)))
-        (and (= dir left)  (= x ox))
-        (and (= dir up)    (= y oy)))))
-
 (define (part2-next-pos pos dir)
+  (define (leaving-tile? a-tile pos dir)
+    (let* ([ origin (tile-origin a-tile) ]
+           [ ox     (real-part origin)   ]
+           [ oy     (imag-part origin)   ]
+           [ x      (real-part pos)      ]
+           [ y      (imag-part pos)      ]
+           [ len    tile-size-1     ])
+      (or (and (= dir right) (= x (+ ox len)))
+          (and (= dir down)  (= y (+ oy len)))
+          (and (= dir left)  (= x ox))
+          (and (= dir up)    (= y oy)))))
+
   (define (pos->tile pos)
     (findf (λ (a-tile)
-             (let* ([ orig (tile-origin a-tile)    ]
-                    [ x1   (real-part orig)        ]
-                    [ y1   (imag-part orig)        ]
-                    [ x2   (+ x1 tile-size-1) ]
-                    [ y2   (+ y1 tile-size-1) ])
+             (let* ([ orig (tile-origin a-tile) ]
+                    [ x1   (real-part orig)     ]
+                    [ y1   (imag-part orig)     ]
+                    [ x2   (+ x1 tile-size-1)   ]
+                    [ y2   (+ y1 tile-size-1)   ])
                (and (<= x1 (real-part pos) x2)
                     (<= y1 (imag-part pos) y2))))
            (hash-values tiles)))
@@ -164,8 +163,6 @@
                                    (hop-tile a-tile pos dir)
                                    (values (+ pos dir) dir)) ])
       (values pos* dir*))))
-
-;; --------------------------------------------------------------------------------------------
 
 (time (check-equal? (solve part1-next-pos) 136054))
 (time (check-equal? (solve part2-next-pos) 122153))
