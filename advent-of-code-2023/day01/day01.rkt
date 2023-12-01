@@ -44,5 +44,3 @@
 
 (check-equal? (part1) 52974)
 (check-equal? (part2) 53340)
-
-      
