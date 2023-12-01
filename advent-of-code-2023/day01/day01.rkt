@@ -27,12 +27,12 @@
 (define (find-last-digit s pairs)
   (find-digit s pairs string-suffix? identity sub1))
 
+(define (calibration-value pairs s)
+  (+ (* 10 (find-first-digit s pairs))
+     (find-last-digit s pairs)))
+
 (define (solve pairs)
-  (~> in
-      (map (λ (s)
-             (+ (* 10 (find-first-digit s pairs))
-                (find-last-digit s pairs))) _)
-      list-sum))
+  (list-sum (map (curry calibration-value pairs) in)))
 
 ;; Parts --------------------------------------------------------------------------------------
 
