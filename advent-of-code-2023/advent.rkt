@@ -54,6 +54,8 @@
             (-> list? number?) ]
           [ list-sum
             (-> list? number?) ]
+          [ parallel-combine
+            (-> procedure? procedure? procedure? procedure?) ]
           [ parse-aoc
             (->* (positive-integer?)
                  (procedure?
@@ -62,6 +64,8 @@
                   #:tail-lines exact-nonnegative-integer?
                   #:print-sample boolean?)
                  any) ]
+          [ rotate-list
+            (-> list? list?) ]
           [ split-2
             (-> list? list?) ]
           [ split-at-list
@@ -121,6 +125,7 @@
          list-min
          list-prod
          list-sum
+         parallel-combine
          parse-aoc
          rotate-list
          split-2
@@ -437,6 +442,27 @@
 (define (numbers str)
   (map string->number
        (regexp-match* #px"((?<![0-9])-)?[0-9]+([.][0-9]+)?" str)))
+
+;; (parallel-combine h f g) -> any
+;; h : procedure?
+;; f : procedure?
+;; g : procedure?
+;;
+;; Functions f and g take the same number of arguments. The input to
+;; parallel-combine is passed to both of them. Their outputs are
+;; combined by the function h, of two arguments.
+;;
+;; For example:
+;; ((parallel-combine cons car (compose1 (curry map add1) cdr)) '(1 2 3))
+;; -> '(1 3 4)
+;;
+;; A combinator from "Software Design for Flexibility" by Hanson &
+;; Sussman
+(define (parallel-combine h f g)
+  (define (the-combination . args)
+    (h (apply f args) (apply g args)))
+
+  the-combination)
 
 ;; (parse-aoc day parser sep print-lines) -> list?
 ;; day         : positive-integer?
