@@ -4,8 +4,7 @@
 
 ;; Parse input into the form:
 ;; ( (<id> (<n> <color>) (<n> <color) ... ) ... )
-(define in (map (λ (lst)
-                  (cons (cadr lst) (chunk 2 (drop lst 2))))
+(define in (map (parallel-combine cons cadr (compose1 (curry chunk 2) (curry (flip drop) 2)))
                 (parse-aoc 2 atoms)))
 
 (define (max-pixel lst [red 0] [green 0] [blue 0])
@@ -34,4 +33,3 @@
 
 (check-equal? (part1) 2528)
 (check-equal? (part2) 67363)
-
