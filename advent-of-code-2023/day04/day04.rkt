@@ -8,9 +8,7 @@
                    (parse-aoc 4 (λ (s) (string-split s " | ")))))
 
 (define (part1 cards)
-  (~> (filter positive? cards)
-      (map (λ (n) (expt 2 (sub1 n))) _)
-      list-sum))
+  (list-sum (map (λ (n) (expt 2 (sub1 n))) (filter positive? cards))))
 
 (define (part2 n cards)
   (cond [ (= n 0) 0 ]
