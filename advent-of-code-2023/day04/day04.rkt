@@ -15,10 +15,9 @@
 (define (part2 n cards)
   (cond [ (= n 0) 0 ]
         [ else (+ n (let loop ([ n n ][ cards cards ][ total 0 ])
-                      (if (= n 0)
-                          total
-                          (let ([ sub-total (part2 (car cards) (cdr cards)) ])
-                            (loop (sub1 n) (cdr cards) (+ total sub-total)))))) ]))
+                      (cond [ (= n 0) total ]
+                            [ else (let ([ sub-total (part2 (car cards) (cdr cards)) ])
+                                     (loop (sub1 n) (cdr cards) (+ total sub-total))) ]))) ]))
 
 (check-equal? (part1 cards) 22897)
 (check-equal? (part2 (length cards) cards) 5095824)
