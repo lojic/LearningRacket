@@ -1,6 +1,6 @@
 #lang racket
 
-(require "../advent.rkt" threading)
+(require "../advent.rkt")
 
 (define cards (map (λ (l)
                      (set-count (set-intersect (drop (string-split (car l)) 2)
