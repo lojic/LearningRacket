@@ -7,8 +7,8 @@
 ;; Parsing ------------------------------------------------------------------------------------
 
 (define (parse-input tokens)
-  (values (filter (λ (pair) (string? (cdr pair))) tokens)
-          (filter (λ (pair) (char? (cdr pair))) tokens)))
+  (values (filter (compose1 string? cdr) tokens)
+          (filter (compose1 char? cdr) tokens)))
 
 (define (parse-tokens lines)
   (let next-line ([ lines lines ][ row 0 ][ tokens '() ])
@@ -59,10 +59,10 @@
          (range (string-length num-str))))
 
 (define (gear-with-nums pos)
-  (cons pos (~> (filter (λ (pair)
-                          (num-adjacent-to-sym? (cdr pair) (car pair) pos))
-                        nums)
-                (map (compose1 string->number cdr) _))))
+  (~> (filter (λ (pair)
+                (num-adjacent-to-sym? (cdr pair) (car pair) pos))
+              nums)
+      (map (compose1 string->number cdr) _)))
 
 ;; Parts --------------------------------------------------------------------------------------
 
@@ -76,8 +76,8 @@
 (define (part2)
   (~> (filter (compose1 (curry char=? #\*) cdr) syms)
       (map (compose1 gear-with-nums car) _)
-      (filter (compose1 (curry = 3) length) _)
-      (map (λ (l) (list-prod (drop l 1))) _)
+      (filter (compose1 (curry = 2) length) _)
+      (map list-prod _)
       list-sum))
 
 ;; Tests --------------------------------------------------------------------------------------
