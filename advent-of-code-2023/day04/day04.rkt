@@ -1,0 +1,23 @@
+#lang racket
+
+(require "../advent.rkt" threading)
+
+(define cards (map (λ (l)
+                     (set-count (set-intersect (drop (string-split (car l)) 2)
+                                               (string-split (cadr l)))))
+                   (parse-aoc 4 (λ (s) (string-split s " | ")))))
+
+(define (part1 cards)
+  (~> (filter positive? cards)
+      (map (λ (n) (expt 2 (sub1 n))) _)
+      list-sum))
+
+(define (part2 n cards)
+  (cond [ (= n 0) 0 ]
+        [ else (+ n (let loop ([ n n ][ cards cards ][ total 0 ])
+                      (if (= n 0)
+                          total
+                          (loop (sub1 n) (cdr cards) (+ total (part2 (car cards) (cdr cards))))))) ]))
+
+(check-equal? (part1 cards) 22897)
+(check-equal? (part2 (length cards) cards) 5095824)
