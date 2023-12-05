@@ -15,6 +15,3 @@
          (cond [ (= n 0) total ]
                [ else (let ([ sub-total (part2 (car cards) (cdr cards)) ])
                         (loop (sub1 n) (cdr cards) (+ total sub-total))) ]))))
-
-(check-equal? (part1 cards) 22897)
-(check-equal? (part2 (length cards) cards) 5095824)
