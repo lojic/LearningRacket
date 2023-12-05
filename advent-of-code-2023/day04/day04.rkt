@@ -1,5 +1,4 @@
 #lang racket
-
 (require "../advent.rkt")
 
 (define cards (map (λ (l)
