@@ -1,5 +1,5 @@
 #lang racket
-(require "../advent.rkt" threading)
+(require "../advent.rkt")
 
 (define-values (seeds1 seeds2 categories)
   (let* ([ lines (parse-aoc 5 #:sep "\n\n" #:print-sample #f) ]
@@ -58,9 +58,7 @@
 (define (part1 seeds) (part2 (map (λ (s) (cons s (add1 s))) seeds)))
 
 (define (part2 seeds)
-  (~> (apply append (map (λ (s) (convert-categories s categories)) seeds))
-      (map car _)
-      list-min))
+  (list-min (map car (apply append (map (λ (s) (convert-categories s categories)) seeds)))))
 
 (check-equal? (part1 seeds1) 457535844)
 (check-equal? (part2 seeds2) 41222968)
