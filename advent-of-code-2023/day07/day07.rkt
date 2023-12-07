@@ -28,7 +28,7 @@
   (map (curry parse-round part) (parse-aoc 7 strings #:print-sample #f)))
 
 (define (solve rounds)
-  (~> (map (match-lambda [(list groups hand bid) (list (cons (rank-hand groups) hand) bid)]) rounds)
+  (~> (map (match-lambda [(list rank hand bid) (list (cons rank hand) bid)]) rounds)
       (sort _ < #:key (match-lambda [(list (list a b c d e f) _)
                                      (+ (* 537824 a) (* 38416 b) (* 2744 c) (* 196 d) (* 14 e) f)] ))
       (map second _)
@@ -36,12 +36,12 @@
       (map (parallel-combine * car cdr) _)
       list-sum))
 
-(define (part1 lst) (sort (map length (group-by identity lst)) >))
+(define (part1 lst) (rank-hand (sort (map length (group-by identity lst)) >)))
 
 (define (part2 lst)
   (~> '(2 3 4 5 6 7 8 9 10 12 13 14)
       (map (compose1 part1 (curry list-replace lst 1)) _)
-      (sort _ > #:key rank-hand)
+      (sort _ >)
       car))
 
 (check-equal? (solve (parse-input part1)) 246409899)
