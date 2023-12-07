@@ -11,7 +11,7 @@
     [ _ (- (char->integer card) 48) ]))
 
 (define (rank-hand hand)
-  (match (map length hand)
+  (match hand
     [ (list 5)         7 ]   ; Five of a kind
     [ (list 4 1)       6 ]   ; Four of a kind
     [ (list 3 2)       5 ]   ; Full house
@@ -36,7 +36,7 @@
       (map (parallel-combine * car cdr) _)
       list-sum))
 
-(define (part1 lst) (sort (group-by identity lst) > #:key length))
+(define (part1 lst) (sort (map length (group-by identity lst)) >))
 
 (define (part2 lst)
   (~> '(2 3 4 5 6 7 8 9 10 12 13 14)
