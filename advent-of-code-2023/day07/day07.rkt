@@ -1,16 +1,6 @@
 #lang racket
 (require "../advent.rkt")
 
-(define (rank-hand hand)
-  (match hand
-    [ (list 5)         7 ]   ; Five of a kind
-    [ (list 4 1)       6 ]   ; Four of a kind
-    [ (list 3 2)       5 ]   ; Full house
-    [ (list 3 1 1)     4 ]   ; Three of a kind
-    [ (list 2 2 1)     3 ]   ; Two pair
-    [ (list 2 1 1 1)   2 ]   ; One pair
-    [ (list 1 1 1 1 1) 1 ])) ; High card
-
 (define (parse-input part)
   (define (translate part2? card)
     (index-of (string->list (if part2? "_J23456789T_QKA" "__23456789TJQKA")) card))
@@ -30,7 +20,15 @@
       (map (parallel-combine * car cdr) _)
       list-sum))
 
-(define (part1 lst) (rank-hand (sort (map length (group-by identity lst)) >)))
+(define (part1 lst)
+  (match (sort (map length (group-by identity lst)) >)
+         [ (list 5)         7 ]   ; Five of a kind
+         [ (list 4 1)       6 ]   ; Four of a kind
+         [ (list 3 2)       5 ]   ; Full house
+         [ (list 3 1 1)     4 ]   ; Three of a kind
+         [ (list 2 2 1)     3 ]   ; Two pair
+         [ (list 2 1 1 1)   2 ]   ; One pair
+         [ (list 1 1 1 1 1) 1 ])) ; High card
 
 (define (part2 lst)
   (~> '(2 3 4 5 6 7 8 9 10 12 13 14)
