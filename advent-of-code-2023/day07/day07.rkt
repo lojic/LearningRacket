@@ -22,13 +22,13 @@
 
 (define (part1 lst)
   (match (sort (map length (group-by identity lst)) >)
-         [ (list 5)         7 ]   ; Five of a kind
-         [ (list 4 1)       6 ]   ; Four of a kind
-         [ (list 3 2)       5 ]   ; Full house
-         [ (list 3 1 1)     4 ]   ; Three of a kind
-         [ (list 2 2 1)     3 ]   ; Two pair
-         [ (list 2 1 1 1)   2 ]   ; One pair
-         [ (list 1 1 1 1 1) 1 ])) ; High card
+         [ '(5)         7 ]   ; Five of a kind
+         [ '(4 1)       6 ]   ; Four of a kind
+         [ '(3 2)       5 ]   ; Full house
+         [ '(3 1 1)     4 ]   ; Three of a kind
+         [ '(2 2 1)     3 ]   ; Two pair
+         [ '(2 1 1 1)   2 ]   ; One pair
+         [ '(1 1 1 1 1) 1 ])) ; High card
 
 (define (part2 lst)
   (~> '(2 3 4 5 6 7 8 9 10 12 13 14)
