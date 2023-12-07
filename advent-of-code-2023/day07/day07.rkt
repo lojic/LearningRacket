@@ -1,15 +1,6 @@
 #lang racket
 (require "../advent.rkt")
 
-(define (translate part2? card)
-  (match card
-    [ #\A 14 ]
-    [ #\K 13 ]
-    [ #\Q 12 ]
-    [ #\J (if part2? 1 11) ]
-    [ #\T 10 ]
-    [ _ (- (char->integer card) 48) ]))
-
 (define (rank-hand hand)
   (match hand
     [ (list 5)         7 ]   ; Five of a kind
@@ -21,6 +12,9 @@
     [ (list 1 1 1 1 1) 1 ])) ; High card
 
 (define (parse-input part)
+  (define (translate part2? card)
+    (index-of (string->list (if part2? "_J23456789T_QKA" "__23456789TJQKA")) card))
+
   (define (parse-round part pair)
     (let ([ lst (map (curry translate (eq? part part2)) (string->list (car pair))) ])
       (list (part lst) lst (string->number (cadr pair)))))
