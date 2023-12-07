@@ -5,17 +5,17 @@
   (define (translate part2? card) ; Translate card symbol to numeric value
     (index-of (string->list (if part2? "_J23456789T_QKA" "__23456789TJQKA")) card))
 
-  (define (parse-round part pair) ; -> (rank <list of 5 cards> bid)
+  (define (parse-round part pair) ; -> (strength . bid)
     (let ([ lst (map (curry translate (eq? part part2)) (string->list (car pair))) ])
-      (list (part lst) lst (string->number (cadr pair)))))
+      (cons (match-let ([(list a b c d e f) (cons (part lst) lst)])
+              (+ (* 537824 a) (* 38416 b) (* 2744 c) (* 196 d) (* 14 e) f))
+            (string->number (cadr pair)))))
 
   (map (curry parse-round part) (parse-aoc 7 strings #:print-sample #f)))
 
 (define (solve rounds)
-  (~> (map (match-lambda [(list rank hand bid) (list (cons rank hand) bid)]) rounds)
-      (sort _ < #:key (match-lambda [(list (list a b c d e f) _)
-                                     (+ (* 537824 a) (* 38416 b) (* 2744 c) (* 196 d) (* 14 e) f)] ))
-      (map second _)                       ; grab bid
+  (~> (sort rounds < #:key car)            ; sort by strength ascending
+      (map cdr _)                          ; grab bid
       (enumerate _ 1)                      ; add rank
       (map (parallel-combine * car cdr) _) ; multiply rank * bid
       list-sum))                           ; sum all
