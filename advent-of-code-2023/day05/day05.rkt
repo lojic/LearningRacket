@@ -11,7 +11,7 @@
             (map (λ (l)
                    (map (λ (l)
                           (match-let ([ (list dst src len) l ])
-                            (list dst (cons src (+ src len))))) (chunk 3 (drop (atoms l) 2))))
+                            (list (- dst src) (cons src (+ src len))))) (chunk 3 (drop (atoms l) 2))))
                  (cdr lines)))))
 
 (define (convert-map seed cat)
@@ -19,25 +19,24 @@
     (cons (+ delta (car pair)) (+ delta (cdr pair))))
 
   (match-let ([ (cons seed-beg seed-end)           seed ]
-              [ (list dest (cons cat-beg cat-end)) cat  ])
-    (let ([ delta (- dest cat-beg) ])
-      (if (< seed-beg cat-beg)
-          (cond [ (<= seed-end cat-beg)
-                  (values #f (list seed)) ]
-                [ (> seed-end cat-end)
-                  (values (increment-range delta (cons cat-beg cat-end))
-                          (list (cons seed-beg cat-beg)
-                                (cons cat-end seed-end))) ]
-                [ else
-                  (values (increment-range delta (cons cat-beg seed-end))
-                          (list (cons seed-beg cat-beg))) ])
-          (cond [ (>= seed-beg cat-end)
-                  (values #f (list seed)) ]
-                [ (<= seed-end cat-end)
-                  (values (increment-range delta seed) '()) ]
-                [ else
-                  (values (increment-range delta (cons seed-beg cat-end))
-                          (list (cons cat-end seed-end))) ])))))
+              [ (list delta (cons cat-beg cat-end)) cat  ])
+    (if (< seed-beg cat-beg)
+        (cond [ (<= seed-end cat-beg)
+                (values #f (list seed)) ]
+              [ (> seed-end cat-end)
+                (values (increment-range delta (cons cat-beg cat-end))
+                        (list (cons seed-beg cat-beg)
+                              (cons cat-end seed-end))) ]
+              [ else
+                (values (increment-range delta (cons cat-beg seed-end))
+                        (list (cons seed-beg cat-beg))) ])
+        (cond [ (>= seed-beg cat-end)
+                (values #f (list seed)) ]
+              [ (<= seed-end cat-end)
+                (values (increment-range delta seed) '()) ]
+              [ else
+                (values (increment-range delta (cons seed-beg cat-end))
+                        (list (cons cat-end seed-end))) ]))))
 
 (define (convert-category seed category)
   (if (null? category)
