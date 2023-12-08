@@ -124,6 +124,7 @@
          list-max
          list-min
          list-prod
+         list-replace
          list-sum
          parallel-combine
          parse-aoc
@@ -134,6 +135,7 @@
          string-left
          string-index-of
          string-right
+         strings
          take-at-most
          take-right-at-most
          vector-sum
@@ -236,6 +238,13 @@
 (define (atoms str)
   (map atom
        (regexp-match* #px"[/$?a-zA-Z_0-9.*+-]+" str)))
+
+;; (strings str) -> list?
+;; str : string?
+;;
+;; Return a list of all strings in str.
+(define (strings str)
+  (regexp-match* #px"[/$?a-zA-Z_0-9.*+-]+" str))
 
 ;; (bool-list->decimal lst) -> exact-integer?
 ;; lst : (listof exact-integer?)
@@ -427,6 +436,18 @@
 ;; Return the product of the numbers in the list.
 (define (list-prod lst)
   (foldl * 1 lst))
+
+;; (list-replace lst from to) -> list?
+;; lst : list?
+;; from : any/c
+;; to   : any/c
+;;
+;; Replaces any element of lst that is equal? to from with to
+(define (list-replace lst from to)
+  (map (λ (e)
+         (if (equal? e from)
+             to
+             e)) lst))
 
 ;; (list-sum lst) -> number?
 ;; lst : (listof number?)
