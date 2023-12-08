@@ -13,12 +13,12 @@
 (define (part1 suffix key)
   (let loop ([ dirs dirs ][ key key ][ steps 1 ])
     (let ([ val ((car dirs) (hash-ref nodes key)) ])
-      (cond [ (string-ends-with? val suffix) steps ]
+      (cond [ (string-suffix? val suffix) steps ]
             [ else (loop (rotate-list dirs) val (add1 steps)) ]))))
 
 (define (part2 suffix)
   (apply lcm (map (curry part1 suffix)
-                  (filter (curry (flip string-ends-with?) "A")
+                  (filter (curry (flip string-suffix?) "A")
                           (hash-keys nodes)))))
 
 ;; Tests --------------------------------------------------------------------------------------
