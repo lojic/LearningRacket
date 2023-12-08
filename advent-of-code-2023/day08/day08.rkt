@@ -18,8 +18,7 @@
 
 (define (part2 suffix)
   (apply lcm (map (curry part1 suffix)
-                  (filter (λ (key)
-                            (string-ends-with? key "A"))
+                  (filter (curry (flip string-ends-with?) "A")
                           (hash-keys nodes)))))
 
 ;; Tests --------------------------------------------------------------------------------------
