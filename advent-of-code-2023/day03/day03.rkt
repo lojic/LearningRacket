@@ -1,6 +1,6 @@
 #lang racket
 
-(require "../advent.rkt" threading)
+(require "../advent.rkt")
 
 (define neighbors '(0-i 1-i 1 1+i 0+i -1+i -1 -1-i))
 

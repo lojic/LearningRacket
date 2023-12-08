@@ -1,6 +1,6 @@
 #lang racket
 
-(require "../advent.rkt" threading)
+(require "../advent.rkt")
 
 ;; Parse input into the form:
 ;; ( (<id> (<n> <color>) (<n> <color) ... ) ... )

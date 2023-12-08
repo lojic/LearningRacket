@@ -1,6 +1,6 @@
 #lang racket
 
-(require "../advent.rkt" threading)
+(require "../advent.rkt")
 
 (define in (parse-aoc 1))
 
