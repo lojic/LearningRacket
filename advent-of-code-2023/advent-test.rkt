@@ -258,12 +258,30 @@
                                 (list symbol->string add1 string->list)
                                 list)
                 '("a" 8 (#\f #\o #\o)))
+  
+  ;; string-ends-with? ------------------------------------------------------------------------
+
+  (check-false (string-ends-with? "abc" "d"))
+  (check-false (string-ends-with? "abc" "aabc"))
+  (check-true (string-ends-with? "abc" ""))
+  (check-true (string-ends-with? "abc" "c"))
+  (check-true (string-ends-with? "abc" "bc"))
+  (check-true (string-ends-with? "abc" "abc"))
 
   ;; string-index-ov --------------------------------------------------------------------------
 
   (check-equal? (string-index-of "abc" #\b) 1)
 
   (check-false (string-index-of "abc" #\d))
+
+  ;; string-ends-with? ------------------------------------------------------------------------
+
+  (check-false (string-starts-with? "abc" "d"))
+  (check-false (string-starts-with? "abc" "abcd"))
+  (check-true (string-starts-with? "abc" ""))
+  (check-true (string-starts-with? "abc" "a"))
+  (check-true (string-starts-with? "abc" "ab"))
+  (check-true (string-starts-with? "abc" "abc"))
 
   ;; take-at-most -----------------------------------------------------------------------------
 

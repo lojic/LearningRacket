@@ -132,9 +132,11 @@
          split-2
          split-at-list
          spread-combine
+         string-ends-with?
          string-left
          string-index-of
          string-right
+         string-starts-with?
          strings
          take-at-most
          take-right-at-most
@@ -505,7 +507,7 @@
                    #:sep          [ sep "\n" ]
                    #:head-lines   [ head-lines 3 ]
                    #:tail-lines   [ tail-lines 2 ]
-                   #:print-sample [ print-sample #t ])
+                   #:print-sample [ print-sample #f ])
   (let* ([ fname   (format "day~a.txt" (~r day #:min-width 2 #:pad-string "0")) ]
          [ text    (file->string fname) ]
          [ entries (map parser (~> text
@@ -669,6 +671,18 @@
                          [ fun funs ])
                 (fun val))))
 
+;; (string-ends-with? s suffix) -> boolean?
+;; s : string?
+;; suffix : string?
+;;
+;; Predicate to indicate whether s ends with suffix
+(define (string-ends-with? s suffix)
+  (let ([ len        (string-length s)      ]
+        [ suffix-len (string-length suffix) ])
+    (if (< len suffix-len)
+        #f
+        (string=? (string-right s suffix-len) suffix))))
+
 ;; (string-left str n) -> string?
 ;; str : string?
 ;; n   : exact-nonnegative-integer?
@@ -697,6 +711,18 @@
 (define (string-right str n)
   (let ([ len (string-length str) ])
     (substring str (- len n))))
+
+;; (string-starts-with? s suffix) -> boolean?
+;; s : string?
+;; prefix : string?
+;;
+;; Predicate to indicate whether s starts with prefix
+(define (string-starts-with? s prefix)
+  (let ([ len        (string-length s)      ]
+        [ prefix-len (string-length prefix) ])
+    (if (< len prefix-len)
+        #f
+        (string=? (string-left s prefix-len) prefix))))
 
 ;; (take-at-most lst n) -> list?
 ;; lst : list?
