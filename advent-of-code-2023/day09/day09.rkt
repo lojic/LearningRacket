@@ -11,7 +11,7 @@
 
 (define (extrapolate lst)
   (let loop ([ lst (reverse lst) ][ results '() ])
-    (if (andmap (curry = 0) lst)
+    (if (andmap zero? lst)
         (list-sum (map car results))
         (loop (compute-deltas lst) (cons lst results)))))
 
