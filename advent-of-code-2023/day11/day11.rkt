@@ -2,14 +2,15 @@
 (require "../advent.rkt")
 
 (define-values (rows columns galaxies)
-  (let ([ empty? (compose1 not false? (curry andmap (curry char=? #\.))) ]
-        [ lines  (parse-aoc 11 string->list) ])
+  (let* ([ empty? (compose1 not false? (curry andmap (curry char=? #\.))) ]
+         [ lines  (parse-aoc 11 string->list)                             ]
+         [ column (λ (i) (map (curry (flip list-ref) i) lines))           ])
     (values (for/list ([ i (in-naturals) ]
                        [ line (in-list lines) ]
                        #:when (empty? line))
               i)
             (for/list ([ i (in-range (length (car lines))) ]
-                       #:when (empty? (map (curry (flip list-ref) i) lines)))
+                       #:when (empty? (column i)))
               i)
             (for/list ([ row (in-naturals) ]
                        [ line (in-list lines) ]
