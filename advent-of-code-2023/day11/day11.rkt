@@ -25,7 +25,7 @@
          [ y2 (imag-part pos2) ])
     (+ (abs (- x1 x2))
        (abs (- y1 y2))
-       (* (expanded y1 y2 rows)   (sub1 inc))
+       (* (expanded y1 y2 rows)    (sub1 inc))
        (* (expanded x1 x2 columns) (sub1 inc)))))
 
 (define (solve mult)
