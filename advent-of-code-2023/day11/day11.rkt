@@ -4,20 +4,13 @@
 (define-values (rows columns galaxies)
   (let* ([ empty?   (compose1 not false? (curry andmap (curry char=? #\.))) ]
          [ lines    (parse-aoc 11 string->list) ]
-         [ rows     (for/list ([ i    (in-range (length lines)) ]
-                               [ line (in-list lines)           ]
+         [ rows     (for/list ([ i (in-naturals) ][ line (in-list lines) ]
                                #:when (empty? line)) i) ]
          [ columns  (for/list ([ i (in-range (length (car lines))) ]
                                #:when (empty? (map (curry (flip list-ref) i) lines))) i) ]
-         [ galaxies (map car
-                         (for/fold ([ result '() ])
-                                   ([ row (enumerate
-                                           (map (curry filter (compose1 (curry char=? #\#) car))
-                                                (map enumerate lines))) ])
-                           (for/fold ([ result result ])
-                                     ([ col (car row) ])
-                             (let ([ pos (make-rectangular (cdr col) (cdr row)) ])
-                               (cons (cons pos (car col)) result))))) ])
+         [ galaxies (for/list ([ row (in-naturals) ][ line (in-list lines) ] #:when #t
+                               [ col (in-naturals) ][ ch (in-list line) ] #:when (char=? #\# ch))
+                      (make-rectangular col row)) ])
 
     (values rows columns galaxies)))
 
