@@ -13,20 +13,16 @@
                       (make-rectangular col row)))))
 
 (define (distance inc pair)
-  (define (expanded a b lst)
-    (count (λ (n)
-             (and (> n (min a b))
-                  (< n (max a b))))
-           lst))
+  (define (dist empties a b)
+    (+ (abs (- a b))
+       (* (sub1 inc)
+          (count (λ (n)
+                   (and (> n (min a b))
+                        (< n (max a b))))
+                 empties))))
 
-  (let* ([ x1 (real-part (car pair)) ]
-         [ y1 (imag-part (car pair)) ]
-         [ x2 (real-part (cadr pair)) ]
-         [ y2 (imag-part (cadr pair)) ])
-    (+ (abs (- x1 x2))
-       (abs (- y1 y2))
-       (* (expanded y1 y2 rows)    (sub1 inc))
-       (* (expanded x1 x2 columns) (sub1 inc)))))
+  (+ (apply dist (cons rows    (map imag-part pair)))
+     (apply dist (cons columns (map real-part pair)))))
 
 (define (solve mult)
   (~> galaxies
