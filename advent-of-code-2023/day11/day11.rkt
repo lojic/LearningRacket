@@ -5,13 +5,13 @@
   (let* ([ empty? (compose1 not false? (curry andmap (curry char=? #\.))) ]
          [ lines  (parse-aoc 11 string->list)                             ]
          [ column (λ (i) (map (curry (flip list-ref) i) lines))           ])
-    (values (for/list ([ i (in-naturals) ]
+    (values (for/list ([ row (in-naturals) ]
                        [ line (in-list lines) ]
                        #:when (empty? line))
-              i)
-            (for/list ([ i (in-range (length (car lines))) ]
-                       #:when (empty? (column i)))
-              i)
+              row)
+            (for/list ([ col (in-range (length (car lines))) ]
+                       #:when (empty? (column col)))
+              col)
             (for/list ([ row (in-naturals) ]
                        [ line (in-list lines) ]
                        #:when #t
