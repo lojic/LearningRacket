@@ -16,10 +16,7 @@
   (define (dist empties a b)
     (+ (abs (- a b))
        (* (sub1 inc)
-          (count (λ (n)
-                   (and (> n (min a b))
-                        (< n (max a b))))
-                 empties))))
+          (count (λ (n) (< (min a b) n (max a b))) empties))))
 
   (+ (apply dist (cons rows    (map imag-part pair)))
      (apply dist (cons columns (map real-part pair)))))
