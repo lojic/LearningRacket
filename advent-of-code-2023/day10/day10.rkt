@@ -44,15 +44,13 @@
         (cons (cons step neighbors) (make-loop start step next-step)))))
 
 (define (count-inside cells row)
-  (let loop ([ col 0 ][ inside #f ][ sum 0 ])
-    (if (>= col width)
-        sum
-        (let* ([ pos       (make-rectangular col row) ]
-               [ neighbors (hash-ref cells pos '())   ])
-          (if (null? neighbors)
-              (loop (add1 col) inside (if inside (add1 sum) sum))
-              (let ([ has-north? (ormap (curry = (+ pos -i)) neighbors) ])
-                (loop (add1 col) (xor has-north? inside) sum)))))))
+  (for/fold ([ sum 0 ][ inside #f ] #:result sum)
+            ([ col (in-range width) ])
+    (let* ([ pos        (make-rectangular col row)             ]
+           [ neighbors  (hash-ref cells pos '())               ]
+           [ has-north? (ormap (curry = (+ pos -i)) neighbors) ])
+          (cond [ (null? neighbors) (values (if inside (add1 sum) sum) inside) ]
+                [ else              (values sum (xor has-north? inside))       ]))))
 
 (define (part1 start)
   (make-loop start start (car (hash-ref pipes start))))
