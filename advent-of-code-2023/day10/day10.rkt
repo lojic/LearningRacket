@@ -52,9 +52,7 @@
           (if (null? neighbors)
               (loop (add1 col) inside (if inside (add1 sum) sum))
               (let ([ has-north? (ormap (curry = (+ pos -i)) neighbors) ])
-                (if has-north?
-                    (loop (add1 col) (not inside) sum)
-                    (loop (add1 col) inside sum))))))))
+                (loop (add1 col) (xor has-north? inside) sum)))))))
 
 (define (part1 start)
   (make-loop start start (car (hash-ref pipes start))))
