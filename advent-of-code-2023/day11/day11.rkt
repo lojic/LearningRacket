@@ -12,17 +12,17 @@
                        [ col (in-naturals) ][ ch (in-list line) ] #:when (char=? #\# ch))
                       (make-rectangular col row)))))
 
-(define (distance pos1 pos2 inc)
+(define (distance inc pair)
   (define (expanded a b lst)
     (count (λ (n)
              (and (> n (min a b))
                   (< n (max a b))))
            lst))
 
-  (let* ([ x1 (real-part pos1) ]
-         [ y1 (imag-part pos1) ]
-         [ x2 (real-part pos2) ]
-         [ y2 (imag-part pos2) ])
+  (let* ([ x1 (real-part (car pair)) ]
+         [ y1 (imag-part (car pair)) ]
+         [ x2 (real-part (cadr pair)) ]
+         [ y2 (imag-part (cadr pair)) ])
     (+ (abs (- x1 x2))
        (abs (- y1 y2))
        (* (expanded y1 y2 rows)    (sub1 inc))
@@ -31,8 +31,7 @@
 (define (solve mult)
   (~> galaxies
       (combinations _ 2)
-      (map (match-lambda [ (list gal1 gal2)
-                           (distance gal1 gal2 mult) ]) _)
+      (map (curry distance mult) _)
       list-sum))
 
 ;; Tests --------------------------------------------------------------------------------------
