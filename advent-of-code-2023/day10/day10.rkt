@@ -35,30 +35,27 @@
 
 (define-values (start pipes width height) (parse-input))
 
-(define (make-loop start prev step)
-  (if (= step start)
-      (list (cons start (hash-ref pipes start)))
-      (let* ([ neighbors (hash-ref pipes step) ]
-             [ next-step (car (filter (compose1 not (curry = prev))
-                                      neighbors)) ])
-        (cons (cons step neighbors) (make-loop start step next-step)))))
-
-(define (count-inside cells row)
-  (for/fold ([ sum 0 ][ inside #f ] #:result sum)
-            ([ col (in-range width) ])
-    (let* ([ pos        (make-rectangular col row)             ]
-           [ neighbors  (hash-ref cells pos '())               ]
-           [ has-north? (ormap (curry = (+ pos -i)) neighbors) ])
-          (cond [ (null? neighbors) (values (if inside (add1 sum) sum) inside) ]
-                [ else              (values sum (xor has-north? inside))       ]))))
-
 (define (part1 start)
+  (define (make-loop start prev step)
+    (if (= step start)
+        (list (cons start (hash-ref pipes start)))
+        (let* ([ neighbors (hash-ref pipes step) ]
+               [ next-step (car (filter (compose1 not (curry = prev))
+                                        neighbors)) ])
+          (cons (cons step neighbors) (make-loop start step next-step)))))
+
   (make-loop start start (car (hash-ref pipes start))))
 
 (define (part2 start)
   (let ([ cells (make-immutable-hash (part1 start)) ])
     (for/sum ([ row (in-range height) ])
-      (count-inside cells row))))
+      (for/fold ([ sum 0 ][ inside #f ] #:result sum)
+                ([ col (in-range width) ])
+        (let* ([ pos        (make-rectangular col row)             ]
+               [ neighbors  (hash-ref cells pos '())               ]
+               [ has-north? (ormap (curry = (+ pos -i)) neighbors) ])
+          (cond [ (null? neighbors) (values (if inside (add1 sum) sum) inside) ]
+                [ else              (values sum (xor has-north? inside))       ]))))))
 
 ;; Tests --------------------------------------------------------------------------------------
 
