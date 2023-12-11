@@ -4,12 +4,10 @@
 (define-values (rows columns galaxies)
   (let* ([ empty?   (compose1 not false? (curry andmap (curry char=? #\.))) ]
          [ lines    (parse-aoc 11 string->list) ]
-         [ rows     (~> (for/fold ([ lst '() ])
-                                  ([ i    (in-range (length lines)) ]
-                                   [ line (in-list lines)           ])
-                          (if (empty? line)
-                              (cons i lst)
-                              lst))) ]
+         [ rows     (for/list ([ i    (in-range (length lines)) ]
+                               [ line (in-list lines)           ]
+                               #:when (empty? line))
+                      i) ]
          [ columns  (~> (for/list ([ i (in-range (length (car lines))) ])
                           (empty? (map (curry (flip list-ref) i) lines)))
                         enumerate
