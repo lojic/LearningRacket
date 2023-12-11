@@ -3,46 +3,69 @@
 
 (define (parse-input)
   (define (cell->neighbors pos c)
-    (define inc (curry + pos))
+    (define (inc a b) (list (+ pos a) (+ pos b)))
 
     (match c
-      [ #\| (list (inc -i) (inc +i)) ] ; north and south
-      [ #\- (list (inc 1)  (inc -1)) ] ; east and west
-      [ #\L (list (inc -i) (inc 1))  ] ; north and east
-      [ #\J (list (inc -i) (inc -1)) ] ; north and west
-      [ #\7 (list (inc +i) (inc -1)) ] ; south and west
-      [ #\F (list (inc +i) (inc 1))  ] ; south and east
-      [ #\. #f                       ] ; ignore
-      [ #\S 'start                   ]))
+      [ #\| (inc -i +i) ] ; north and south
+      [ #\- (inc 1  -1) ] ; east and west
+      [ #\L (inc -i 1)  ] ; north and east
+      [ #\J (inc -i -1) ] ; north and west
+      [ #\7 (inc +i -1) ] ; south and west
+      [ #\F (inc +i 1)  ] ; south and east
+      [ _   c           ]))
 
-  (let* ([ positions (for/fold ([ result '() ])
-                               ([ row (enumerate (parse-aoc 10 (compose1 enumerate string->list))) ])
+  (let* ([ lines (parse-aoc 10 (compose1 enumerate string->list)) ]
+         [ positions (for/fold ([ result '() ])
+                               ([ row (enumerate lines) ])
                        (for/fold ([ result result ])
                                  ([ col (car row) ])
                          (let ([ pos (make-rectangular (cdr col) (cdr row)) ])
-                           (cons (cons pos (cell->neighbors pos (car col)))
+                           (cons (cons pos
+                                       (cell->neighbors pos (car col)))
                                  result)))) ]
-         [ start (car (findf (compose1 (curry eq? 'start) cdr) positions)) ]
-         [ pipes (make-immutable-hash (filter (compose1 list? cdr) positions)) ]
+         [ start (car (findf (compose1 (curry eq? #\S) cdr)
+                             positions)) ]
+         [ pipes (make-immutable-hash (filter (compose1 list? cdr)
+                                              positions)) ]
          [ start-neighbors (for/list ([ (pos neighbors) pipes ]
                                       #:when (memv start neighbors))
                              pos) ])
 
-    (values start start-neighbors pipes)))
+    (values start (hash-set pipes start start-neighbors) (length (car lines)) (length lines))))
 
-(define-values (start start-neighbors pipes) (parse-input))
+(define-values (start pipes width height) (parse-input))
 
-(define (make-loop prev step loop)
+(define (make-loop start prev step)
   (if (= step start)
-      loop
-      (let ([ next-step (car (filter (compose1 not (curry = prev))
-                                     (hash-ref pipes step))) ])
-        (make-loop step next-step (cons step loop)))))
+      (list (cons start (hash-ref pipes start)))
+      (let* ([ neighbors (hash-ref pipes step) ]
+             [ next-step (car (filter (compose1 not (curry = prev))
+                                      neighbors)) ])
+        (cons (cons step neighbors) (make-loop start step next-step)))))
+
+(define (count-inside cells row)
+  (let loop ([ col 0 ][ inside #f ][ sum 0 ])
+    (if (>= col width)
+        sum
+        (let* ([ pos        (make-rectangular col row)             ]
+               [ neighbors  (hash-ref cells pos '())               ]
+               [ has-north? (ormap (curry = (+ pos -i)) neighbors) ])
+          (if (null? neighbors)
+              (loop (add1 col) inside (if inside (add1 sum) sum))
+              (if has-north?
+                  (loop (add1 col) (not inside) sum)
+                  (loop (add1 col) inside sum)))))))
 
 (define (part1 start)
-  (let ([ loop (make-loop start (car start-neighbors) (list start)) ])
-    (/ (length loop) 2)))
+  (make-loop start start (car (hash-ref pipes start))))
+
+(define (part2 start)
+  (let ([ cells (make-immutable-hash (part1 start)) ])
+    (for/sum ([ row (in-range height) ])
+      (count-inside cells row))))
 
 ;; Tests --------------------------------------------------------------------------------------
 
-(check-equal? (part1 start) 6897)
+(check-equal? (/ (length (part1 start)) 2) 6897)
+
+(check-equal? (part2 start) 367)
