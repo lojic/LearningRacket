@@ -6,13 +6,9 @@
          [ lines    (parse-aoc 11 string->list) ]
          [ rows     (for/list ([ i    (in-range (length lines)) ]
                                [ line (in-list lines)           ]
-                               #:when (empty? line))
-                      i) ]
-         [ columns  (~> (for/list ([ i (in-range (length (car lines))) ])
-                          (empty? (map (curry (flip list-ref) i) lines)))
-                        enumerate
-                        (filter car _)
-                        (map cdr _)) ]
+                               #:when (empty? line)) i) ]
+         [ columns  (for/list ([ i (in-range (length (car lines))) ]
+                               #:when (empty? (map (curry (flip list-ref) i) lines))) i) ]
          [ galaxies (map car
                          (for/fold ([ result '() ])
                                    ([ row (enumerate
