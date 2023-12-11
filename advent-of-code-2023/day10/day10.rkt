@@ -47,14 +47,14 @@
   (let loop ([ col 0 ][ inside #f ][ sum 0 ])
     (if (>= col width)
         sum
-        (let* ([ pos        (make-rectangular col row)             ]
-               [ neighbors  (hash-ref cells pos '())               ]
-               [ has-north? (ormap (curry = (+ pos -i)) neighbors) ])
+        (let* ([ pos        (make-rectangular col row) ]
+               [ neighbors  (hash-ref cells pos '())   ])
           (if (null? neighbors)
               (loop (add1 col) inside (if inside (add1 sum) sum))
-              (if has-north?
-                  (loop (add1 col) (not inside) sum)
-                  (loop (add1 col) inside sum)))))))
+              (let ([ has-north? (ormap (curry = (+ pos -i)) neighbors) ])
+                (if has-north?
+                    (loop (add1 col) (not inside) sum)
+                    (loop (add1 col) inside sum))))))))
 
 (define (part1 start)
   (make-loop start start (car (hash-ref pipes start))))
