@@ -2,8 +2,9 @@
 (require "../advent.rkt")
 
 (define-values (rows columns galaxies)
-  (let* ([ lines   (parse-aoc 11 string->list)                             ]
-         [ empty?  (compose1 not false? (curry andmap (curry char=? #\.))) ]
+  (let* ([ lines   (parse-aoc 11 string->list) ]
+         [ empty?  (λ (l)
+                     (not (false? (andmap (curry char=? #\.) l)))) ]
          [ empties (λ (lines)
                      (for/list ([ (key _) (grid->hash lines
                                                       #:row-filter empty?
