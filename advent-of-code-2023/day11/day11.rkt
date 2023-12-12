@@ -2,16 +2,17 @@
 (require "../advent.rkt")
 
 (define-values (rows columns galaxies)
-  (let* ([ empty? (compose1 not false? (curry andmap (curry char=? #\.))) ]
-         [ lines  (parse-aoc 11 string->list)                             ]
-         [ column (λ (i) (map (curry (flip list-ref) i) lines))           ])
-    (values (for/list ([ row (in-naturals) ]
-                       [ line (in-list lines) ]
-                       #:when (empty? line))
-              row)
-            (for/list ([ col (in-range (length (car lines))) ]
-                       #:when (empty? (column col)))
-              col)
+  (let* ([ lines   (parse-aoc 11 string->list)                             ]
+         [ empty?  (compose1 not false? (curry andmap (curry char=? #\.))) ]
+         [ empties (λ (lines)
+                     (~> (grid->hash lines #:row-filter empty? #:row-transform (const '(#t)))
+                         (hash-keys _)
+                         (map imag-part _))) ])
+
+    (values (empties lines)
+
+            (empties (apply map list lines)) ; Transpose lines to columns to reuse empties!
+
             (hash-keys (grid->hash lines #:col-filter (curry char=? #\#))))))
 
 (define (distance inc pair)
