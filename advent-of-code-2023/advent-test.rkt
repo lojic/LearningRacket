@@ -195,7 +195,15 @@
                                                         'water))) ])
       (check-equal? (hash-ref hsh +2i) 'land)
       (check-equal? (hash-ref hsh 1+2i) 'water))
-    )     
+    )
+
+  ;; group-consecutive ------------------------------------------------------------------------
+
+  (check-equal? (group-consecutive '(1 2 2 3 4 4 2 2 2 4 4 4))
+                '((1) (2 2) (3) (4 4) (2 2 2) (4 4 4)))
+
+  (check-equal? (group-consecutive '(1 2 2 3 4 4 2 2 2 4 4 4) odd?)
+                '((1) (2 2) (3) (4 4 4 2 2 2 4 4)))
 
   ;; iterate ----------------------------------------------------------------------------------
 

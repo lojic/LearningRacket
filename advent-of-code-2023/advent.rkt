@@ -119,6 +119,7 @@
          filter-ascending-permutations
          flip
          grid->hash
+         group-consecutive
          scanl
          numbers
          iterate
@@ -425,6 +426,25 @@
              #:when (col-filter elem))
     (values (make-rectangular col row) (col-transform elem))))
 
+;; (group-contiguous lst) -> list?
+;; lst : list?
+;; compare? : (-> any/c any/c boolean?)
+;;
+;; Group identical contiguous elements together. For example:
+;;
+;; (group-contiguous '(1 2 2 3 4 4 2 2 2 4 4 4)) ->
+;; '((1) (2 2) (3) (4 4) (2 2 2) (4 4 4))
+;;
+;; (group-contiguous '(1 2 2 3 4 4 2 2 2 4 4 4) odd?) ->
+;; '((1) (2 2) (3) (4 4 4 2 2 2 4 4))
+(define (group-consecutive lst [ key identity ][ compare? equal? ][ group '() ][ result '() ])
+  (if (null? lst)
+      (reverse (cons group result))
+      (let ([ elem (car lst) ])
+        (if (or (null? group) (compare? (key elem) (key (car group))))
+            (group-consecutive (cdr lst) key compare? (cons elem group) result)
+            (group-consecutive (cdr lst) key compare? (list elem) (cons group result))))))
+  
 ;; (iterate fun arg n) -> any/c
 ;; fun : procedure?
 ;; arg : any/c
