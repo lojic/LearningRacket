@@ -5,9 +5,10 @@
   (let* ([ lines   (parse-aoc 11 string->list)                             ]
          [ empty?  (compose1 not false? (curry andmap (curry char=? #\.))) ]
          [ empties (λ (lines)
-                     (~> (grid->hash lines #:row-filter empty? #:row-transform (const '(#t)))
-                         (hash-keys _)
-                         (map imag-part _))) ])
+                     (for/list ([ (key _) (grid->hash lines
+                                                      #:row-filter empty?
+                                                      #:row-transform (const '(#t))) ])
+                       (imag-part key))) ])
 
     (values (empties lines)
 
