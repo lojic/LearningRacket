@@ -118,6 +118,7 @@
          enumerate
          filter-ascending-permutations
          flip
+         grid->hash
          scanl
          numbers
          iterate
@@ -403,6 +404,26 @@
 (define (flip fun)
   (λ (b a)
     (fun a b)))
+
+;; (grid->hash lines) -> hash?
+;; lines : list?
+;;
+;; Convert a list of lists into a hash where the keys are two
+;; dimensional coordinates in the form of a complex number, and the
+;; values are the list elements, possibly transformed. See tests for
+;; example usage.
+(define (grid->hash lines
+                    #:col-filter    [ col-filter    (const #t) ]
+                    #:col-transform [ col-transform identity   ]
+                    #:row-filter    [ row-filter    (const #t) ]
+                    #:row-transform [ row-transform identity   ])
+  (for/hash ([ row  (in-naturals)   ]
+             [ line (in-list lines) ]
+             #:when (row-filter line)
+             [ col  (in-naturals)  ]
+             [ elem (in-list (row-transform line)) ]
+             #:when (col-filter elem))
+    (values (make-rectangular col row) (col-transform elem))))
 
 ;; (iterate fun arg n) -> any/c
 ;; fun : procedure?

@@ -162,6 +162,40 @@
   (check-true ((flip <) 5 3))
 
   (check-equal? ((flip string-append) "b" "a") "ab")
+  
+  ;; grid->hash -------------------------------------------------------------------------------
+
+  (let* ([ lines (list (string->list "..#...#.")
+                       (string->list "...#....")
+                       (string->list ".#.....#")
+                       (string->list "##...#..")) ])
+    (let* ([ hsh (grid->hash lines) ]
+           [ st  (list->set (hash-keys hsh)) ])
+      (check-equal? (set-count st) 32) ; entire 8x4 grid
+      (check-not-false (set-member? st 2+2i))
+      (check-equal? #\# (hash-ref hsh 3+1i)))
+
+    (let* ([ hsh (grid->hash lines #:col-filter (curry char=? #\#)) ]
+           [ keys (hash-keys hsh) ])
+      (check-equal? (length keys) 8) ; only has # chars
+      (check-not-false (hash-has-key? hsh 1+2i))
+      (check-false (hash-has-key? hsh 2+1i)))
+
+    (let* ([ hsh (grid->hash lines
+                             #:col-transform (λ (c) (if (char=? c #\#)
+                                                        'land
+                                                        'water))) ])
+      (check-equal? (hash-ref hsh 7+2i) 'land)
+      (check-equal? (hash-ref hsh 7+3i) 'water))
+
+    (let* ([ hsh (grid->hash lines
+                             #:row-transform reverse
+                             #:col-transform (λ (c) (if (char=? c #\#)
+                                                        'land
+                                                        'water))) ])
+      (check-equal? (hash-ref hsh +2i) 'land)
+      (check-equal? (hash-ref hsh 1+2i) 'water))
+    )     
 
   ;; iterate ----------------------------------------------------------------------------------
 
