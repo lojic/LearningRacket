@@ -12,13 +12,7 @@
             (for/list ([ col (in-range (length (car lines))) ]
                        #:when (empty? (column col)))
               col)
-            (for/list ([ row (in-naturals) ]
-                       [ line (in-list lines) ]
-                       #:when #t
-                       [ col (in-naturals) ]
-                       [ ch (in-list line) ]
-                       #:when (char=? #\# ch))
-              (make-rectangular col row)))))
+            (hash-keys (grid->hash lines #:col-filter (curry char=? #\#))))))
 
 (define (distance inc pair)
   (define (dist empties a b)
