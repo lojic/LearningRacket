@@ -426,24 +426,32 @@
              #:when (col-filter elem))
     (values (make-rectangular col row) (col-transform elem))))
 
-;; (group-contiguous lst) -> list?
+;; (group-consecutive lst) -> list?
 ;; lst : list?
+;; key : (-> any/c an/yc)
 ;; compare? : (-> any/c any/c boolean?)
 ;;
-;; Group identical contiguous elements together. For example:
+;; Group consecutive elements of an equivalence class
+;; together. Optional parameters allow specifying a key transform of
+;; the element and a comparator.
 ;;
-;; (group-contiguous '(1 2 2 3 4 4 2 2 2 4 4 4)) ->
+;; For example:
+;;
+;; (group-consecutive '(1 2 2 3 4 4 2 2 2 4 4 4)) ->
 ;; '((1) (2 2) (3) (4 4) (2 2 2) (4 4 4))
 ;;
-;; (group-contiguous '(1 2 2 3 4 4 2 2 2 4 4 4) odd?) ->
+;; (group-consecutive '(1 2 2 3 4 4 2 2 2 4 4 4) odd?) ->
 ;; '((1) (2 2) (3) (4 4 4 2 2 2 4 4))
-(define (group-consecutive lst [ key identity ][ compare? equal? ][ group '() ][ result '() ])
-  (if (null? lst)
-      (reverse (cons group result))
-      (let ([ elem (car lst) ])
-        (if (or (null? group) (compare? (key elem) (key (car group))))
-            (group-consecutive (cdr lst) key compare? (cons elem group) result)
-            (group-consecutive (cdr lst) key compare? (list elem) (cons group result))))))
+(define (group-consecutive lst [ key identity ][ compare? equal? ])
+  (define (helper lst key compare? group result)
+    (if (null? lst)
+        (reverse (cons group result))
+        (let ([ elem (car lst) ])
+          (if (or (null? group) (compare? (key elem) (key (car group))))
+              (helper (cdr lst) key compare? (cons elem group) result)
+              (helper (cdr lst) key compare? (list elem) (cons group result))))))
+
+  (helper lst key compare? '() '()))
   
 ;; (iterate fun arg n) -> any/c
 ;; fun : procedure?
