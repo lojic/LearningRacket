@@ -7,7 +7,7 @@
 (define (south grid) (~> grid transpose (map reverse _) tilt (map reverse _) transpose))
 
 (define (roll grid)
-  (~> (split-rocks grid)
+  (~> (group-consecutive grid (curry char=? #\#))
       (map (λ (l) (sort l char>?)) _)
       (apply append _)))
 
@@ -16,22 +16,11 @@
 (define tilt      (curry map roll))
 (define transpose (curry apply map list))
 
-(define ((class t) c)
-  (if (char=? #\# t)
-      (char=? #\# c)
-      (not (char=? #\# c))))
-
 (define (count-load grid)
   (for/sum ([ lst (in-list grid) ])
     (for/sum ([ rows (in-inclusive-range (length lst) 1 -1) ]
               [ c    (in-list lst)                          ])
       (if (char=? c #\O) rows 0))))
-
-(define (split-rocks lst)
-  (if (null? lst)
-      '()
-      (let-values ([ (h t) (splitf-at lst (class (car lst))) ])
-        (cons h (split-rocks t)))))
 
 (define (floyd f val x0) ; Floyd "tortoise & hare" cycle detection algorithm
   (let*-values ([ (hare) (let loop ([ tortoise (f x0) ][ hare (f (f x0)) ])
