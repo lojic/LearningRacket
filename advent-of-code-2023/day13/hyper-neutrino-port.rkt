@@ -1,7 +1,7 @@
 #lang racket
 (require "../advent.rkt")
 
-;; Port of hyper-neutrino's solution to Racket
+;; Port of https://github.com/hyper-neutrino/advent-of-code/blob/main/2023/day13p2.py
 
 (define (find-mirror grid)
   (or (for/or ([ r (in-inclusive-range 1 (length grid)) ])
