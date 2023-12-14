@@ -6,8 +6,8 @@
 (define (east  grid) (~> grid (map reverse _) tilt (map reverse _)))
 (define (south grid) (~> grid transpose (map reverse _) tilt (map reverse _) transpose))
 
-(define (roll grid)
-  (~> (group-consecutive grid (curry char=? #\#))
+(define (roll lst)
+  (~> (group-consecutive lst (curry char=? #\#))
       (map (λ (l) (sort l char>?)) _)
       (apply append _)))
 
