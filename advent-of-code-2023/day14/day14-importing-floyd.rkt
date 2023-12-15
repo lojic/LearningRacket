@@ -25,8 +25,8 @@
 (define part1 (compose1 count-load tilt transpose))
 
 (define (part2 grid n)
-  (let-values ([ (lam mu) (floyd cycle grid (λ (grid) (count-load (transpose grid)))) ])
-    (count-load (transpose (iterate cycle grid (+ mu (modulo (- n mu) lam)))))))
+  (let-values ([ (len idx) (floyd cycle grid (λ (grid) (count-load (transpose grid)))) ])
+    (count-load (transpose (iterate cycle grid (+ idx (modulo (- n idx) len)))))))
 
 ;; Tests --------------------------------------------------------------------------------------
 
