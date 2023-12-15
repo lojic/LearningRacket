@@ -163,6 +163,33 @@
 
   (check-equal? ((flip string-append) "b" "a") "ab")
   
+  ;; floyd ------------------------------------------------------------------------------------
+
+  (let ([ f (λ (n) ; f from https://en.wikipedia.org/wiki/Cycle_detection
+              (match n
+                [ 0 6 ]
+                [ 1 6 ]
+                [ 2 0 ]
+                [ 3 1 ]
+                [ 4 4 ]
+                [ 5 3 ]
+                [ 6 3 ]
+                [ 7 4 ]
+                [ 8 0 ])) ])
+    (let-values ([ (len idx) (floyd f 2) ])
+      (check-equal? len 3)
+      (check-equal? idx 2))
+    (let-values ([ (len idx) (floyd f 0) ])
+      (check-equal? len 3)
+      (check-equal? idx 1))
+    (let-values ([ (len idx) (floyd f 8) ])
+      (check-equal? len 3)
+      (check-equal? idx 2))
+    (let-values ([ (len idx) (floyd f 7) ])
+      (check-equal? len 1)
+      (check-equal? idx 1)))
+
+  
   ;; grid->hash -------------------------------------------------------------------------------
 
   (let* ([ lines (list (string->list "..#...#.")

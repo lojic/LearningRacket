@@ -118,6 +118,7 @@
          enumerate
          filter-ascending-permutations
          flip
+         floyd
          grid->hash
          group-consecutive
          scanl
@@ -405,6 +406,32 @@
 (define (flip fun)
   (λ (b a)
     (fun a b)))
+
+;; (floyd f key init) -> integer? integer?
+;; f    : procedure?
+;; init : any/c
+;; key  : procedure?
+;;
+;; Floyd's "tortoise & hare" cycle detection algorithm. f is a
+;; function to producing objects that eventually repeat in a
+;; cycle. init is the initial input to f. key, which defaults to
+;; identity, is used to transform the objects if necessary.
+;;
+;; Returns two values: the cycle length and the initial iteration for
+;; the beginning of the cycle
+(define (floyd f init [ key identity ][ compare? equal? ])
+  (let*-values ([ (hare) (let loop ([ tortoise (f init) ][ hare (f (f init)) ])
+                           (if (compare? (key tortoise) (key hare))
+                               hare
+                               (loop (f tortoise) (f (f hare))))) ]
+                [ (tortoise mu) (let loop ([ mu 0 ][ tortoise init ][ hare hare ])
+                                  (if (compare? (key tortoise) (key hare))
+                                      (values tortoise mu)
+                                      (loop (add1 mu) (f tortoise) (f hare)))) ])
+    (let loop ([ hare (f tortoise) ][ lam 1 ])
+      (if (compare? (key tortoise) (key hare))
+          (values lam mu)
+          (loop (f hare) (add1 lam))))))
 
 ;; (grid->hash lines) -> hash?
 ;; lines : list?
