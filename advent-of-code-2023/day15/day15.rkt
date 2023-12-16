@@ -17,17 +17,16 @@
       (* (add1 (hash-code (car pair))) slot (string->number (cdr pair)))))
 
   (define (simplify lst)
-    (if (null? lst)
-        '()
-        (match (car lst)
-          [ (list _)  (simplify (cdr lst)) ] ; A - with nothing to delete, ignore
-          [ (list label focal)
-            (let* ([ next (findf (λ (l) (string=? label (car l))) (cdr lst)) ]
-                   [ tail (remove next (cdr lst))                            ])
-              (match next
-                [ #f         (cons (cons label focal) (simplify tail)) ] ; No next label, continue
-                [ (list _)   (simplify tail)                           ] ; Next is -, consume both elements
-                [ (list _ _) (simplify (cons next tail))               ])) ]))) ; Next is =, replace focal length
+    (cond [ (null? lst) '() ]
+          [ else (match (car lst)
+                   [ (list _)  (simplify (cdr lst)) ] ; A '-' with nothing to delete, ignore
+                   [ (list label focal)
+                     (let* ([ next (findf (λ (l) (string=? label (car l))) (cdr lst)) ]
+                            [ tail (remove next (cdr lst))                            ])
+                       (match next
+                         [ #f         (cons (cons label focal) (simplify tail)) ] ; No next label, continue
+                         [ (list _)   (simplify tail)                           ] ; Next is '-', consume both elements
+                         [ (list _ _) (simplify (cons next tail))               ])) ]) ])) ; Next is '=', replace focal length
 
   (~> (map (curry (flip string-split) #px"[=-]") input)
       (group-by (compose1 hash-code car) _)
