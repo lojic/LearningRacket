@@ -34,8 +34,7 @@
 
   (~> (map (curry (flip string-split) #px"[=-]") input)
       (group-by (compose1 hash-code car) _)
-      (map collapse _)
-      (map add-power _)
+      (map (compose1 add-power collapse) _)
       list-sum))
 
 ;; Tests --------------------------------------------------------------------------------------
