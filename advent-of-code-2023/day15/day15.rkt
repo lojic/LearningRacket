@@ -24,13 +24,13 @@
     (if (null? lst)
         '()
         (match (car lst)
-          [ (list _) (collapse (cdr lst)) ]
+          [ (list _) (collapse (cdr lst)) ] ; A - with nothing to delete, ignore
           [ (list label focal)
             (let-values ([ (next tail) (next-label label (cdr lst)) ])
               (match next
-                [ #f         (cons (cons label focal) (collapse tail)) ]
-                [ (list _)   (collapse tail)                           ]
-                [ (list _ _) (collapse (cons next tail))               ])) ])))
+                [ #f         (cons (cons label focal) (collapse tail)) ] ; No next label, continue
+                [ (list _)   (collapse tail)                           ] ; Next is -, consume both elements
+                [ (list _ _) (collapse (cons next tail))               ])) ]))) ; Next is =, replace focal length
 
   (~> (map (curry (flip string-split) #px"[=-]") input)
       (group-by (compose1 hash-code car) _)
