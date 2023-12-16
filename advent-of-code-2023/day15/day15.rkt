@@ -17,16 +17,13 @@
       (* (add1 (hash-code (car pair))) slot (string->number (cdr pair)))))
 
   (define (simplify lst)
-    (define (next-label label lst)
-      (let ([ val (findf (λ (l) (string=? label (car l))) lst) ])
-        (values val (remove val lst))))
-
     (if (null? lst)
         '()
         (match (car lst)
-          [ (list _) (simplify (cdr lst)) ] ; A - with nothing to delete, ignore
+          [ (list _)  (simplify (cdr lst)) ] ; A - with nothing to delete, ignore
           [ (list label focal)
-            (let-values ([ (next tail) (next-label label (cdr lst)) ])
+            (let* ([ next (findf (λ (l) (string=? label (car l))) (cdr lst)) ]
+                   [ tail (remove next (cdr lst))                            ])
               (match next
                 [ #f         (cons (cons label focal) (simplify tail)) ] ; No next label, continue
                 [ (list _)   (simplify tail)                           ] ; Next is -, consume both elements
