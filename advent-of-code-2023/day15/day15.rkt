@@ -12,7 +12,7 @@
   (list-sum (map hash-code input)))
 
 (define (part2)
-  (define (add-power xs)
+  (define (sum-box xs)
     (for/sum ([ pair xs ][ slot (in-naturals 1) ])
       (* (add1 (hash-code (car pair))) slot (string->number (cdr pair)))))
 
@@ -34,7 +34,7 @@
 
   (~> (map (curry (flip string-split) #px"[=-]") input)
       (group-by (compose1 hash-code car) _)
-      (map (compose1 add-power simplify) _)
+      (map (compose1 sum-box simplify) _)
       list-sum))
 
 ;; Tests --------------------------------------------------------------------------------------
