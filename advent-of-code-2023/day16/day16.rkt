@@ -15,15 +15,15 @@
                   (and (char=? c #\-) (= 0 y))
                   (and (char=? c #\|) (= 0 x))) (next pos dir seen) ]
             [ (char=? c #\\) (next pos (+ y (* x +i))         seen) ]
-            [ (char=? c #\/) (next pos (+ (- y) (* x -i)) seen) ]
+            [ (char=? c #\/) (next pos (+ (- y) (* x -i))     seen) ]
             [ (char=? c #\-) (next pos -1 (next pos 1  seen)) ]
             [ (char=? c #\|) (next pos -i (next pos +i seen)) ])))
 
   (let ([ key (cons pos dir) ])
-    (cond [ (set-member? seen key) seen ]
+    (cond [ (set-member? seen key) seen           ]
           [ else (let ([ c (hash-ref grid pos #f) ])
-                   (cond [ (not c) seen ]
-                         [ else (ray c seen key pos dir)]))])))
+                   (cond [ (not c) seen                     ]
+                         [ else    (ray c seen key pos dir) ])) ])))
 
 (define (part1 pos dir)
   (~> (beam pos dir (set))
