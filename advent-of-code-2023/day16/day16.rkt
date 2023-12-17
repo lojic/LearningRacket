@@ -13,11 +13,11 @@
           [ next (λ (pos dir seen) (beam (+ pos dir) dir seen)) ])
       (cond [ (or (char=? c #\.)
                   (and (char=? c #\-) (= 0 y))
-                  (and (char=? c #\|) (= 0 x))) (next pos dir seen) ]
-            [ (char=? c #\\) (next pos (+ y (* x +i))         seen) ]
-            [ (char=? c #\/) (next pos (+ (- y) (* x -i))     seen) ]
-            [ (char=? c #\-) (next pos -1 (next pos 1  seen)) ]
-            [ (char=? c #\|) (next pos -i (next pos +i seen)) ])))
+                  (and (char=? c #\|) (= 0 x))) (next pos dir seen) ] ; Pass through
+            [ (char=? c #\\) (next pos (+ y (* x +i))         seen) ] ; Reflect
+            [ (char=? c #\/) (next pos (+ (- y) (* x -i))     seen) ] ; Reflect
+            [ (char=? c #\-) (next pos -1 (next pos 1  seen)) ]       ; Split
+            [ (char=? c #\|) (next pos -i (next pos +i seen)) ])))    ; Split
 
   (let ([ key (cons pos dir) ])
     (cond [ (set-member? seen key) seen           ]
@@ -31,10 +31,10 @@
 (define (part2)
   (list-max
    (map (λ (config) (part1 (car config) (cdr config)))
-        (append (map (λ (col) (cons col                          +i))  (range width))
-                (map (λ (col) (cons (+ col (* (sub1 height) +i)) -i))  (range width))
-                (map (λ (row) (cons (* row +i)                   1))   (range height))
-                (map (λ (row) (cons (+ (sub1 width) (* row +i)) -1))   (range height))))))
+        (append (map (λ (col) (cons col                          +i)) (range width))      ; Top edge
+                (map (λ (col) (cons (+ col (* (sub1 height) +i)) -i)) (range width))      ; Bottom edge
+                (map (λ (row) (cons (* row +i)                    1)) (range height))     ; Left edge
+                (map (λ (row) (cons (+ (sub1 width) (* row +i))  -1)) (range height)))))) ; Right edge
 
 ;; Tests --------------------------------------------------------------------------------------
 
