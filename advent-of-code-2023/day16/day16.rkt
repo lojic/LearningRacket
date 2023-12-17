@@ -30,11 +30,11 @@
 
 (define (part2)
   (list-max
-   (map (λ (config) (part1 (car config) (cdr config)))
-        (append (map (λ (col) (cons col                          +i)) (range width))      ; Top edge
-                (map (λ (col) (cons (+ col (* (sub1 height) +i)) -i)) (range width))      ; Bottom edge
-                (map (λ (row) (cons (* row +i)                    1)) (range height))     ; Left edge
-                (map (λ (row) (cons (+ (sub1 width) (* row +i))  -1)) (range height)))))) ; Right edge
+   (map (curry apply part1)
+        (append (map (λ (col) (list col                          +i)) (range width))      ; Top edge
+                (map (λ (col) (list (+ col (* (sub1 height) +i)) -i)) (range width))      ; Bottom edge
+                (map (λ (row) (list (* row +i)                    1)) (range height))     ; Left edge
+                (map (λ (row) (list (+ (sub1 width) (* row +i))  -1)) (range height)))))) ; Right edge
 
 ;; Tests --------------------------------------------------------------------------------------
 
