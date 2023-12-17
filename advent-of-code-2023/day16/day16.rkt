@@ -37,8 +37,8 @@
    (map (λ (config) (part1 (car config) (cdr config)))
         (append (map (λ (col) (cons col                          +i))  (range width))
                 (map (λ (col) (cons (+ col (* (sub1 height) +i)) -i))  (range width))
-                (map (λ (row) (cons (* row +i)                   1))   (range width))
-                (map (λ (row) (cons (+ (sub1 width) (* row +i)) -1))   (range width))))))
+                (map (λ (row) (cons (* row +i)                   1))   (range height))
+                (map (λ (row) (cons (+ (sub1 width) (* row +i)) -1))   (range height))))))
 
 ;; Tests --------------------------------------------------------------------------------------
 
