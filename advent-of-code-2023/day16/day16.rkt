@@ -26,11 +26,7 @@
                          [ else    (ray c seen key pos dir) ])) ])))
 
 (define (part1 pos dir)
-  (~> (beam pos dir (set))
-      (set->list _)
-      (map car _)
-      (remove-duplicates _)
-      length))
+  (length (remove-duplicates (map car (set->list (beam pos dir (set)))))))
 
 (define (part2)
   (list-max
