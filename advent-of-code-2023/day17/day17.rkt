@@ -1,6 +1,8 @@
 #lang racket
 (require "../advent.rkt" data/heap)
 
+;; This implementation can also provide the path from start to goal, not just the total loss :)
+
 (define-values (grid goal width height)
   (let* ([ lines  (parse-aoc 17 string->list)      ]
          [ width  (length (car lines))             ]
@@ -33,14 +35,14 @@
              (state pos* loss* pos (cons n history))))
          (filter (λ (n)
                    (let ([ next (+ pos n) ])
-                     (cond [ (= next prev) #f ] ; Can't be previous position
+                     (cond [ (= next prev) #f ]                                     ; Can't be previous position
                            [ (not (and (<= 0 (real-part next) (sub1 width))
                                        (<= 0 (imag-part next) (sub1 height)))) #f ] ; Must be in grid
                            [ else
                              (let* ([ same (same-dir obj) ]
                                     [ len  (length same)  ])
-                               (cond [ (= max-dir len)   (not (= n (car same))) ] ; At most max-dir moves in same dir
-                                     [ (< 0 len min-dir) (= n (car same))       ]  ; < min-dir, must be same dir
+                               (cond [ (= max-dir len)   (not (= n (car same))) ]   ; At most max-dir moves in same dir
+                                     [ (< 0 len min-dir) (= n (car same))       ]   ; < min-dir, must be same dir
                                      [ else              #t                     ])) ])))
                  '(1 +i -1 -i)))))
 
