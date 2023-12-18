@@ -71,5 +71,5 @@
 
 ;; Tests --------------------------------------------------------------------------------------
 
-(check-equal? (time (part1)) 1246)
-(check-equal? (time (part2)) 1389)
+(check-equal? (time (part1)) 1246) ; 1.3 seconds
+(check-equal? (time (part2)) 1389) ; 5.5 seconds
