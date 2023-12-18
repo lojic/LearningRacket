@@ -1,5 +1,5 @@
 #lang racket
-(require "../advent.rkt" data/heap)
+(require "../advent.rkt" data/heap/unsafe)
 
 ;; This implementation can also provide the path from start to goal, not just the total loss :)
 
@@ -73,5 +73,5 @@
 
 ;; Tests --------------------------------------------------------------------------------------
 
-(check-equal? (time (part1)) 1246) ; 1.3 seconds
-(check-equal? (time (part2)) 1389) ; 5.5 seconds
+(check-equal? (time (part1)) 1246) ; 1.2 seconds
+(check-equal? (time (part2)) 1389) ; 5.1 seconds
