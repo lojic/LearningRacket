@@ -13,7 +13,7 @@
        (>= (length (same-dir obj)) n)))
 
 (define (cache-key obj)
-  (cons (state-pos obj) (same-dir obj)))
+  (string-join (map number->string (cons (state-pos obj) (same-dir obj))) ":"))
 
 (define (same-dir obj [ dir #f ])
   (let ([ history (state-history obj) ])
