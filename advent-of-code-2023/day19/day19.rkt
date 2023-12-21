@@ -45,10 +45,8 @@
                   [ (string=? val "R") '()                       ]
                   [ else (flow obj (hash-ref workflows val)) ])
             (let-values ([ (yes no) (split-state obj val) ])
-              (let* ([ key   (fourth val)        ]
-                     [ left  (flow no (cdr lst)) ]
-                     [ right (flow yes (cons key (cdr lst))) ])
-                (append left right)))))))
+              (let ([ key (fourth val) ])
+                (append (flow no (cdr lst)) (flow yes (cons key (cdr lst))))))))))
 
 (define (combos obj)
   (* (- (add1 (state-x-max obj)) (state-x-min obj))
