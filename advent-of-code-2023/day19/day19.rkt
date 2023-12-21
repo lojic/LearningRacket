@@ -47,9 +47,7 @@
             (let-values ([ (yes no) (split-state obj val) ])
               (let* ([ key   (fourth val)        ]
                      [ left  (flow no (cdr lst)) ]
-                     [ right (cond [ (string=? "A" key) (list yes) ]
-                                   [ (string=? "R" key) '() ]
-                                   [ else (flow yes (hash-ref workflows key)) ]) ])
+                     [ right (flow yes (cons key (cdr lst))) ])
                 (append left right)))))))
 
 (define (combos obj)
