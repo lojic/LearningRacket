@@ -1,5 +1,5 @@
 #lang racket
-(require "../advent.rkt")
+(require "../advent.rkt" "./syntax.rkt")
 
 (define-values (workflows ratings)
   (match-let ([ (list workflows ratings) (parse-aoc 19 string-split #:sep "\n\n") ])
@@ -26,22 +26,15 @@
 (define (split-state obj val)
   (match-let ([ (list var op n _) val ])
     (match (cons op var)
-      [ (cons #\< #\x) (values (struct-copy state obj [ x-max (min (state-x-max obj) (sub1 n)) ])
-                               (struct-copy state obj [ x-min (max (state-x-min obj) n) ])) ]
-      [ (cons #\< #\m) (values (struct-copy state obj [ m-max (min (state-m-max obj) (sub1 n)) ])
-                               (struct-copy state obj [ m-min (max (state-m-min obj) n) ])) ]
-      [ (cons #\< #\a) (values (struct-copy state obj [ a-max (min (state-a-max obj) (sub1 n)) ])
-                               (struct-copy state obj [ a-min (max (state-a-min obj) n) ])) ]
-      [ (cons #\< #\s) (values (struct-copy state obj [ s-max (min (state-s-max obj) (sub1 n)) ])
-                               (struct-copy state obj [ s-min (max (state-s-min obj) n) ])) ]
-      [ (cons #\> #\x) (values (struct-copy state obj [ x-min (max (state-x-min obj) (add1 n)) ])
-                               (struct-copy state obj [ x-max (min (state-x-max obj) n) ])) ]
-      [ (cons #\> #\m) (values (struct-copy state obj [ m-min (max (state-m-min obj) (add1 n)) ])
-                               (struct-copy state obj [ m-max (min (state-m-max obj) n) ])) ]
-      [ (cons #\> #\a) (values (struct-copy state obj [ a-min (max (state-a-min obj) (add1 n)) ])
-                               (struct-copy state obj [ a-max (min (state-a-max obj) n) ])) ]
-      [ (cons #\> #\s) (values (struct-copy state obj [ s-min (max (state-s-min obj) (add1 n)) ])
-                               (struct-copy state obj [ s-max (min (state-s-max obj) n) ])) ])))
+      [ (cons #\< #\x) (set< x) ]
+      [ (cons #\< #\m) (set< m) ]
+      [ (cons #\< #\a) (set< a) ]
+      [ (cons #\< #\s) (set< s) ]
+
+      [ (cons #\> #\x) (set> x) ]
+      [ (cons #\> #\m) (set> m) ]
+      [ (cons #\> #\a) (set> a) ]
+      [ (cons #\> #\s) (set> s) ])))
 
 (define (flow obj lst)
   (if (null? lst)
@@ -52,8 +45,8 @@
                   [ (string=? val "R") '()                       ]
                   [ else (flow obj (hash-ref workflows val)) ])
             (let-values ([ (yes no) (split-state obj val) ])
-              (let* ([ key  (fourth val)        ]
-                     [ left (flow no (cdr lst)) ]
+              (let* ([ key   (fourth val)        ]
+                     [ left  (flow no (cdr lst)) ]
                      [ right (cond [ (string=? "A" key) (list yes) ]
                                    [ (string=? "R" key) '() ]
                                    [ else (flow yes (hash-ref workflows key)) ]) ])
@@ -78,7 +71,7 @@
     (~> (filter (curry accepted? states) ratings)
         (map (curry apply +) _)
         list-sum)))
-       
+
 (define (part2)
   (~> (flow (state 1 4000 1 4000 1 4000 1 4000) (hash-ref workflows "in"))
       (map combos _)
