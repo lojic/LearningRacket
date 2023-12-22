@@ -54,14 +54,12 @@
               (hash-set network to (struct-copy conjunction mod [ inputs hsh ]))) ]
           [ else network ])))
 
-(define (button queue network)
+(define (button queue part-fun network)
   (define (helper queue network)
     (if (queue-empty? queue)
         network
         (match-let ([ (message from to pulse) (dequeue! queue) ])
-          (when (and (string=? "rx" to)
-                     (eq? pulse 'low))
-            (printf "got it!\n"))
+          (part-fun from pulse)
           (helper queue (process-message queue
                                         (hash-set network pulse (add1 (hash-ref network pulse 0)))
                                         from
@@ -72,10 +70,28 @@
   (helper queue network))
 
 (define (part1)
-  (let ([ network (iterate (curry button (make-queue)) network 1000) ])
+  (let ([ network (iterate (curry button (make-queue) void) network 1000) ])
     (* (hash-ref network 'low  0)
        (hash-ref network 'high 0))))
+
+(define (part2)
+  (define cycles '())
+
+  (define push-button
+    (let ([ num-buttons 0 ]
+          [ queue (make-queue) ])
+      (λ (network)
+        (define (set-cycles from pulse)
+          (when (and (member from '("vz" "bq" "qh" "lt")) (eq? pulse 'high))
+            (set! cycles (cons num-buttons cycles))))
+
+        (set! num-buttons (add1 num-buttons))
+        (button queue set-cycles network))))
+
+  (iterate push-button network 5000)
+  (apply lcm cycles))
 
 ;; Tests --------------------------------------------------------------------------------------
 
 (check-equal? (part1) 737679780)
+(check-equal? (part2) 227411378431763)
