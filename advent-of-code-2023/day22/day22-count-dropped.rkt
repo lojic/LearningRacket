@@ -68,9 +68,8 @@
 
 (define (part2)
   (for/sum ([ pos (in-range (length bricks)) ])
-    (let ([ bricks* (remf (λ (b) (= pos (brick-idx b))) bricks) ])
-      (let-values ([ (_ n) (drop-bricks bricks*) ])
-        n))))
+    (let-values ([ (_ n) (drop-bricks (remf (λ (b) (= pos (brick-idx b))) bricks)) ])
+      n)))
 
 ;; Tests --------------------------------------------------------------------------------------
 
