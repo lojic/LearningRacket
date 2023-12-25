@@ -9,7 +9,7 @@
             1
             (+ (- width 2) (* (sub1 height) +i)))))
 
-(define (create-graph make-graph start weight)
+(define (create-graph make-graph start weight valid-exits)
   (define (find-vertex v dir [ dist 1 ])
     (define (step v dir)
       (let ([ dir* (findf (λ (d)
@@ -17,17 +17,11 @@
                                  (hash-ref grid (+ v d) #f)))
                           '(1 +i -1 -i)) ])
         (values (+ v dir*) dir*)))
-    
-    (define (valid-exits pos)
-      (filter identity (list (if (char=? #\> (hash-ref grid (+ pos 1) #\#))   1 #f)
-                             (if (char=? #\v (hash-ref grid (+ pos +i) #\#)) +i #f)
-                             (if (char=? #\< (hash-ref grid (+ pos -1) #\#)) -1 #f)
-                             (if (char=? #\^ (hash-ref grid (+ pos -i) #\#)) -i #f))))
-    
-    (if (= v goal)
+
+    (if (or (= v goal) (= v start))
         (values v dist '())
-        (let ([ dirs (valid-exits v) ])
-          (if (> (length dirs) 1) 
+        (let ([ dirs (valid-exits v dir) ])
+          (if (> (length dirs) 1)
               (values v dist dirs)
               (let-values ([ (v* dir*) (step v dir) ])
                 (find-vertex v* dir* (add1 dist)))))))
@@ -37,12 +31,30 @@
         (make-graph edges weights)
         (match-let ([ (cons v1 dir) (car queue) ])
           (let-values ([ (v2 dist dirs) (find-vertex (+ v1 dir) dir) ])
-            (if (null? dirs)
-                (loop (cdr queue) (cons (list v1 v2) edges) (cons (weight dist) weights))
-                (loop (append (cdr queue)
-                              (map (λ (dir) (cons v2 dir)) dirs))
-                      (cons (list v1 v2) edges)
-                      (cons (weight dist) weights))))))))
+            (cond [ (findf (λ (lst)
+                             (and (memv v1 lst) (memv v2 lst)))
+                             edges)
+                    (loop (cdr queue) edges weights) ]
+                  [ (null? dirs)
+                    (loop (cdr queue) (cons (list v1 v2) edges) (cons (weight dist) weights)) ]
+                  [ else
+                    (loop (append (cdr queue)
+                                  (map (λ (dir) (cons v2 dir)) dirs))
+                          (cons (list v1 v2) edges)
+                          (cons (weight dist) weights)) ]))))))
+
+(define (valid-exits-1 pos _)
+  (filter identity (list (if (char=? #\> (hash-ref grid (+ pos 1) #\#))   1 #f)
+                         (if (char=? #\v (hash-ref grid (+ pos +i) #\#)) +i #f)
+                         (if (char=? #\< (hash-ref grid (+ pos -1) #\#)) -1 #f)
+                         (if (char=? #\^ (hash-ref grid (+ pos -i) #\#)) -i #f))))
+
+(define (valid-exits-2 pos dir)
+  (let ([ dirs (filter (λ (d)
+                         (and (not (= d (- dir)))
+                              (memv (hash-ref grid (+ pos d) #\#) '(#\. #\> #\< #\^ #\v))))
+                       '(1 +i -1 -i)) ])
+    dirs))
 
 (define (dfs g v [ path '() ][ dist 0 ])
   (if (= v goal)
@@ -52,23 +64,19 @@
                                 (get-neighbors g v)) ])
         (if (null? neighbors)
             0
-            (let loop ([ dist* 0 ][ neighbors neighbors ])
-              (if (null? neighbors)
-                  dist*
-                  (let* ([ v*    (car neighbors)      ]
-                         [ delta (edge-weight g v v*) ])
-                    (loop (max dist (dfs g v* (cons v path) (+ dist delta)))
-                          (cdr neighbors)))))))))
-     
+            (list-max (for/list ([ neighbor (in-list neighbors) ])
+                        (let ([ delta (edge-weight g v neighbor) ])
+                          (dfs g neighbor (cons v path) (+ dist delta)))))))))
+
 (define (part1)
-  (let-values ([ (hsh _) (bellman-ford (create-graph directed-graph 1 -) 1) ])
+  (let-values ([ (hsh _) (bellman-ford (time (create-graph directed-graph start - valid-exits-1)) 1) ])
     (- (list-min (hash-values hsh)))))
+
+(define (part2)
+  (let ([ g (time (create-graph undirected-graph start identity valid-exits-2)) ])
+    (dfs g 1)))
 
 ;; Tests --------------------------------------------------------------------------------------
 
-(check-equal? (part1) 2238)
-  
-        
-  
-            
-                
+(check-equal? (time (part1)) 2238)
+(check-equal? (time (part2)) 6398)
