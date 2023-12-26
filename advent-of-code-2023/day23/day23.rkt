@@ -12,10 +12,9 @@
 (define (create-graph make-graph start weight valid-exits)
   (define (find-vertex v dir [ dist 1 ])
     (define (step v dir)
-      (let ([ dir* (findf (λ (d)
-                            (and (not (= d (- dir)))
-                                 (hash-ref grid (+ v d) #f)))
-                          '(1 +i -1 -i)) ])
+      (define (dir-ok? d) (and (not (= d (- dir)))
+                               (hash-ref grid (+ v d) #f)))
+      (let ([ dir* (findf dir-ok? '(1 +i -1 -i)) ])
         (values (+ v dir*) dir*)))
 
     (if (or (= v goal) (= v start))
@@ -33,15 +32,14 @@
           (let-values ([ (v2 dist dirs) (find-vertex (+ v1 dir) dir) ])
             (cond [ (findf (λ (lst)
                              (and (memv v1 lst) (memv v2 lst)))
-                             edges)
+                           edges)
                     (loop (cdr queue) edges weights) ]
                   [ (null? dirs)
                     (loop (cdr queue) (cons (list v1 v2) edges) (cons (weight dist) weights)) ]
-                  [ else
-                    (loop (append (cdr queue)
-                                  (map (λ (dir) (cons v2 dir)) dirs))
-                          (cons (list v1 v2) edges)
-                          (cons (weight dist) weights)) ]))))))
+                  [ else (loop (append (cdr queue)
+                                       (map (λ (dir) (cons v2 dir)) dirs))
+                               (cons (list v1 v2) edges)
+                               (cons (weight dist) weights)) ]))))))
 
 (define (part1)
   (define (valid-exits pos _)
@@ -55,55 +53,48 @@
 
 (define (part2)
   (define (valid-exits pos dir)
-    (let ([ dirs (filter (λ (d)
-                           (and (not (= d (- dir)))
-                                (memv (hash-ref grid (+ pos d) #\#) '(#\. #\> #\< #\^ #\v))))
-                         '(1 +i -1 -i)) ])
-      dirs))
-  
-  (define (create-edges g v-index edges) 
-    (let* ([ n   (hash-count v-index)    ]
-           [ vec (make-vector (* n n) 0) ])
+    (filter (λ (d)
+              (and (not (= d (- dir)))
+                   (memv (hash-ref grid (+ pos d) #\#) '(#\> #\v #\< #\^))))
+            '(1 +i -1 -i)))
+
+  (define (create-edges g n v-index edges)
+    (let ([ vec (make-vector (* n n) 0) ])
       (for ([ lst (in-list edges) ])
         (match-let ([ (list v1 v2) lst ])
-        (let ([ i1 (hash-ref v-index v1) ]
-              [ i2 (hash-ref v-index v2) ]
-              [ wt (edge-weight g v1 v2) ])
-          (vector-set! vec (+ i1 (* i2 n)) wt)
-          (vector-set! vec (+ i2 (* i1 n)) wt))))
+          (let ([ i1 (hash-ref v-index v1) ]
+                [ i2 (hash-ref v-index v2) ]
+                [ wt (edge-weight g v1 v2) ])
+            (vector-set! vec (+ i1 (* i2 n)) wt)
+            (vector-set! vec (+ i2 (* i1 n)) wt))))
       vec))
 
   (define (dfs get-neighbors v goal get-weight visited [ dist 0 ])
     (if (= v goal)
         dist
-        (let ([ neighbors (filter (λ (v*)
-                                    (not (vector-ref visited v*)))
-                                  (get-neighbors v)) ])
+        (let loop ([ neighbors (get-neighbors v) ][ dist* 0 ])
           (if (null? neighbors)
-              0
-              (list-max (for/list ([ neighbor (in-list neighbors) ])
-                          (let ([ delta (get-weight v neighbor) ])
-                            (vector-set! visited v #t)
-                            (let ([ val (dfs get-neighbors neighbor goal get-weight visited (+ delta dist)) ])
-                              (vector-set! visited v #f)
-                              val))))))))
-  
+              dist*
+              (let ([ neighbor (car neighbors) ])
+                (if (vector-ref visited neighbor)
+                    (loop (cdr neighbors) dist*)
+                    (let ([ delta (get-weight v neighbor) ])
+                      (vector-set! visited v #t)
+                      (let ([ val (dfs get-neighbors neighbor goal get-weight visited (+ delta dist)) ])
+                        (vector-set! visited v #f)
+                        (loop (cdr neighbors) (max dist* val))))))))))
+
   (let* ([ g         (create-graph undirected-graph start identity valid-exits) ]
          [ vertices  (get-vertices g)                                           ]
-         [ n         (length vertices)                                          ]
          [ v-index   (make-immutable-hash (enumerate vertices))                 ]
-         [ visited   (make-vector n #f)                                         ]
-         [ neighbors (list->vector (map (λ (v)
-                                          (map (λ (v*)
-                                                 (hash-ref v-index v*))
-                                               (get-neighbors g v)))
-                                        vertices)) ]
-         [ edges         (create-edges g v-index (get-edges g))         ]
+         [ neighbors (list->vector (for/list ([ v (in-list vertices) ])
+                                     (for/list ([ v* (in-neighbors g v) ])
+                                       (hash-ref v-index v*)))) ]
+         [ n             (hash-count v-index)                           ]
+         [ edges         (create-edges g n v-index (get-edges g))       ]
          [ get-neighbors (λ (v) (vector-ref neighbors v))               ]
          [ get-weight    (λ (v1 v2) (vector-ref edges (+ v1 (* n v2)))) ])
-    (dfs get-neighbors (hash-ref v-index start) (hash-ref v-index goal) get-weight visited)))
-
-;(part2)
+    (dfs get-neighbors (hash-ref v-index start) (hash-ref v-index goal) get-weight (make-vector n #f))))
 
 ;; Tests --------------------------------------------------------------------------------------
 
