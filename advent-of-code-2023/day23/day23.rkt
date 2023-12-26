@@ -43,37 +43,37 @@
                           (cons (list v1 v2) edges)
                           (cons (weight dist) weights)) ]))))))
 
-(define (valid-exits-1 pos _)
-  (filter identity (list (if (char=? #\> (hash-ref grid (+ pos 1) #\#))   1 #f)
-                         (if (char=? #\v (hash-ref grid (+ pos +i) #\#)) +i #f)
-                         (if (char=? #\< (hash-ref grid (+ pos -1) #\#)) -1 #f)
-                         (if (char=? #\^ (hash-ref grid (+ pos -i) #\#)) -i #f))))
-
-(define (valid-exits-2 pos dir)
-  (let ([ dirs (filter (λ (d)
-                         (and (not (= d (- dir)))
-                              (memv (hash-ref grid (+ pos d) #\#) '(#\. #\> #\< #\^ #\v))))
-                       '(1 +i -1 -i)) ])
-    dirs))
-
-(define (dfs g v [ path '() ][ dist 0 ])
-  (if (= v goal)
-      dist
-      (let ([ neighbors (filter (λ (v*)
-                                  (not (memv v* path)))
-                                (get-neighbors g v)) ])
-        (if (null? neighbors)
-            0
-            (list-max (for/list ([ neighbor (in-list neighbors) ])
-                        (let ([ delta (edge-weight g v neighbor) ])
-                          (dfs g neighbor (cons v path) (+ dist delta)))))))))
-
 (define (part1)
-  (let-values ([ (hsh _) (bellman-ford (time (create-graph directed-graph start - valid-exits-1)) 1) ])
+  (define (valid-exits pos _)
+    (filter identity (list (if (char=? #\> (hash-ref grid (+ pos 1) #\#))   1 #f)
+                           (if (char=? #\v (hash-ref grid (+ pos +i) #\#)) +i #f)
+                           (if (char=? #\< (hash-ref grid (+ pos -1) #\#)) -1 #f)
+                           (if (char=? #\^ (hash-ref grid (+ pos -i) #\#)) -i #f))))
+
+  (let-values ([ (hsh _) (bellman-ford (create-graph directed-graph start - valid-exits) 1) ])
     (- (list-min (hash-values hsh)))))
 
 (define (part2)
-  (let ([ g (time (create-graph undirected-graph start identity valid-exits-2)) ])
+  (define (dfs g v [ path (set) ][ dist 0 ])
+    (if (= v goal)
+        dist
+        (let ([ neighbors (filter (λ (v*)
+                                    (not (set-member? path v*)))
+                                  (get-neighbors g v)) ])
+          (if (null? neighbors)
+              0
+              (list-max (for/list ([ neighbor (in-list neighbors) ])
+                          (let ([ delta (edge-weight g v neighbor) ])
+                            (dfs g neighbor (set-add path v) (+ dist delta)))))))))
+
+  (define (valid-exits pos dir)
+    (let ([ dirs (filter (λ (d)
+                           (and (not (= d (- dir)))
+                                (memv (hash-ref grid (+ pos d) #\#) '(#\. #\> #\< #\^ #\v))))
+                         '(1 +i -1 -i)) ])
+      dirs))
+
+  (let ([ g (create-graph undirected-graph start identity valid-exits) ])
     (dfs g 1)))
 
 ;; Tests --------------------------------------------------------------------------------------
