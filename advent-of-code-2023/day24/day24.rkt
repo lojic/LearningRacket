@@ -1,11 +1,6 @@
 #lang racket
 (require "../advent.rkt")
 
-;; (define test1 7)
-;; (define test2 27)
-(define test1 200000000000000)
-(define test2 400000000000000)
-
 (struct stone (px py pz vx vy vz) #:transparent)
 
 (define stones (~> (parse-aoc 24 numbers)
@@ -42,27 +37,27 @@
                                       (* y3 x4)))) ])
                   (cons (/ numx denom) (/ numy denom)))))]))
 
-(define (in-area? t1 t2 p)
-  (and (<= t1 (car p) t2)
-       (<= t1 (cdr p) t2)))
-
-(define (intersects-test-area? t1 t2 s)
-  (define (test? p) (and p (in-area? t1 t2 p)))
-
-  (or (test? (intersection s (stone t1 t1 t1 0 1 0) 'z))
-      (test? (intersection s (stone t2 t2 t2 -1 0 0) 'z))
-      (test? (intersection s (stone t2 t2 t2 0 -1 0) 'z))
-      (test? (intersection s (stone t1 t1 t1 1 0 0) 'z))))
-
-(define (not-in-past? s p)
-  (let ([ pvx (- (car p) (stone-px s)) ]
-        [ pvy (- (cdr p) (stone-py s)) ]
-        [ vx (stone-vx s) ]
-        [ vy (stone-vy s) ])
-    (and (positive? (* pvx vx))
-         (positive? (* pvy vy)))))
-
 (define (intersections-in-area t1 t2 stones)
+  (define (not-in-past? s p)
+    (let ([ pvx (- (car p) (stone-px s)) ]
+          [ pvy (- (cdr p) (stone-py s)) ]
+          [ vx (stone-vx s) ]
+          [ vy (stone-vy s) ])
+      (and (positive? (* pvx vx))
+           (positive? (* pvy vy)))))
+
+  (define (in-area? t1 t2 p)
+    (and (<= t1 (car p) t2)
+         (<= t1 (cdr p) t2)))
+
+  (define (intersects-test-area? t1 t2 s)
+    (define (test? p) (and p (in-area? t1 t2 p)))
+
+    (or (test? (intersection s (stone t1 t1 t1 0 1 0) 'z))
+        (test? (intersection s (stone t2 t2 t2 -1 0 0) 'z))
+        (test? (intersection s (stone t2 t2 t2 0 -1 0) 'z))
+        (test? (intersection s (stone t1 t1 t1 1 0 0) 'z))))
+
   (let loop ([ lst (filter (λ (s) (intersects-test-area? t1 t2 s)) stones) ]
              [ intersections (set) ])
     (if (null? lst)
@@ -80,7 +75,7 @@
                         intersections))))))))
 
 (define (part1)
-  (set-count (intersections-in-area test1 test2 stones)))
+  (set-count (intersections-in-area 200000000000000 400000000000000 stones)))
 
 ;; Tests --------------------------------------------------------------------------------------
 
