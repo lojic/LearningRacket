@@ -3,7 +3,9 @@
 # equations.
 
 # For a collision to occur, the position of the rock and the hailstone
-# must be the same at the same instant of time:
+# must be the same at the same instant of time. In the following:
+#
+# px is hailstone x, vx is hailstone x-velocity, xr is rock x, vxr is rock x-velocity, etc.
 #
 # px + t * vx = xr + t * vxr
 # py + t * vy = yr + t * vyr
