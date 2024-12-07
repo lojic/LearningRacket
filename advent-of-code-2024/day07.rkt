@@ -4,7 +4,7 @@
 
 (define input (parse-aoc 7 numbers))
 
-(define conc (λ (x y) (string->number (format "~a~a" x y))))
+(define conc (λ (x y) (string->number (string-append (number->string x) (number->string y)))))
 
 (define (is-valid? ops answer result operands)
   (cond [ (> result answer) #f                ]
