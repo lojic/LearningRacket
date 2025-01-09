@@ -14,11 +14,9 @@
                       ops) ]))
 
 (define (solve . operators)
-  (~> (filter (λ (lst)
-                (is-valid? operators (car lst) (cadr lst) (cddr lst)))
-              input)
-      (map car _)
-      (apply + _)))
+  (for/sum ([ lst (in-list input) ]
+            #:when (is-valid? operators (car lst) (cadr lst) (cddr lst)))
+    (car lst)))
 
 (check-equal? (solve * +) 2664460013123)
 (check-equal? (solve * + conc) 426214131924213)
