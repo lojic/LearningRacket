@@ -18,5 +18,7 @@
             #:when (is-valid? operators (car lst) (cadr lst) (cddr lst)))
     (car lst)))
 
-(check-equal? (solve * +) 2664460013123)
-(check-equal? (solve * + conc) 426214131924213)
+;; --------------------------------------------------------------------------------------------
+
+(check-equal? (solve * +) 2664460013123)        ; Part 1
+(check-equal? (solve * + conc) 426214131924213) ; Part 2
